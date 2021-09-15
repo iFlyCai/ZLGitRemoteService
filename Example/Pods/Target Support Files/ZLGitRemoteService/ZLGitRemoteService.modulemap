@@ -1,0 +1,6 @@
+framework module ZLGitRemoteService {
+  umbrella header "ZLGitRemoteService-umbrella.h"
+
+  export *
+  module * { export * }
+}

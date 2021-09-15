@@ -1,0 +1,6 @@
+framework module SYDCentralPivot {
+  umbrella header "SYDCentralPivot-umbrella.h"
+
+  export *
+  module * { export * }
+}

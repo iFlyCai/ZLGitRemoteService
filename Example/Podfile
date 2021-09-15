@@ -1,0 +1,11 @@
+use_frameworks!
+
+platform :ios, '12.0'
+
+target 'ZLGitRemoteService_Example' do
+  pod 'ZLGitRemoteService', :path => '../'
+
+  target 'ZLGitRemoteService_Tests' do
+    inherit! :search_paths
+  end
+end
