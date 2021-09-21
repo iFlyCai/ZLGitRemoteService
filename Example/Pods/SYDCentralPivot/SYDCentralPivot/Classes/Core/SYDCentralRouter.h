@@ -7,10 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
-#import "SYDCentralFactory.h"
-#import "SYDCentralRouterModel.h"
+@class SYDCentralFactory;
+@class SYDCentralRouterModel;
 
 
 @interface SYDCentralRouter : NSObject
@@ -22,6 +21,11 @@
 - (void) addConfig:(NSArray <SYDCentralRouterModel *>  * _Nonnull ) configs;
 
 - (void) addConfigWithFilePath:(NSString * _Nonnull) filePath withBundle:(NSBundle * _Nullable) bundle;
+
+- (id _Nullable) sendMessage:(NSString * _Nonnull) message
+                      toBean:(NSString * _Nonnull) modelkey
+                    withPara:(NSArray * _Nullable) paramArray
+           isInstanceMessage:(BOOL) isInstanceMessage;
 
 @end
 

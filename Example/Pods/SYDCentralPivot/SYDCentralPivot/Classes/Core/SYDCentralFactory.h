@@ -8,16 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "SYDCentralRouterModel.h"
+#define SYDLog(format,...) [[SYDCentralFactory sharedInstance] handleLog:[NSString stringWithFormat:format,##__VA_ARGS__]];
+
+@class SYDCentralRouterModel;
 
 @interface SYDCentralFactory : NSObject
-
-@property(nonatomic,strong) NSMutableDictionary * _Nullable viewControllerModelMapCache;
-
-@property(nonatomic,strong) NSMutableDictionary * _Nullable serviceModelMapCache;
-
-@property(nonatomic,strong) NSMutableDictionary * _Nullable otherMapCache;
-
 
 #pragma mark - SYDCentralFactory 单例
 
@@ -39,7 +34,12 @@
 
 - (id _Nullable) getCommonBean:(const NSString * _Nonnull) beanKey withInjectParam:(NSDictionary * _Nonnull) param;
 
-- (id _Nullable) getSingleton:(const NSString * _Nonnull) beanKey;
+#pragma mark - 日志处理
+
+//
+- (void) addLogHandler:(void(^_Nonnull)(NSString *_Nonnull)) handler;
+
+- (void) handleLog:(NSString * _Nonnull) message;
 
 @end
 

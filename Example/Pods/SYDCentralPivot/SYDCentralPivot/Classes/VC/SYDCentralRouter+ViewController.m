@@ -7,13 +7,13 @@
 
 - (void) enterViewController:(const NSString *) viewControllerKey withViewControllerConfig:(id) config withParam:(NSDictionary *) paramDic
 {
-    NSLog(@"SYDCentralRouter_enterViewController: viewControllerKey[%@] config[%@] paramDic[%@]",viewControllerKey,config,paramDic);
+    SYDLog(@"SYDCentralRouter_enterViewController: viewControllerKey[%@] config[%@] paramDic[%@]",viewControllerKey,config,paramDic);
     
     Class viewControllerClass = [self.centralFactory getViewControllerClass:viewControllerKey];
     
     if(!viewControllerClass)
     {
-        NSLog(@"SYDCentralRouter_enterViewController: viewcontrollerclass for [%@] not exist",viewControllerKey);
+        SYDLog(@"SYDCentralRouter_enterViewController: viewcontrollerclass for [%@] not exist",viewControllerKey);
         return;
     }
     
@@ -38,7 +38,7 @@
     }
     else
     {
-        NSLog(@"SYDCentralRouter: enterViewController method for [%@] not exist ",viewControllerKey);
+        SYDLog(@"SYDCentralRouter: enterViewController method for [%@] not exist ",viewControllerKey);
     }
 }
 

@@ -7,7 +7,7 @@
 //
 
 #import "SYDCentralFactory.h"
-
+#import "SYDCentralRouterModel.h"
 #import <objc/Runtime.h>
 #import <objc/message.h>
 
@@ -16,6 +16,8 @@
 @property(nonatomic,strong) NSMutableDictionary* sydCentralModelMap;
 
 @property(nonatomic,strong) NSMutableDictionary* singletonCache;
+
+@property(nonatomic,copy) NSArray* logHanderArray;
 
 @property(nonatomic,strong) dispatch_queue_t concurrentQueue;       // 私有并发队列保证线程安全
 
@@ -53,7 +55,7 @@
     
     NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
     for(SYDCentralRouterModel * model in configs) {
-        if(model.modelKey == nil || model.cla == nil) {
+        if(model.modelKey == nil || model.claStr == nil) {
             continue;
         }
         [dic setObject:model forKey:model.modelKey];
@@ -78,37 +80,24 @@
             NSString * modelKey = key;
             NSDictionary * modelValue = value;
             
-            NSString * classString = [modelValue objectForKey:@"class"];
-            Class cla = NSClassFromString(classString);
+            NSString * classString = [modelValue objectForKey:@"claStr"];
             
-            if(!cla){
-                // 支持swift 创建的类
-                NSBundle *tmpBundle = bundle;
-                if(!tmpBundle){
-                    tmpBundle = [NSBundle mainBundle];
-                }
-                NSString *moduleName = [tmpBundle objectForInfoDictionaryKey:@"CFBundleName"];
-               // NSString *classStringName = [NSString stringWithFormat:@"_TtC%lu%@%lu%@", (unsigned long)moduleName.length, moduleName, (unsigned long)classString.length, classString];
-                NSString *classStringName = [NSString stringWithFormat:@"%@.%@",  moduleName,classString];
-                cla = NSClassFromString(classStringName);
-            }
-            
-            if(cla)
-            {
+            if(classString){
+                
                 SYDCentralRouterModelType type = (SYDCentralRouterModelType)((NSNumber *)[modelValue objectForKey:@"type"]).intValue;
                 SYDCentralRouterModel * model = [[SYDCentralRouterModel alloc] init];
                 
                 [model setModelType:type];
                 [model setModelKey:modelKey];
-                [model setCla:cla];
+                [model setClaStr:classString];
+                [model setModuleName:[modelValue objectForKey:@"moduleName"]];
                 [model setSingle:[[modelValue objectForKey:@"isSingle"] boolValue]];
                 [model setSingletonMethodStr:[modelValue objectForKey:@"singleMethod"]];
                 [dic setObject:model forKey:modelKey];
                 
             }
-            else
-            {
-                NSLog(@"SYDCentralFactory_init: class for [%@] not exist",modelKey);
+            else{
+                SYDLog(@"SYDCentralFactory_init: class for [%@] not exist",modelKey);
             }
         }];
         
@@ -121,6 +110,10 @@
 }
 
 - (SYDCentralRouterModel *) getCentralRouterModel:(const NSString *) beanKey{
+    return [[self inline_getCentralRouterModel:beanKey] copy];
+}
+
+- (SYDCentralRouterModel *) inline_getCentralRouterModel:(const NSString *) beanKey{
     if(beanKey == nil){
         return nil;
     }
@@ -133,8 +126,18 @@
 
 
 - (Class) getBeanClass:(const NSString *) beanKey{
-    SYDCentralRouterModel * model = [self getCentralRouterModel:beanKey];
-    return model.cla;
+    SYDCentralRouterModel * model = [self inline_getCentralRouterModel:beanKey];
+    if(model && model.claStr){
+        Class cla = NSClassFromString(model.claStr);
+        if(!cla && model.moduleName){
+            // 支持swift 创建的类
+            NSString *classStringName = [NSString stringWithFormat:@"%@.%@", model.moduleName,model.claStr];
+            cla = NSClassFromString(classStringName);
+        }
+        return cla;
+    }
+
+    return nil;
 }
 
 - (id) getCommonBean:(const NSString *) beanKey{
@@ -143,7 +146,7 @@
         return nil;
     }
     
-    SYDCentralRouterModel * model = [self getCentralRouterModel:beanKey];
+    SYDCentralRouterModel * model = [self inline_getCentralRouterModel:beanKey];
     
     id commomBean = nil;
     
@@ -151,15 +154,16 @@
         if(model.isSingle){
             commomBean = [self getSingleton:beanKey];
             if(!commomBean){
-                NSLog(@"SYDCentralFactory_getCommonBean: create singleton for [%@] failed",beanKey);
+                SYDLog(@"SYDCentralFactory_getCommonBean: create singleton for [%@] failed",beanKey);
             }
         }
         else{
-            commomBean = class_createInstance([model cla], 0);
+            Class cla = [self getBeanClass:beanKey];
+            commomBean = [[cla alloc] init];
         }
     }
     else{
-        NSLog(@"SYDCentralFactory_getCommonBean: SYDCentralRouterModel for [%@] is not exist",beanKey);
+        SYDLog(@"SYDCentralFactory_getCommonBean: SYDCentralRouterModel for [%@] is not exist",beanKey);
     }
     
     return commomBean;
@@ -179,7 +183,7 @@
                 [commonBean setValue:value forKey:tmpKey];
             }
             @catch(NSException * exception){
-                NSLog(@"SYDCentralFactory_getCommonBeanWithInjectParam: value for key[%@] not exist,exception[%@]",beanKey,exception);
+                SYDLog(@"SYDCentralFactory_getCommonBeanWithInjectParam: value for key[%@] not exist,exception[%@]",beanKey,exception);
             }
             
         }];
@@ -202,18 +206,19 @@
         return singleton;
     }
     
-    SYDCentralRouterModel * model = [self getCentralRouterModel:beanKey];
+    SYDCentralRouterModel * model = [self inline_getCentralRouterModel:beanKey];
+    Class cla = [self getBeanClass:beanKey];
     
-    if(model){
+    if(model && cla){
         
         if(model.isSingle && model.singletonMethodStr){
             
             SEL singleMethodSel = NSSelectorFromString(model.singletonMethodStr);
-            Method singletonMethod = class_getClassMethod(model.cla,singleMethodSel);
+            Method singletonMethod = class_getClassMethod(cla,singleMethodSel);
             id(*singletonMethodIMP)(id,SEL) = (id(*)(id,SEL))method_getImplementation(singletonMethod);
             
             if(singletonMethodIMP){
-                singleton = singletonMethodIMP(model.cla,singleMethodSel);
+                singleton = singletonMethodIMP(cla,singleMethodSel);
                 if(singleton){
                     dispatch_barrier_sync(self.concurrentQueue, ^{
                         [self.singletonCache setObject:singleton forKey:beanKey];
@@ -221,19 +226,48 @@
                 }
             }
             else{
-                NSLog(@"SYDCentralFactory_getSingleton: singleton method for [%@] not exist",beanKey);
+                SYDLog(@"SYDCentralFactory_getSingleton: singleton method for [%@] not exist",beanKey);
             }
             
         }
         else{
-            NSLog(@"SYDCentralFactory_getSingleton: SYDCentralRouterModel for [%@] is not singleton",beanKey);
+            SYDLog(@"SYDCentralFactory_getSingleton: SYDCentralRouterModel for [%@] is not singleton",beanKey);
         }
     }
     else{
-        NSLog(@"SYDCentralFactory_getSingleton: SYDCentralRouterModel for [%@] is not exist",beanKey);
+        SYDLog(@"SYDCentralFactory_getSingleton: SYDCentralRouterModel for [%@] is not exist",beanKey);
     }
     
     return singleton;
+}
+
+
+#pragma mark - 错误处理
+
+//
+- (void) addLogHandler:(void(^_Nonnull)(NSString *_Nonnull)) handler{
+    if(handler == nil){
+        return;
+    }
+    NSMutableArray* newHanderArray = [[NSMutableArray alloc] init];
+    dispatch_barrier_sync(self.concurrentQueue, ^{
+        if(self.logHanderArray){
+            [newHanderArray addObjectsFromArray:self.logHanderArray];
+        }
+        [newHanderArray addObject:handler];
+        self.logHanderArray = newHanderArray;
+    });
+}
+
+- (void) handleLog:(NSString * _Nonnull) errorMessage{
+    NSLog(@"%@", errorMessage);
+    __block NSArray* array = nil;
+    dispatch_sync(self.concurrentQueue, ^{
+        array = self.logHanderArray;
+    });
+    for(void(^ handler)(NSString *) in array){
+        handler(errorMessage);
+    }
 }
 
 

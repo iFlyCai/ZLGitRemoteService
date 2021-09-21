@@ -61,7 +61,7 @@ Pod::Spec.new do |s|
   s.dependency 'CocoaLumberjack'
   s.dependency 'MJExtension'
   s.dependency 'Apollo', '~> 0.48.0'
-  s.dependency 'SYDCentralPivot', '~> 1.3.0'
+  s.dependency 'SYDCentralPivot'
   s.dependency 'Bugly'
 
 end

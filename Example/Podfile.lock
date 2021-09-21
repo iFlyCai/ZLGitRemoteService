@@ -106,14 +106,11 @@ PODS:
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
   - PromisesObjC (2.0.0)
-  - SYDCentralPivot (1.3.0):
-    - SYDCentralPivot/Core (= 1.3.0)
-    - SYDCentralPivot/Service (= 1.3.0)
-    - SYDCentralPivot/VC (= 1.3.0)
-  - SYDCentralPivot/Core (1.3.0)
-  - SYDCentralPivot/Service (1.3.0):
-    - SYDCentralPivot/Core
-  - SYDCentralPivot/VC (1.3.0):
+  - SYDCentralPivot (1.4.1):
+    - SYDCentralPivot/Core (= 1.4.1)
+    - SYDCentralPivot/VC (= 1.4.1)
+  - SYDCentralPivot/Core (1.4.1)
+  - SYDCentralPivot/VC (1.4.1):
     - SYDCentralPivot/Core
   - Umbrella (0.12.0):
     - Umbrella/Core (= 0.12.0)
@@ -128,7 +125,7 @@ PODS:
     - Firebase/Analytics
     - FMDB
     - MJExtension
-    - SYDCentralPivot (~> 1.3.0)
+    - SYDCentralPivot
     - Umbrella
     - Umbrella/Firebase
 
@@ -177,9 +174,9 @@ SPEC CHECKSUMS:
   MJExtension: 01704cca2b60a214c10761b6491eab74069d68a9
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
-  SYDCentralPivot: f4ec6fca1046a8ef1ee6014fa06a4e1006498702
+  SYDCentralPivot: 744303ae0997af1b829fab7ef9772bba692222bd
   Umbrella: 4faf9786a6b29197608f6483711271104d237646
-  ZLGitRemoteService: db22ce2786cfff93144344c59bdb93d2ca010614
+  ZLGitRemoteService: 19504c70fa8886e3482e4a95a8ddf7e1a0f84fd3
 
 PODFILE CHECKSUM: fe12ae42a4e8085d88885d40ce98b30896c71300
 

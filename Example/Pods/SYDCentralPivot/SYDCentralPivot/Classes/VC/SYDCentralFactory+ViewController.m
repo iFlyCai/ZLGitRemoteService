@@ -20,7 +20,7 @@
     Class viewControllerClass = [self getViewControllerClass:viewControllerKey];
     
     if(!viewControllerClass){
-       NSLog(@"SYDCentralFactory_getOneUIViewController: class for [%@] is not exist",viewControllerKey);
+       SYDLog(@"SYDCentralFactory_getOneUIViewController: class for [%@] is not exist",viewControllerKey);
         return nil;
     }
     
@@ -45,7 +45,7 @@
         return controller;
     }
     else{
-        NSLog(@"SYDCentralFactory_getOneViewController: method for [%@] not exist ",viewControllerKey);
+        SYDLog(@"SYDCentralFactory_getOneViewController: method for [%@] not exist ",viewControllerKey);
         return class_createInstance(viewControllerClass, 0);
     }
 }
@@ -66,7 +66,7 @@
              }
              @catch(NSException * exception)
              {
-                 NSLog(@"SYDCentralFactory_getOneUIViewControllerWithInjectParam: value for key[%@] not exist,exception[%@]",viewControllerKey,exception);
+                 SYDLog(@"SYDCentralFactory_getOneUIViewControllerWithInjectParam: value for key[%@] not exist,exception[%@]",viewControllerKey,exception);
              }
              
          }];

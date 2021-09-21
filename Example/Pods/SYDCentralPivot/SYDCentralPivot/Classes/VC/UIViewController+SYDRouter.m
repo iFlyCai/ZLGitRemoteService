@@ -10,6 +10,7 @@
 #import "UIViewController+SYDRouter.h"
 #import <objc/runtime.h>
 #import "SYDCentralRouterViewControllerConfig.h"
+#import "SYDCentralFactory.h"
 
 
 @implementation UIViewController (SYDRouter)
@@ -21,7 +22,7 @@
 - (NSString *) VCKey{
     NSString *key = objc_getAssociatedObject(self, "VCKey");
     if(!key){
-        key = @"UIViewController";
+        key = NSStringFromClass([self class]);
     }
     return key;
 }
@@ -48,7 +49,7 @@
          }
          @catch(NSException * exception)
          {
-             NSLog(@"enterViewControllerWithViewControllerConfig: value for key[%@] not exist,exception[%@]",key,exception);
+             SYDLog(@"enterViewControllerWithViewControllerConfig: value for key[%@] not exist,exception[%@]",key,exception);
          }
        
      }];

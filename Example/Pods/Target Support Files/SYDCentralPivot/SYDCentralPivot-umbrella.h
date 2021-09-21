@@ -11,11 +11,11 @@
 #endif
 
 #import "SYDCentralFactory.h"
+#import "SYDCentralPivot.h"
 #import "SYDCentralRouter.h"
 #import "SYDCentralRouterModel.h"
-#import "SYDCentralFactory+SYDService.h"
-#import "SYDCentralRouter+SYDService.h"
 #import "SYDCentralFactory+ViewController.h"
+#import "SYDCentralPivotForVC.h"
 #import "SYDCentralRouter+ViewController.h"
 #import "SYDCentralRouterViewControllerConfig.h"
 #import "UIViewController+SYDRouter.h"
