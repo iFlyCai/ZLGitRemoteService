@@ -33,7 +33,6 @@
   ],
   "vendored_libraries": "ZLGitRemoteService/Libs/libgumbo.a",
   "pod_target_xcconfig": {
-    "HEADER_SEARCH_PATHS": "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Libs/gumbo",
     "LIBRARY_SEARCH_PATHS": "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Libs",
     "FRAMEWORK_SEARCH_PATHS": "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Frameworks",
     "DEFINES_MODULE": "YES"

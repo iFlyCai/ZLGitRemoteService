@@ -40,8 +40,7 @@ Pod::Spec.new do |s|
                            'ZLGitRemoteService/Classes/Network/ZLGithubHttpClient.h']
   s.vendored_libraries = 'ZLGitRemoteService/Libs/libgumbo.a'
  # s.vendored_frameworks = 'ZLGitRemoteService/Frameworks/Bugly.framework'
-  s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Libs/gumbo",
-                            'LIBRARY_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Libs",
+  s.pod_target_xcconfig = { 'LIBRARY_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Libs",
                             'FRAMEWORK_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Frameworks",
                             'DEFINES_MODULE' => 'YES'}
   s.swift_version = '5.0'
