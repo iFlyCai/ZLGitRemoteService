@@ -117,7 +117,7 @@ PODS:
   - Umbrella/Core (0.12.0)
   - Umbrella/Firebase (0.12.0):
     - Umbrella/Core
-  - ZLGitRemoteService (0.1.0):
+  - ZLGitRemoteService (1.1.1):
     - AFNetworking
     - Apollo (~> 0.48.0)
     - Bugly
@@ -176,8 +176,8 @@ SPEC CHECKSUMS:
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   SYDCentralPivot: 744303ae0997af1b829fab7ef9772bba692222bd
   Umbrella: 4faf9786a6b29197608f6483711271104d237646
-  ZLGitRemoteService: 01e77071f31172eb4e0ab218ed9c87c1f0d65b57
+  ZLGitRemoteService: c0f512cde98df8c4ac9124dddd6848116bbd86b1
 
-PODFILE CHECKSUM: fe12ae42a4e8085d88885d40ce98b30896c71300
+PODFILE CHECKSUM: 8613e47532f35ae01f5cb7444a53dc654ae830d4
 
 COCOAPODS: 1.11.0

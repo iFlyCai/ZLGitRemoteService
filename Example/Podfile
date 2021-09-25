@@ -1,4 +1,5 @@
 use_frameworks!
+inhibit_all_warnings!     # 屏蔽pod中告警
 
 platform :ios, '12.0'
 
