@@ -15,12 +15,11 @@ import SYDCentralPivot
     
     private static func getSharedInstance() -> ZLServiceManager {
         let bundle = Bundle(for: ZLServiceManager.self)
-        let moduleName = bundle.object(forInfoDictionaryKey: "CFBundleName") as? String
+        let moduleName = "ZLGitRemoteService"
         
         let configArray = [
             SYDCentralRouterModel(modelKey: "ZLLogModule", modelType: .other, claStr: "ZLLogManager", moduleName: moduleName, single: true, singletonMethodStr: "sharedInstance"),
             SYDCentralRouterModel(modelKey: "ZLDBModule", modelType: .other, claStr: "ZLDataBaseManager", moduleName: moduleName, single: true, singletonMethodStr: "sharedInstance"),
-            SYDCentralRouterModel(modelKey: "ZLLANModule", modelType: .other, claStr: "ZLLanguageManager", moduleName: moduleName, single: true, singletonMethodStr: "sharedInstance"),
             SYDCentralRouterModel(modelKey: "ZLViewerServiceModel", modelType: .service, claStr: "ZLViewerServiceModel", moduleName: moduleName, single: true, singletonMethodStr: "sharedServiceModel"),
             SYDCentralRouterModel(modelKey: "ZLViewerServiceModel", modelType: .service, claStr: "ZLViewerServiceModel", moduleName: moduleName, single: true, singletonMethodStr: "sharedServiceModel"),
             SYDCentralRouterModel(modelKey: "ZLUserServiceModel", modelType: .service, claStr: "ZLUserServiceModel", moduleName: moduleName, single: true, singletonMethodStr: "sharedServiceModel"),
@@ -83,11 +82,5 @@ import SYDCentralPivot
     
     public var dbModule : ZLDBModuleProtocol?{
         return SYDCentralFactory.sharedInstance().getCommonBean("ZLDBModule") as? ZLDBModuleProtocol
-    }
-    
-    public var lanModule : ZLLanguageModuleProtocol? {
-        return SYDCentralFactory.sharedInstance().getCommonBean("ZLLANModule") as? ZLLanguageModuleProtocol
-    }
-    
-    
+    }    
 }

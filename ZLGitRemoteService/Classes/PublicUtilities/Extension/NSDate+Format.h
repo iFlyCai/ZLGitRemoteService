@@ -1,5 +1,5 @@
 //
-//  NSDate+localizeStr.h
+//  NSDate+Format.h
 //  ZLGitHubClient
 //
 //  Created by 朱猛 on 2019/8/25.
@@ -10,17 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSDate (localizeStr)
-
-- (NSString *) dateLocalStrSinceCurrentTime;
+@interface NSDate (Format)
 
 - (NSString *) dateStrForYYYYMMdd;
 
 - (NSString *) dateStrForYYYYMMDDTHHMMSSZForTimeZone0;
 
 - (NSString *) dateStrForYYYYMMDDTHHMMSSZForTimeZoneCurrent;
-
-+ (NSString *) getDateLocalStrSinceCurrentTimeWithGithubTime:(NSString *) githubDateStr;
 
 @end
 

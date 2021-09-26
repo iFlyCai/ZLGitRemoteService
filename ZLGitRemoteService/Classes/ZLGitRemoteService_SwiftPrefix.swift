@@ -23,8 +23,6 @@ public let ZLUpdateUserPublicProfileInfoResult_Notification = Notification.Name(
 public let ZLGetUserReceivedEventResult_Notification = Notification.Name(rawValue: "ZLGetUserReceivedEventResult_Notification")
 public let ZLGetMyEventResult_Notification = Notification.Name(rawValue: "ZLGetMyEventResult_Notification")
 
-public let ZLLanguageTypeChange_Notificaiton = Notification.Name(rawValue: "ZLLanguageTypeChange_Notificaiton")
-
 public let ZLGithubConfigUpdate_Notification = Notification.Name(rawValue: "ZLGithubConfigUpdate_Notification")
 
 
@@ -58,12 +56,6 @@ public func ZLLog_Verbose(_ message: @autoclosure () -> String, file: StaticStri
 
 public func ZLLog_Error(_ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line, tag: Any? = nil, asynchronous async: Bool = false, ddlog: DDLog = DDLog.sharedInstance) {
     ZLServiceManager.sharedInstance.logModule?.zlLogError("\(function)", file: "\(file)", line: line, str: message())
-}
-
-// MARK: ZLLANModule
-
-public func ZLLocalizedString(string: String, comment: String) -> String{
-    return ZLServiceManager.sharedInstance.lanModule?.localized(withKey: string) ?? comment
 }
 
 // MARK: Dispatch

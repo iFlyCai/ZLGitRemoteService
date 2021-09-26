@@ -16,6 +16,9 @@ FOUNDATION_EXPORT const unsigned char ZLServiceFrameworkVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <ZLGitRemoteService/PublicHeader.h>
 
+// GeneralDefine
+#include "ZLGitRemoteSerivce_GeneralDefine.h"
+
 // model
 #import "ZLBaseObject.h"
 #import "ZLGithubRepositoryBranchModel.h"
@@ -37,9 +40,8 @@ FOUNDATION_EXPORT const unsigned char ZLServiceFrameworkVersionString[];
 // Tool
 #import "ZLLogModuleProtocol.h"
 #import "ZLDBModuleProtocol.h"
-#import "ZLLanguageModuleProtocol.h"
 #import "ZLSharedDataManager.h"
-#import "ZLBuglyManager.h"
+//#import "ZLBuglyManager.h"
 #import "ZLDeviceInfo.h"
 
 #import "ZLBaseServiceModel.h"
@@ -52,9 +54,11 @@ FOUNDATION_EXPORT const unsigned char ZLServiceFrameworkVersionString[];
 
 //extension
 #import "NSString+ZLExtension.h"
-#import "NSDate+localizeStr.h"
+#import "NSDate+Format.h"
 
 // network
 #import "ZLGithubHttpClient.h"
+
+
 
 

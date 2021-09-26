@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ZLGitRemoteService'
-  s.version          = '1.1.1'
+  s.version          = '1.1.2'
   s.summary          = 'A short description of ZLGitRemoteService.'
 
 # This description is used to generate tags and improve search results.
@@ -30,13 +30,14 @@ Pod::Spec.new do |s|
   s.module_name = 'ZLGitRemoteService'
   s.source_files = 'ZLGitRemoteService/Classes/**/*.{h,m,swift}'
   s.prefix_header_file= 'ZLGitRemoteService/Classes/ZLGitRemoteService-prefix.pch'
-  s.public_header_files = ['ZLGitRemoteService/Classes/ZLGitRemoteService.h',
+  s.public_header_files = ['ZLGitRemoteService/Classes/ZLGitRemoteSerivce_GeneralDefine.h',
+                           'ZLGitRemoteService/Classes/ZLGitRemoteService.h',
                            'ZLGitRemoteService/Classes/Model/**/*.h',
                            'ZLGitRemoteService/Classes/PublicUtilities/**/*.h',
                            'ZLGitRemoteService/Classes/Base/**/*.h',
-                           'ZLGitRemoteService/Classes/Analyse/**/*.h',
+                           'ZLGitRemoteService/Classes/Manager/ZLSharedDataManager/*.h',
+                           'ZLGitRemoteService/Classes/Manager/ZLBuglyManager/*.h',
                            'ZLGitRemoteService/Classes/PublicModule/**/*.h',
-                           'ZLGitRemoteService/Classes/Tool/ZLSharedDataManager/**/*.h',
                            'ZLGitRemoteService/Classes/Network/ZLGithubHttpClient.h']
   s.vendored_libraries = 'ZLGitRemoteService/Libs/libgumbo.a'
  # s.vendored_frameworks = 'ZLGitRemoteService/Frameworks/Bugly.framework'

@@ -15,7 +15,7 @@
 
 // Tool
 #import "ZLSharedDataManager.h"
-#import "NSDate+localizeStr.h"
+#import "NSDate+Format.h"
 #import "NSString+ZLExtension.h"
 #import "OCGumbo.h"
 #import "OCGumbo+Query.h"

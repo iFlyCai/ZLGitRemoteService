@@ -155,7 +155,6 @@
 #define blockUserURL        @"/user/blocks/%@"                     // PUT 屏蔽某用户/ get 检查是否屏蔽某用户 取消屏蔽
 
 
-static const NSNotificationName ZLGithubTokenInvalid_Notification = @"ZLGithubTokenInvalid_Notification";
 
 
 
