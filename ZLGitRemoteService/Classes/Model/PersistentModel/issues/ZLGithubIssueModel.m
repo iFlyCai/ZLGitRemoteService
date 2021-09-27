@@ -8,6 +8,7 @@
 
 #import "ZLGithubIssueModel.h"
 #import <MJExtension/MJExtension.h>
+#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
 
 @implementation ZLGithubLabelModel
 

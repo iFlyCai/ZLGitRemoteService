@@ -8,6 +8,7 @@
 
 #import "ZLGithubCommitModel.h"
 #import <MJExtension/MJExtension.h>
+#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
 
 @implementation ZLGithubFileModel 
 

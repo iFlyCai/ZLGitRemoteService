@@ -134,7 +134,7 @@
             }
             else
             {
-                ZLGithubRequestErrorModel *model = (ZLGithubRequestErrorModel *)response;
+                ZLGithubRequestErrorModel *model = processModel.errorModel;
                 [ZLAppEventForOC loginEventWithResult:1 step:weakSelf.step way:0 error:model.message];
                 weakSelf.step = ZLLoginStep_init;
                 weakSelf.currentLoginSerialNumber = nil;

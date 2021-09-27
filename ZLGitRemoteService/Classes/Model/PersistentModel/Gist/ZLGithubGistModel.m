@@ -8,6 +8,7 @@
 
 #import "ZLGithubGistModel.h"
 #import <MJExtension/MJExtension.h>
+#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
 
 @implementation ZLGithubGistFileModel
 

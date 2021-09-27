@@ -8,6 +8,7 @@
 
 #import "ZLGithubPullRequestModel.h"
 #import <MJExtension/MJExtension.h>
+#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
 
 @implementation ZLGithubPullRequestModel
 
