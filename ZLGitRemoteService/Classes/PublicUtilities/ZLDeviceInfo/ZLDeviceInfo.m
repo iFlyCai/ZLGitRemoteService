@@ -66,6 +66,10 @@
     if ([platform isEqualToString:@"iPhone13,2"]) return @"iPhone 12";
     if ([platform isEqualToString:@"iPhone13,3"]) return @"iPhone 12 Pro";
     if ([platform isEqualToString:@"iPhone13,4"]) return @"iPhone 12 Pro Max";
+    if ([platform isEqualToString:@"iPhone14,4"]) return @"iPhone 13 mini";
+    if ([platform isEqualToString:@"iPhone14,5"]) return @"iPhone 13";
+    if ([platform isEqualToString:@"iPhone14,2"]) return @"iPhone 13 Pro";
+    if ([platform isEqualToString:@"iPhone14,3"]) return @"iPhone 13 Pro Max";
     
     // iPad
     if ([platform isEqualToString:@"iPad1,1"]) return @"iPad";
@@ -87,6 +91,8 @@
     if ([platform isEqualToString:@"iPad7,12"]) return @"iPad 7";
     if ([platform isEqualToString:@"iPad11,6"]) return @"iPad 8";
     if ([platform isEqualToString:@"iPad11,7"]) return @"iPad 8";
+    if ([platform isEqualToString:@"iPad12,1"]) return @"iPad 9";
+    if ([platform isEqualToString:@"iPad12,2"]) return @"iPad 9";
     
     if ([platform isEqualToString:@"iPad4,1"]) return @"iPad Air";
     if ([platform isEqualToString:@"iPad4,2"]) return @"iPad Air";
@@ -111,6 +117,8 @@
     if ([platform isEqualToString:@"iPad5,2"]) return @"iPad Mini 4";
     if ([platform isEqualToString:@"iPad11,1"]) return @"iPad Mini 5";
     if ([platform isEqualToString:@"iPad11,2"]) return @"iPad Mini 5";
+    if ([platform isEqualToString:@"iPad14,1"]) return @"iPad Mini 6";
+    if ([platform isEqualToString:@"iPad14,2"]) return @"iPad Mini 6";
     
     if ([platform isEqualToString:@"iPad6,3"]) return @"iPad Pro 9.7-inch";
     if ([platform isEqualToString:@"iPad6,4"]) return @"iPad Pro 9.7-inch";
@@ -122,6 +130,11 @@
     if ([platform isEqualToString:@"iPad8,4"]) return @"iPad Pro 11-inch";
     if ([platform isEqualToString:@"iPad8,9"]) return @"iPad Pro 11-inch 2";
     if ([platform isEqualToString:@"iPad8,10"]) return @"iPad Pro 11-inch 2";
+    if ([platform isEqualToString:@"iPad13,4"]) return @"iPad Pro 11-inch 3";
+    if ([platform isEqualToString:@"iPad13,5"]) return @"iPad Pro 11-inch 3";
+    if ([platform isEqualToString:@"iPad13,6"]) return @"iPad Pro 11-inch 3";
+    if ([platform isEqualToString:@"iPad13,7"]) return @"iPad Pro 11-inch 3";
+    
     if ([platform isEqualToString:@"iPad6,7"]) return @"iPad Pro 12.9-inch";
     if ([platform isEqualToString:@"iPad6,8"]) return @"iPad Pro 12.9-inch";
     if ([platform isEqualToString:@"iPad7,1"]) return @"iPad Pro 12.9-inch 2";
@@ -132,6 +145,10 @@
     if ([platform isEqualToString:@"iPad8,8"]) return @"iPad Pro 12.9-inch 3";
     if ([platform isEqualToString:@"iPad8,11"]) return @"iPad Pro 12.9-inch 4";
     if ([platform isEqualToString:@"iPad8,12"]) return @"iPad Pro 12.9-inch 4";
+    if ([platform isEqualToString:@"iPad13,8"]) return @"iPad Pro 12.9-inch 5";
+    if ([platform isEqualToString:@"iPad13,9"]) return @"iPad Pro 12.9-inch 5";
+    if ([platform isEqualToString:@"iPad13,10"]) return @"iPad Pro 12.9-inch 5";
+    if ([platform isEqualToString:@"iPad13,11"]) return @"iPad Pro 12.9-inch 5";
     
     // Simulator
     if ([platform isEqualToString:@"i386"]) return @"Simulator";

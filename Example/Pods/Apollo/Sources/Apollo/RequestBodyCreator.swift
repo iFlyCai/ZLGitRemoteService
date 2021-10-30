@@ -1,6 +1,6 @@
 import Foundation
 #if !COCOAPODS
-import ApolloUtils
+import ApolloCore
 #endif
 
 public protocol RequestBodyCreator {

@@ -59,7 +59,7 @@ public class ApolloClient {
   /// - Parameter url: The URL of a GraphQL server to connect to.
   public convenience init(url: URL) {
     let store = ApolloStore(cache: InMemoryNormalizedCache())
-    let provider = DefaultInterceptorProvider(store: store)
+    let provider = LegacyInterceptorProvider(store: store)
     let transport = RequestChainNetworkTransport(interceptorProvider: provider,
                                                  endpointURL: url)
     
@@ -82,13 +82,13 @@ extension ApolloClient: ApolloClientProtocol {
 
   public func clearCache(callbackQueue: DispatchQueue = .main,
                          completion: ((Result<Void, Error>) -> Void)? = nil) {
-    self.store.clearCache(callbackQueue: callbackQueue, completion: completion)
+    self.store.clearCache(completion: completion)
   }
   
   @discardableResult public func fetch<Query: GraphQLQuery>(query: Query,
-                                                            cachePolicy: CachePolicy = .default,
+                                                            cachePolicy: CachePolicy = .returnCacheDataElseFetch,
                                                             contextIdentifier: UUID? = nil,
-                                                            queue: DispatchQueue = .main,
+                                                            queue: DispatchQueue = DispatchQueue.main,
                                                             resultHandler: GraphQLResultHandler<Query.Data>? = nil) -> Cancellable {
     return self.networkTransport.send(operation: query,
                                       cachePolicy: cachePolicy,
@@ -99,12 +99,10 @@ extension ApolloClient: ApolloClientProtocol {
   }
 
   public func watch<Query: GraphQLQuery>(query: Query,
-                                         cachePolicy: CachePolicy = .default,
-                                         callbackQueue: DispatchQueue = .main,
+                                         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
                                          resultHandler: @escaping GraphQLResultHandler<Query.Data>) -> GraphQLQueryWatcher<Query> {
     let watcher = GraphQLQueryWatcher(client: self,
                                       query: query,
-                                      callbackQueue: callbackQueue,
                                       resultHandler: resultHandler)
     watcher.fetch(cachePolicy: cachePolicy)
     return watcher

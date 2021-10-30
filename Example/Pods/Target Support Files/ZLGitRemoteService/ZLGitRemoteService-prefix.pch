@@ -22,26 +22,4 @@
 #endif
 #endif
 
-#import "ZLLogModuleProtocol.h"
-#import "ZLLanguageModuleProtocol.h"
-#import <SYDCentralPivot/SYDCentralFactory.h>
-
-#define ZLMainThreadDispatch(a)     if([NSThread isMainThread]){ a }else{dispatch_async(dispatch_get_main_queue(), ^{ a });}
-
-#define ZLLOGMODULE  [[SYDCentralFactory sharedInstance] getCommonBean:@"ZLLogModule"]
-#define ZLLANMODULE  [[SYDCentralFactory sharedInstance] getCommonBean:@"ZLLANModule"]
-
-
-#pragma mark - 日志模块快速调用宏
-
-#define ZLLog_Error(fmt, ...)    [ZLLOGMODULE  ZLLogError:__PRETTY_FUNCTION__ file:__FILE__ line:__LINE__ format:fmt, ##__VA_ARGS__];
-#define ZLLog_Warning(fmt, ...)  [ZLLOGMODULE  ZLLogWarning:__PRETTY_FUNCTION__ file:__FILE__ line:__LINE__ format:fmt, ##__VA_ARGS__];
-#define ZLLog_Info(fmt, ...)     [ZLLOGMODULE  ZLLogInfo:__PRETTY_FUNCTION__ file:__FILE__ line:__LINE__ format:fmt, ##__VA_ARGS__];
-#define ZLLog_Debug(fmt, ...)    [ZLLOGMODULE  ZLLogDebug:__PRETTY_FUNCTION__ file:__FILE__ line:__LINE__ format:fmt, ##__VA_ARGS__];
-#define ZLLog_Verbose(fmt, ...)  [ZLLOGMODULE  ZLLogVerbose:__PRETTY_FUNCTION__ file:__FILE__ line:__LINE__ format:fmt, ##__VA_ARGS__];
-
-#pragma mark - 国际化模块
-
-#define ZLLocalizedString(string,comment) [ZLLANMODULE localizedWithKey:string]
-
-static const NSNotificationName ZLLanguageTypeChange_Notificaiton = @"ZLLanguageTypeChange_Notificaiton";
+#include "ZLGitRemoteSerivce_GeneralDefine.h"

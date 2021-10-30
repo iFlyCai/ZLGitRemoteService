@@ -1,6 +1,6 @@
 {
   "name": "ZLGitRemoteService",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "summary": "A short description of ZLGitRemoteService.",
   "description": "ZLGitRemoteService",
   "homepage": "https://github.com/existorlive/ZLGitRemoteService",
@@ -13,22 +13,23 @@
   },
   "source": {
     "git": "https://github.com/existorlive/ZLGitRemoteService.git",
-    "tag": "1.1.1"
+    "tag": "1.1.2"
   },
   "platforms": {
-    "ios": "12.0"
+    "ios": "11.0"
   },
   "module_name": "ZLGitRemoteService",
   "source_files": "ZLGitRemoteService/Classes/**/*.{h,m,swift}",
   "prefix_header_file": "ZLGitRemoteService/Classes/ZLGitRemoteService-prefix.pch",
   "public_header_files": [
+    "ZLGitRemoteService/Classes/ZLGitRemoteSerivce_GeneralDefine.h",
     "ZLGitRemoteService/Classes/ZLGitRemoteService.h",
     "ZLGitRemoteService/Classes/Model/**/*.h",
     "ZLGitRemoteService/Classes/PublicUtilities/**/*.h",
     "ZLGitRemoteService/Classes/Base/**/*.h",
-    "ZLGitRemoteService/Classes/Analyse/**/*.h",
+    "ZLGitRemoteService/Classes/Manager/ZLSharedDataManager/*.h",
+    "ZLGitRemoteService/Classes/Manager/ZLBuglyManager/*.h",
     "ZLGitRemoteService/Classes/PublicModule/**/*.h",
-    "ZLGitRemoteService/Classes/Tool/ZLSharedDataManager/**/*.h",
     "ZLGitRemoteService/Classes/Network/ZLGithubHttpClient.h"
   ],
   "vendored_libraries": "ZLGitRemoteService/Libs/libgumbo.a",
@@ -62,7 +63,7 @@
 
     ],
     "Apollo": [
-      "~> 0.48.0"
+      "~> 0.39.0"
     ],
     "SYDCentralPivot": [
 

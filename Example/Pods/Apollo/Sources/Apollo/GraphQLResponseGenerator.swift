@@ -18,7 +18,7 @@ final class GraphQLResponseGenerator: GraphQLResultAccumulator {
   }
 
   func accept(fieldEntries: [(key: String, value: JSONValue)], info: GraphQLResolveInfo) -> JSONValue {
-    return JSONObject(fieldEntries, uniquingKeysWith: { (_, last) in last })
+    return JSONObject(fieldEntries)
   }
   
   func finish(rootValue: JSONValue, info: GraphQLResolveInfo) throws -> JSONObject {

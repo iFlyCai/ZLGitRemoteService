@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/existorlive/ZLGitRemoteService.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '12.0'
+  s.ios.deployment_target = '11.0'
   s.module_name = 'ZLGitRemoteService'
   s.source_files = 'ZLGitRemoteService/Classes/**/*.{h,m,swift}'
   s.prefix_header_file= 'ZLGitRemoteService/Classes/ZLGitRemoteService-prefix.pch'
@@ -45,6 +45,7 @@ Pod::Spec.new do |s|
                             'FRAMEWORK_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Frameworks",
                             'DEFINES_MODULE' => 'YES'}
   s.swift_version = '5.0'
+  # 由于引入了bugly静态库，因此ZLGitRemote也必须是静态库
   s.static_framework = true
   
   # s.resource_bundles = {
@@ -60,7 +61,7 @@ Pod::Spec.new do |s|
   s.dependency 'FMDB'
   s.dependency 'CocoaLumberjack'
   s.dependency 'MJExtension'
-  s.dependency 'Apollo', '~> 0.48.0'
+  s.dependency 'Apollo', '~> 0.39.0'
   s.dependency 'SYDCentralPivot'
   s.dependency 'Bugly'
 
