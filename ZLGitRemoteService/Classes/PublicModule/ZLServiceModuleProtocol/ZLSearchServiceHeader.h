@@ -68,11 +68,11 @@ static const NSNotificationName _Nonnull ZLSearchResult_Notification = @"ZLSearc
 
 #pragma mark - trend
 
-- (void) trendingWithType:(ZLSearchType) type
-                 language:(NSString *__nullable) language
-                dateRange:(ZLDateRange) dateRange
-             serialNumber:(NSString *_Nonnull) serialNumber
-           completeHandle:(void(^_Nonnull)(ZLOperationResultModel *_Nonnull)) handle;
+- (NSArray * _Nullable) trendingWithType:(ZLSearchType) type
+                                language:(NSString *__nullable) language
+                               dateRange:(ZLDateRange) dateRange
+                            serialNumber:(NSString *_Nonnull) serialNumber
+                          completeHandle:(void(^_Nonnull)(ZLOperationResultModel *_Nonnull)) handle;
 
 @end
 

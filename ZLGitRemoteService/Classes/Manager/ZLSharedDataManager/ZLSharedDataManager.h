@@ -18,6 +18,7 @@
 @class ZLGithubUserModel;
 @class ZLGithubConfigModel;
 @class ZLGithubCollectedRepoModel;
+@class ZLGithubRepositoryModel;
  
 NS_ASSUME_NONNULL_BEGIN
 
@@ -55,6 +56,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray* __nullable) fixReposForLoginUser:(NSString *)login;
 
+
+#pragma mark - Trending Cache
+
+- (NSArray<ZLGithubRepositoryModel *> *) trendRepositoriesWithLanguage:(NSString *) languague
+                                                             dateRange:(ZLDateRange) range;
+
+- (NSArray<ZLGithubUserModel *> *) trendUsersWithLanguage:(NSString *) languague
+                                                dateRange:(ZLDateRange) range;
+
+
+- (void) setTrendRepositories:(NSArray<ZLGithubRepositoryModel *> *) array
+                     language:(NSString *) languague
+                    dateRange:(ZLDateRange) range;
+
+- (void) setTrendUsers:(NSArray<ZLGithubUserModel *> *) array
+              language:(NSString *) languague
+             dateRange:(ZLDateRange) range;
 @end
 
 NS_ASSUME_NONNULL_END

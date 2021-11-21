@@ -37,6 +37,10 @@ import MJExtension
         }
         return oldValue
     }
+    
+    class func supportsSecureCoding() -> Bool {
+        return true
+    }
 }
 
 // MARK: ----- ZLGithubUserModel -----
@@ -208,7 +212,9 @@ import MJExtension
         isDeveloperProgramMember = queryData.user?.isDeveloperProgramMember ?? false
     }
     
-    
+    override class func supportsSecureCoding() -> Bool {
+        return true
+    }
     
 }
 
@@ -318,5 +324,8 @@ import MJExtension
         updated_at = dateFormatter.date(from: queryData.organization?.updatedAt ?? "")
     }
     
+    override class func supportsSecureCoding() -> Bool {
+        return true
+    }
 }
 

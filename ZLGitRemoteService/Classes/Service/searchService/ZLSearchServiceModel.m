@@ -16,6 +16,9 @@
 // network
 #import "ZLGithubHttpClient.h"
 
+// tool
+#import "ZLSharedDataManager.h"
+
 #import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
 
 @implementation ZLSearchServiceModel
@@ -323,13 +326,31 @@
 
 #pragma mark - trending
 
-- (void) trendingWithType:(ZLSearchType) type
+- (NSArray *) trendingWithType:(ZLSearchType) type
                  language:(NSString *__nullable) language
                 dateRange:(ZLDateRange) dateRange
              serialNumber:(NSString *) serialNumber
            completeHandle:(void(^)(ZLOperationResultModel *)) handle{
     
     GithubResponse response = ^(BOOL result,id responseObject,NSString * serialNumber){
+        
+        if(result){
+            switch (type) {
+                case ZLSearchTypeUsers:
+                    
+                    [[ZLSharedDataManager sharedInstance] setTrendUsers:responseObject
+                                                               language:language
+                                                              dateRange:dateRange];
+                    break;
+                case ZLSearchTypeRepositories:
+                    [[ZLSharedDataManager sharedInstance] setTrendRepositories:responseObject
+                                                                      language:language
+                                                                     dateRange:dateRange];
+                    break;
+                default:
+                    break;
+            }
+        }
         
         ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
         repoResultModel.result = result;
@@ -346,7 +367,10 @@
                                                      language:language
                                                     dateRange:dateRange
                                                  serialNumber:serialNumber];
-             break;
+             
+             
+             return [[ZLSharedDataManager sharedInstance] trendUsersWithLanguage:language
+                                                                       dateRange:dateRange];
          }
          case ZLSearchTypeRepositories:{
              
@@ -354,7 +378,9 @@
                                                      language:language
                                                     dateRange:dateRange
                                                  serialNumber:serialNumber];
-             break;
+             
+             return [[ZLSharedDataManager sharedInstance] trendRepositoriesWithLanguage:language
+                                                                       dateRange:dateRange];
          }
          default:
              break;

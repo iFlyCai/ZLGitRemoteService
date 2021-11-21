@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ZLBaseObject : NSObject <NSCopying,NSCoding>
+@interface ZLBaseObject : NSObject <NSCopying,NSSecureCoding>
 
 @end
 

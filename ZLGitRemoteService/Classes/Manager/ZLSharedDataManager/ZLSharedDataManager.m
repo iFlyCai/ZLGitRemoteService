@@ -9,6 +9,7 @@
 
 #import "ZLSharedDataManager.h"
 #import "ZLKeyChainManager.h"
+#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
 
 
 #define ZLKeyChainService @"com.zm.fbd34c5a34be72f66c35.ZLGitHubClient"
@@ -18,7 +19,9 @@
 #define ZLAccessTokenKey @"ZLAccessTokenKey"
 #define ZLGithubConfigKey @"ZLGithubConfigKey"
 #define ZLGithubLanguageKey @"ZLGithubLanguagueKey"
-#define ZLCurrentUserInterfaceStyleKey @"ZLCurrentUserInterfaceStyleKey"
+
+#define ZLGithubTrendRepositoriesKey @"ZLGithubTrendRepositoriesKey"
+#define ZLGithubTrendUsersKey @"ZLGithubTrendUsersKey"
 
 @interface ZLSharedDataManager()
 
@@ -182,6 +185,145 @@
     NSMutableDictionary *reposDic =  [ZLKeyChainManager load:ZLKeyChainServiceFixRepos];
     return [reposDic objectForKey:login];
 }
+
+
+#pragma mark - Trending Cache
+
+- (NSArray<ZLGithubRepositoryModel *> *) trendRepositoriesWithLanguage:(NSString *) languague
+                                                             dateRange:(ZLDateRange) range{
+    NSString *rangeStr = @"";
+    switch (range) {
+        case ZLDateRangeDaily:
+            rangeStr = @"daily";
+            break;
+        case ZLDateRangeWeakly:
+            rangeStr = @"weekly";
+            break;
+        case ZLDateRangeMonthly:
+            rangeStr = @"monthly";
+            break;
+        default:
+            break;
+    }
+    
+    NSString *key = [NSString stringWithFormat:@"%@-%@-%@",ZLGithubTrendRepositoriesKey,languague == nil ? @"" : languague,rangeStr];
+        
+    NSData* data = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    NSArray * array = nil;
+    if(data) {
+        NSError *error = nil;
+        array = [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClass:[ZLBaseObject class]
+                                                          fromData:data
+                                                             error:&error];
+        NSLog(@"%@",error);
+    }
+    return array;
+}
+
+- (NSArray<ZLGithubUserModel *> *) trendUsersWithLanguage:(NSString *) languague
+                                                dateRange:(ZLDateRange) range{
+    NSString *rangeStr = @"";
+    switch (range) {
+        case ZLDateRangeDaily:
+            rangeStr = @"daily";
+            break;
+        case ZLDateRangeWeakly:
+            rangeStr = @"weekly";
+            break;
+        case ZLDateRangeMonthly:
+            rangeStr = @"monthly";
+            break;
+        default:
+            break;
+    }
+    
+    NSString *key = [NSString stringWithFormat:@"%@-%@-%@",ZLGithubTrendUsersKey,languague == nil ? @"" : languague,rangeStr];
+    
+    NSData* data = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    NSArray * array = nil;
+    if(data) {
+        NSError *error = nil;
+        array = [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClass:[ZLBaseObject class]
+                                                          fromData:data
+                                                             error:&error];
+        NSLog(@"%@",error);
+    }
+    return array;
+}
+
+
+- (void) setTrendRepositories:(NSArray<ZLGithubRepositoryModel *> *) array
+                     language:(NSString *) languague
+                    dateRange:(ZLDateRange) range{
+    
+    NSString *rangeStr = @"";
+    switch (range) {
+        case ZLDateRangeDaily:
+            rangeStr = @"daily";
+            break;
+        case ZLDateRangeWeakly:
+            rangeStr = @"weekly";
+            break;
+        case ZLDateRangeMonthly:
+            rangeStr = @"monthly";
+            break;
+        default:
+            break;
+    }
+    
+    NSString *key = [NSString stringWithFormat:@"%@-%@-%@",ZLGithubTrendRepositoriesKey,languague == nil ? @"" : languague,rangeStr];
+    
+    if(array == nil){
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+        return;
+    }
+
+    NSError *error = nil;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:array
+                                         requiringSecureCoding:YES
+                                                         error:&error];
+    
+    if(nil == error) {
+        [[NSUserDefaults standardUserDefaults] setObject:data forKey:key];
+    }
+}
+
+- (void) setTrendUsers:(NSArray<ZLGithubUserModel *> *) array
+                                        language:(NSString *) languague
+                                       dateRange:(ZLDateRange) range{
+    
+    NSString *rangeStr = @"";
+    switch (range) {
+        case ZLDateRangeDaily:
+            rangeStr = @"daily";
+            break;
+        case ZLDateRangeWeakly:
+            rangeStr = @"weekly";
+            break;
+        case ZLDateRangeMonthly:
+            rangeStr = @"monthly";
+            break;
+        default:
+            break;
+    }
+    
+    NSString *key = [NSString stringWithFormat:@"%@-%@-%@",ZLGithubTrendUsersKey,languague == nil ? @"" : languague,rangeStr];
+    
+    if(array == nil){
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+        return;
+    }
+
+    NSError *error = nil;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:array
+                                         requiringSecureCoding:YES
+                                                         error:&error];
+    
+    if(nil == error) {
+        [[NSUserDefaults standardUserDefaults] setObject:data forKey:key];
+    }
+}
+
 
 
 @end

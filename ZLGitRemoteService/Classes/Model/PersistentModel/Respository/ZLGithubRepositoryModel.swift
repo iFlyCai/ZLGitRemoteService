@@ -109,4 +109,8 @@ import MJExtension
         pushed_at = dateFormatter.date(from: queryData.repository?.pushedAt ?? "")
     }
     
+    
+    class func supportsSecureCoding() -> Bool {
+        return true
+    }
 }
