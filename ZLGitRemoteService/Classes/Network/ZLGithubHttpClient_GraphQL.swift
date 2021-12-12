@@ -337,9 +337,9 @@ public extension ZLGithubHttpClient{
         self.baseQuery(query: query, serialNumber: serialNumber) { (result, data, serialNumber) in
             if let queryData = data as? UserOrOrgInfoQuery.Data{
                 if queryData.user != nil {
-                    block(result,ZLGithubUserModel(UserOrOrgQueryData: queryData),serialNumber)
+                    block(result,ZLGithubUserInfoModelForView(UserOrOrgQueryData: queryData),serialNumber)
                 } else if queryData.organization != nil{
-                    block(result,ZLGithubOrgModel(UserOrOrgQueryData: queryData),serialNumber)
+                    block(result,ZLGithubOrgInfoModelForView(UserOrOrgQueryData: queryData),serialNumber)
                 } else {
                     block(result,data,serialNumber)
                 }
@@ -349,6 +349,21 @@ public extension ZLGithubHttpClient{
            
         }
     }
+    
+    @objc func getUserContributionsDataSwift(login: String,
+                                             serialNumber: String,
+                                             block: @escaping GithubResponseSwift) {
+        
+        let query = UserContributionDetailQuery(loginName: login)
+        self.baseQuery(query: query, serialNumber: serialNumber) { (result, data, serialNumber) in
+            if let queryData = data as? UserContributionDetailQuery.Data{
+                block(result,ZLGithubUserContributionData.getContributionDataArray(UserContributionDetailQuery:queryData),serialNumber)
+            } else {
+                block(result,data,serialNumber)
+            }
+        }
+    }
+    
     
     @objc func getUserAvatar(login: String,
                              serialNumber: String,
@@ -360,7 +375,36 @@ public extension ZLGithubHttpClient{
             } else {
                 block(result,data,serialNumber)
             }
-            
+        }
+    }
+    
+    @objc func getUserPinnedRepositories(login: String,
+                                         serialNumber: String,
+                                         block: @escaping GithubResponseSwift){
+        let query = UserPinnedItemQuery(login: login)
+        self.baseQuery(query: query, serialNumber: serialNumber) { (result, data, serialNumber) in
+            if let queryData = data as? UserPinnedItemQuery.Data{
+                block(result,
+                      ZLGithubRepositoryBriefModel.getRepositoryBriefModelArray(UserPinnedItemQuery:queryData),
+                      serialNumber)
+            } else {
+                block(result,data,serialNumber)
+            }
+        }
+    }
+    
+    @objc func getOrgPinnedRepositories(login: String,
+                                        serialNumber: String,
+                                        block: @escaping GithubResponseSwift){
+        let query = OrgPinnedItemQuery(login: login)
+        self.baseQuery(query: query, serialNumber: serialNumber) { (result, data, serialNumber) in
+            if let queryData = data as? OrgPinnedItemQuery.Data{
+                block(result,
+                      ZLGithubRepositoryBriefModel.getRepositoryBriefModelArray(OrgPinnedItemQuery:queryData),
+                      serialNumber)
+            } else {
+                block(result,data,serialNumber)
+            }
         }
     }
     

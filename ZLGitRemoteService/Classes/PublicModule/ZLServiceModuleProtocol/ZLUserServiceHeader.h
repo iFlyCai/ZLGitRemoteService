@@ -143,6 +143,16 @@ static const NSNotificationName _Nonnull ZLUpdateUserPublicProfileInfoResult_Not
                                                                                  serialNumber: (NSString * _Nonnull) serialNumber
                                                                                completeHandle: (void(^ _Nonnull)(ZLOperationResultModel * _Nonnull)) handle;
 
+#pragma mark - user or org pinned repo
+
+- (void) getUserPinnedRepositories:(NSString * _Nonnull) loginName
+                      serialNumber: (NSString * _Nonnull) serialNumber
+                    completeHandle: (void(^ _Nonnull)(ZLOperationResultModel * _Nonnull)) handle;
+
+
+- (void) getOrgPinnedRepositories:(NSString * _Nonnull) loginName
+                      serialNumber: (NSString * _Nonnull) serialNumber
+                   completeHandle: (void(^ _Nonnull)(ZLOperationResultModel * _Nonnull)) handle;
 
 @end
 

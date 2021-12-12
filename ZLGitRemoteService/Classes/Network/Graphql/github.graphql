@@ -28,7 +28,7 @@ query viewerPullRequest($state:[PullRequestState!],$after:String) {
 # 查询我的top repositories
 query viewerTopRepositories($after:String){
   viewer{
-    topRepositories(first:10,orderBy:{field:UPDATED_AT,direction:DESC},after:$after){
+    topRepositories(first:20,orderBy:{field:UPDATED_AT,direction:DESC},after:$after){
       pageInfo{
         endCursor
       }
@@ -56,7 +56,7 @@ query viewerTopRepositories($after:String){
 
 # 搜索 issue 或者 pr
 query searchItem($after: String, $query: String!, $type: SearchType!) {
-  search(query: $query, first: 15, type: $type, after: $after) {
+  search(query: $query, first: 20, type: $type, after: $after) {
     issueCount
     pageInfo {
       hasNextPage
@@ -161,7 +161,7 @@ query searchItem($after: String, $query: String!, $type: SearchType!) {
 # 查询我的issues
 query viewerIssues($assignee:String,$creator:String,$mentioned:String,$after:String){
   viewer{
-    issues(after:$after,orderBy:{field:UPDATED_AT,direction:DESC},first:10,filterBy:{createdBy:$creator,mentioned:$mentioned,assignee:$assignee}){
+    issues(after:$after,orderBy:{field:UPDATED_AT,direction:DESC},first:20,filterBy:{createdBy:$creator,mentioned:$mentioned,assignee:$assignee}){
       pageInfo{
         hasNextPage
         endCursor
@@ -274,7 +274,7 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
       closed
       closedAt
       createdAt
-      timelineItems(first: 10, after: $after) {
+      timelineItems(first: 20, after: $after) {
         totalCount
         pageInfo {
           startCursor
@@ -1110,8 +1110,47 @@ query UserOrOrgInfo($login: String!) {
     isViewer
     viewerIsFollowing
     isDeveloperProgramMember
+    
+    pinnedItems(types:[REPOSITORY],first:20){
+      totalCount
+      nodes{
+        ...on Repository{
+          owner{
+            login
+            avatarUrl(size:150)
+            url 
+          }
+          name
+          isPrivate
+          nameWithOwner
+          url
+          description
+          stargazerCount
+          primaryLanguage{
+            name
+            color
+          }
+        }
+      }
+    }
+
+    contributionsCollection{
+      contributionCalendar{
+        totalContributions
+        weeks{
+          firstDay
+          contributionDays{
+            contributionCount
+            contributionLevel
+            date
+            weekday
+          }
+        }
+      }
+    }
+    
   }
-  
+
   organization(login:$login){
     
     node_id:id
@@ -1144,6 +1183,29 @@ query UserOrOrgInfo($login: String!) {
     }
     
     viewerIsAMember
+
+    pinnedItems(types:[REPOSITORY],first:20){
+      totalCount
+      nodes{
+        ...on Repository{
+          owner{
+            login
+            avatarUrl(size:150)
+            url 
+          }
+          name
+          isPrivate
+          nameWithOwner
+          url
+          description
+          stargazerCount
+          primaryLanguage{
+            name
+            color
+          }
+        }
+      }
+    }
   }
 }
 
@@ -1250,5 +1312,83 @@ query repoInfo($login:String!,$name:String!){
 query avatar($login:String!){
   user(login:$login){
     avatarUrl(size:150)
+  }
+}
+
+# user contributions
+query UserContributionDetail($loginName: String!){
+  user(login:$loginName){
+    contributionsCollection{
+      contributionCalendar{
+        totalContributions
+        weeks{
+          firstDay
+          contributionDays{
+            contributionCount
+            contributionLevel
+            date
+            weekday
+          }
+        }
+      }
+    }
+  }
+}
+
+# user Pinned Repository
+query UserPinnedItem($login:String!){
+  user(login:$login){
+    pinnedItems(types:[REPOSITORY],first:20){
+      totalCount
+      nodes{
+        ...on Repository{
+          owner{
+            login
+            avatarUrl(size:150)
+            url
+          }
+          name
+          isPrivate
+          nameWithOwner
+          url
+          description
+          stargazerCount
+          forkCount
+          primaryLanguage{
+            name
+            color
+          }
+        }
+      }
+    }
+  }
+}
+
+# Org Pinned Repository
+query OrgPinnedItem($login:String!){
+  organization(login:$login){
+    pinnedItems(types:[REPOSITORY],first:20){
+      totalCount
+      nodes{
+        ...on Repository{
+          owner{
+            login
+            avatarUrl(size:150)
+            url
+          }
+          name
+          isPrivate
+          nameWithOwner
+          url
+          description
+          stargazerCount
+          forkCount
+          primaryLanguage{
+            name
+            color
+          }
+        }
+      }
+    }
   }
 }

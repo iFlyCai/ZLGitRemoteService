@@ -314,13 +314,60 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getUserContributionsData:response
-                                                       loginName:loginName
-                                                    serialNumber:serialNumber];
+    [[ZLGithubHttpClient defaultClient] getUserContributionsDataSwiftWithLogin:loginName
+                                                                  serialNumber:serialNumber
+                                                                         block:response];
     
     return contributionsArray;
 }
 
+
+#pragma mark - user or org pinned repo
+
+- (void) getUserPinnedRepositories:(NSString * _Nonnull) loginName
+                      serialNumber: (NSString * _Nonnull) serialNumber
+                    completeHandle: (void(^ _Nonnull)(ZLOperationResultModel * _Nonnull)) handle{
+    
+    GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
+    {
+        ZLOperationResultModel * model = [[ZLOperationResultModel alloc] init];
+        model.result = result;
+        model.serialNumber = serialNumber;
+        model.data = responseObject;
+        
+        if(handle)
+        {
+            ZLMainThreadDispatch(handle(model);)
+        }
+    };
+    
+    [[ZLGithubHttpClient defaultClient] getUserPinnedRepositoriesWithLogin:loginName
+                                                              serialNumber:serialNumber
+                                                                     block:response];
+}
+
+
+- (void) getOrgPinnedRepositories:(NSString * _Nonnull) loginName
+                      serialNumber: (NSString * _Nonnull) serialNumber
+                    completeHandle: (void(^ _Nonnull)(ZLOperationResultModel * _Nonnull)) handle{
+    
+    GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
+    {
+        ZLOperationResultModel * model = [[ZLOperationResultModel alloc] init];
+        model.result = result;
+        model.serialNumber = serialNumber;
+        model.data = responseObject;
+        
+        if(handle)
+        {
+            ZLMainThreadDispatch(handle(model);)
+        }
+    };
+    
+    [[ZLGithubHttpClient defaultClient] getOrgPinnedRepositoriesWithLogin:loginName
+                                                             serialNumber:serialNumber
+                                                                    block:response];
+}
 
 
 #pragma mark - user additions info (repos followers followings gists)

@@ -62,6 +62,8 @@ public enum SearchType: RawRepresentable, Equatable, Hashable, CaseIterable, Apo
   case repository
   /// Returns results matching users and organizations on GitHub.
   case user
+  /// Returns matching discussions in repositories.
+  case discussion
   /// Auto generated constant for unknown enum values
   case __unknown(RawValue)
 
@@ -70,6 +72,7 @@ public enum SearchType: RawRepresentable, Equatable, Hashable, CaseIterable, Apo
       case "ISSUE": self = .issue
       case "REPOSITORY": self = .repository
       case "USER": self = .user
+      case "DISCUSSION": self = .discussion
       default: self = .__unknown(rawValue)
     }
   }
@@ -79,6 +82,7 @@ public enum SearchType: RawRepresentable, Equatable, Hashable, CaseIterable, Apo
       case .issue: return "ISSUE"
       case .repository: return "REPOSITORY"
       case .user: return "USER"
+      case .discussion: return "DISCUSSION"
       case .__unknown(let value): return value
     }
   }
@@ -88,6 +92,7 @@ public enum SearchType: RawRepresentable, Equatable, Hashable, CaseIterable, Apo
       case (.issue, .issue): return true
       case (.repository, .repository): return true
       case (.user, .user): return true
+      case (.discussion, .discussion): return true
       case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
       default: return false
     }
@@ -98,6 +103,7 @@ public enum SearchType: RawRepresentable, Equatable, Hashable, CaseIterable, Apo
       .issue,
       .repository,
       .user,
+      .discussion,
     ]
   }
 }
@@ -141,6 +147,67 @@ public enum IssueState: RawRepresentable, Equatable, Hashable, CaseIterable, Apo
     return [
       .open,
       .closed,
+    ]
+  }
+}
+
+/// Varying levels of contributions from none to many.
+public enum ContributionLevel: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  /// No contributions occurred.
+  case `none`
+  /// Lowest 25% of days of contributions.
+  case firstQuartile
+  /// Second lowest 25% of days of contributions. More contributions than the first quartile.
+  case secondQuartile
+  /// Second highest 25% of days of contributions. More contributions than second quartile, less than the fourth quartile.
+  case thirdQuartile
+  /// Highest 25% of days of contributions. More contributions than the third quartile.
+  case fourthQuartile
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "NONE": self = .none
+      case "FIRST_QUARTILE": self = .firstQuartile
+      case "SECOND_QUARTILE": self = .secondQuartile
+      case "THIRD_QUARTILE": self = .thirdQuartile
+      case "FOURTH_QUARTILE": self = .fourthQuartile
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .none: return "NONE"
+      case .firstQuartile: return "FIRST_QUARTILE"
+      case .secondQuartile: return "SECOND_QUARTILE"
+      case .thirdQuartile: return "THIRD_QUARTILE"
+      case .fourthQuartile: return "FOURTH_QUARTILE"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: ContributionLevel, rhs: ContributionLevel) -> Bool {
+    switch (lhs, rhs) {
+      case (.none, .none): return true
+      case (.firstQuartile, .firstQuartile): return true
+      case (.secondQuartile, .secondQuartile): return true
+      case (.thirdQuartile, .thirdQuartile): return true
+      case (.fourthQuartile, .fourthQuartile): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [ContributionLevel] {
+    return [
+      .none,
+      .firstQuartile,
+      .secondQuartile,
+      .thirdQuartile,
+      .fourthQuartile,
     ]
   }
 }
@@ -551,7 +618,7 @@ public final class ViewerTopRepositoriesQuery: GraphQLQuery {
       viewer {
         __typename
         topRepositories(
-          first: 10
+          first: 20
           orderBy: {field: UPDATED_AT, direction: DESC}
           after: $after
         ) {
@@ -632,7 +699,7 @@ public final class ViewerTopRepositoriesQuery: GraphQLQuery {
       public static var selections: [GraphQLSelection] {
         return [
           GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("topRepositories", arguments: ["first": 10, "orderBy": ["field": "UPDATED_AT", "direction": "DESC"], "after": GraphQLVariable("after")], type: .nonNull(.object(TopRepository.selections))),
+          GraphQLField("topRepositories", arguments: ["first": 20, "orderBy": ["field": "UPDATED_AT", "direction": "DESC"], "after": GraphQLVariable("after")], type: .nonNull(.object(TopRepository.selections))),
         ]
       }
 
@@ -998,7 +1065,7 @@ public final class SearchItemQuery: GraphQLQuery {
   public let operationDefinition: String =
     """
     query searchItem($after: String, $query: String!, $type: SearchType!) {
-      search(query: $query, first: 15, type: $type, after: $after) {
+      search(query: $query, first: 20, type: $type, after: $after) {
         __typename
         issueCount
         pageInfo {
@@ -1133,7 +1200,7 @@ public final class SearchItemQuery: GraphQLQuery {
 
     public static var selections: [GraphQLSelection] {
       return [
-        GraphQLField("search", arguments: ["query": GraphQLVariable("query"), "first": 15, "type": GraphQLVariable("type"), "after": GraphQLVariable("after")], type: .nonNull(.object(Search.selections))),
+        GraphQLField("search", arguments: ["query": GraphQLVariable("query"), "first": 20, "type": GraphQLVariable("type"), "after": GraphQLVariable("after")], type: .nonNull(.object(Search.selections))),
       ]
     }
 
@@ -1281,7 +1348,7 @@ public final class SearchItemQuery: GraphQLQuery {
       }
 
       public struct Node: GraphQLSelectionSet {
-        public static let possibleTypes: [String] = ["App", "Issue", "MarketplaceListing", "Organization", "PullRequest", "Repository", "User"]
+        public static let possibleTypes: [String] = ["App", "Discussion", "Issue", "MarketplaceListing", "Organization", "PullRequest", "Repository", "User"]
 
         public static var selections: [GraphQLSelection] {
           return [
@@ -1302,6 +1369,10 @@ public final class SearchItemQuery: GraphQLQuery {
 
         public static func makeApp() -> Node {
           return Node(unsafeResultMap: ["__typename": "App"])
+        }
+
+        public static func makeDiscussion() -> Node {
+          return Node(unsafeResultMap: ["__typename": "Discussion"])
         }
 
         public static func makeMarketplaceListing() -> Node {
@@ -2236,7 +2307,7 @@ public final class SearchItemQuery: GraphQLQuery {
             }
           }
 
-          /// Whether or not this user is followed by the viewer.
+          /// Whether or not this user is followed by the viewer. Inverse of is_following_viewer.
           public var viewerIsFollowing: Bool {
             get {
               return resultMap["viewerIsFollowing"]! as! Bool
@@ -2633,7 +2704,7 @@ public final class ViewerIssuesQuery: GraphQLQuery {
         issues(
           after: $after
           orderBy: {field: UPDATED_AT, direction: DESC}
-          first: 10
+          first: 20
           filterBy: {createdBy: $creator, mentioned: $mentioned, assignee: $assignee}
         ) {
           __typename
@@ -2729,7 +2800,7 @@ public final class ViewerIssuesQuery: GraphQLQuery {
       public static var selections: [GraphQLSelection] {
         return [
           GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("issues", arguments: ["after": GraphQLVariable("after"), "orderBy": ["field": "UPDATED_AT", "direction": "DESC"], "first": 10, "filterBy": ["createdBy": GraphQLVariable("creator"), "mentioned": GraphQLVariable("mentioned"), "assignee": GraphQLVariable("assignee")]], type: .nonNull(.object(Issue.selections))),
+          GraphQLField("issues", arguments: ["after": GraphQLVariable("after"), "orderBy": ["field": "UPDATED_AT", "direction": "DESC"], "first": 20, "filterBy": ["createdBy": GraphQLVariable("creator"), "mentioned": GraphQLVariable("mentioned"), "assignee": GraphQLVariable("assignee")]], type: .nonNull(.object(Issue.selections))),
         ]
       }
 
@@ -4268,7 +4339,7 @@ public final class IssueInfoQuery: GraphQLQuery {
           closed
           closedAt
           createdAt
-          timelineItems(first: 10, after: $after) {
+          timelineItems(first: 20, after: $after) {
             __typename
             totalCount
             pageInfo {
@@ -4723,7 +4794,7 @@ public final class IssueInfoQuery: GraphQLQuery {
             GraphQLField("closed", type: .nonNull(.scalar(Bool.self))),
             GraphQLField("closedAt", type: .scalar(String.self)),
             GraphQLField("createdAt", type: .nonNull(.scalar(String.self))),
-            GraphQLField("timelineItems", arguments: ["first": 10, "after": GraphQLVariable("after")], type: .nonNull(.object(TimelineItem.selections))),
+            GraphQLField("timelineItems", arguments: ["first": 20, "after": GraphQLVariable("after")], type: .nonNull(.object(TimelineItem.selections))),
           ]
         }
 
@@ -19509,7 +19580,7 @@ public final class UserInfoQuery: GraphQLQuery {
         }
       }
 
-      /// Whether or not this user is followed by the viewer.
+      /// Whether or not this user is followed by the viewer. Inverse of is_following_viewer.
       public var viewerIsFollowing: Bool {
         get {
           return resultMap["viewerIsFollowing"]! as! Bool
@@ -20178,6 +20249,50 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
         isViewer
         viewerIsFollowing
         isDeveloperProgramMember
+        pinnedItems(types: [REPOSITORY], first: 20) {
+          __typename
+          totalCount
+          nodes {
+            __typename
+            ... on Repository {
+              owner {
+                __typename
+                login
+                avatarUrl(size: 150)
+                url
+              }
+              name
+              isPrivate
+              nameWithOwner
+              url
+              description
+              stargazerCount
+              primaryLanguage {
+                __typename
+                name
+                color
+              }
+            }
+          }
+        }
+        contributionsCollection {
+          __typename
+          contributionCalendar {
+            __typename
+            totalContributions
+            weeks {
+              __typename
+              firstDay
+              contributionDays {
+                __typename
+                contributionCount
+                contributionLevel
+                date
+                weekday
+              }
+            }
+          }
+        }
       }
       organization(login: $login) {
         __typename
@@ -20206,6 +20321,32 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
           totalCount
         }
         viewerIsAMember
+        pinnedItems(types: [REPOSITORY], first: 20) {
+          __typename
+          totalCount
+          nodes {
+            __typename
+            ... on Repository {
+              owner {
+                __typename
+                login
+                avatarUrl(size: 150)
+                url
+              }
+              name
+              isPrivate
+              nameWithOwner
+              url
+              description
+              stargazerCount
+              primaryLanguage {
+                __typename
+                name
+                color
+              }
+            }
+          }
+        }
       }
     }
     """
@@ -20289,6 +20430,8 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
           GraphQLField("isViewer", type: .nonNull(.scalar(Bool.self))),
           GraphQLField("viewerIsFollowing", type: .nonNull(.scalar(Bool.self))),
           GraphQLField("isDeveloperProgramMember", type: .nonNull(.scalar(Bool.self))),
+          GraphQLField("pinnedItems", arguments: ["types": ["REPOSITORY"], "first": 20], type: .nonNull(.object(PinnedItem.selections))),
+          GraphQLField("contributionsCollection", type: .nonNull(.object(ContributionsCollection.selections))),
         ]
       }
 
@@ -20298,8 +20441,8 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
         self.resultMap = unsafeResultMap
       }
 
-      public init(nodeId: GraphQLID, userId: Int? = nil, loginName: String, name: String? = nil, htmlUrl: String, avatarUrl: String, createdAt: String, updatedAt: String, followers: Follower, following: Following, gists: Gist, repositories: Repository, bio: String? = nil, company: String? = nil, email: String, location: String? = nil, blog: String? = nil, status: Status? = nil, isViewer: Bool, viewerIsFollowing: Bool, isDeveloperProgramMember: Bool) {
-        self.init(unsafeResultMap: ["__typename": "User", "node_id": nodeId, "user_id": userId, "loginName": loginName, "name": name, "html_url": htmlUrl, "avatar_url": avatarUrl, "created_at": createdAt, "updated_at": updatedAt, "followers": followers.resultMap, "following": following.resultMap, "gists": gists.resultMap, "repositories": repositories.resultMap, "bio": bio, "company": company, "email": email, "location": location, "blog": blog, "status": status.flatMap { (value: Status) -> ResultMap in value.resultMap }, "isViewer": isViewer, "viewerIsFollowing": viewerIsFollowing, "isDeveloperProgramMember": isDeveloperProgramMember])
+      public init(nodeId: GraphQLID, userId: Int? = nil, loginName: String, name: String? = nil, htmlUrl: String, avatarUrl: String, createdAt: String, updatedAt: String, followers: Follower, following: Following, gists: Gist, repositories: Repository, bio: String? = nil, company: String? = nil, email: String, location: String? = nil, blog: String? = nil, status: Status? = nil, isViewer: Bool, viewerIsFollowing: Bool, isDeveloperProgramMember: Bool, pinnedItems: PinnedItem, contributionsCollection: ContributionsCollection) {
+        self.init(unsafeResultMap: ["__typename": "User", "node_id": nodeId, "user_id": userId, "loginName": loginName, "name": name, "html_url": htmlUrl, "avatar_url": avatarUrl, "created_at": createdAt, "updated_at": updatedAt, "followers": followers.resultMap, "following": following.resultMap, "gists": gists.resultMap, "repositories": repositories.resultMap, "bio": bio, "company": company, "email": email, "location": location, "blog": blog, "status": status.flatMap { (value: Status) -> ResultMap in value.resultMap }, "isViewer": isViewer, "viewerIsFollowing": viewerIsFollowing, "isDeveloperProgramMember": isDeveloperProgramMember, "pinnedItems": pinnedItems.resultMap, "contributionsCollection": contributionsCollection.resultMap])
       }
 
       public var __typename: String {
@@ -20500,7 +20643,7 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
         }
       }
 
-      /// Whether or not this user is followed by the viewer.
+      /// Whether or not this user is followed by the viewer. Inverse of is_following_viewer.
       public var viewerIsFollowing: Bool {
         get {
           return resultMap["viewerIsFollowing"]! as! Bool
@@ -20517,6 +20660,26 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
         }
         set {
           resultMap.updateValue(newValue, forKey: "isDeveloperProgramMember")
+        }
+      }
+
+      /// A list of repositories and gists this profile owner has pinned to their profile
+      public var pinnedItems: PinnedItem {
+        get {
+          return PinnedItem(unsafeResultMap: resultMap["pinnedItems"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "pinnedItems")
+        }
+      }
+
+      /// The collection of contributions this user has made to different repositories.
+      public var contributionsCollection: ContributionsCollection {
+        get {
+          return ContributionsCollection(unsafeResultMap: resultMap["contributionsCollection"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "contributionsCollection")
         }
       }
 
@@ -20719,6 +20882,555 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
           }
         }
       }
+
+      public struct PinnedItem: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["PinnableItemConnection"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+            GraphQLField("nodes", type: .list(.object(Node.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(totalCount: Int, nodes: [Node?]? = nil) {
+          self.init(unsafeResultMap: ["__typename": "PinnableItemConnection", "totalCount": totalCount, "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// Identifies the total count of items in the connection.
+        public var totalCount: Int {
+          get {
+            return resultMap["totalCount"]! as! Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "totalCount")
+          }
+        }
+
+        /// A list of nodes.
+        public var nodes: [Node?]? {
+          get {
+            return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+          }
+          set {
+            resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+          }
+        }
+
+        public struct Node: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Gist", "Repository"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLTypeCase(
+                variants: ["Repository": AsRepository.selections],
+                default: [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                ]
+              )
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public static func makeGist() -> Node {
+            return Node(unsafeResultMap: ["__typename": "Gist"])
+          }
+
+          public static func makeRepository(owner: AsRepository.Owner, name: String, isPrivate: Bool, nameWithOwner: String, url: String, description: String? = nil, stargazerCount: Int, primaryLanguage: AsRepository.PrimaryLanguage? = nil) -> Node {
+            return Node(unsafeResultMap: ["__typename": "Repository", "owner": owner.resultMap, "name": name, "isPrivate": isPrivate, "nameWithOwner": nameWithOwner, "url": url, "description": description, "stargazerCount": stargazerCount, "primaryLanguage": primaryLanguage.flatMap { (value: AsRepository.PrimaryLanguage) -> ResultMap in value.resultMap }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var asRepository: AsRepository? {
+            get {
+              if !AsRepository.possibleTypes.contains(__typename) { return nil }
+              return AsRepository(unsafeResultMap: resultMap)
+            }
+            set {
+              guard let newValue = newValue else { return }
+              resultMap = newValue.resultMap
+            }
+          }
+
+          public struct AsRepository: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Repository"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("owner", type: .nonNull(.object(Owner.selections))),
+                GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                GraphQLField("isPrivate", type: .nonNull(.scalar(Bool.self))),
+                GraphQLField("nameWithOwner", type: .nonNull(.scalar(String.self))),
+                GraphQLField("url", type: .nonNull(.scalar(String.self))),
+                GraphQLField("description", type: .scalar(String.self)),
+                GraphQLField("stargazerCount", type: .nonNull(.scalar(Int.self))),
+                GraphQLField("primaryLanguage", type: .object(PrimaryLanguage.selections)),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(owner: Owner, name: String, isPrivate: Bool, nameWithOwner: String, url: String, description: String? = nil, stargazerCount: Int, primaryLanguage: PrimaryLanguage? = nil) {
+              self.init(unsafeResultMap: ["__typename": "Repository", "owner": owner.resultMap, "name": name, "isPrivate": isPrivate, "nameWithOwner": nameWithOwner, "url": url, "description": description, "stargazerCount": stargazerCount, "primaryLanguage": primaryLanguage.flatMap { (value: PrimaryLanguage) -> ResultMap in value.resultMap }])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The User owner of the repository.
+            public var owner: Owner {
+              get {
+                return Owner(unsafeResultMap: resultMap["owner"]! as! ResultMap)
+              }
+              set {
+                resultMap.updateValue(newValue.resultMap, forKey: "owner")
+              }
+            }
+
+            /// The name of the repository.
+            public var name: String {
+              get {
+                return resultMap["name"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "name")
+              }
+            }
+
+            /// Identifies if the repository is private or internal.
+            public var isPrivate: Bool {
+              get {
+                return resultMap["isPrivate"]! as! Bool
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "isPrivate")
+              }
+            }
+
+            /// The repository's name with owner.
+            public var nameWithOwner: String {
+              get {
+                return resultMap["nameWithOwner"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "nameWithOwner")
+              }
+            }
+
+            /// The HTTP URL for this repository
+            public var url: String {
+              get {
+                return resultMap["url"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "url")
+              }
+            }
+
+            /// The description of the repository.
+            public var description: String? {
+              get {
+                return resultMap["description"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "description")
+              }
+            }
+
+            /// Returns a count of how many stargazers there are on this object
+            public var stargazerCount: Int {
+              get {
+                return resultMap["stargazerCount"]! as! Int
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "stargazerCount")
+              }
+            }
+
+            /// The primary language of the repository's code.
+            public var primaryLanguage: PrimaryLanguage? {
+              get {
+                return (resultMap["primaryLanguage"] as? ResultMap).flatMap { PrimaryLanguage(unsafeResultMap: $0) }
+              }
+              set {
+                resultMap.updateValue(newValue?.resultMap, forKey: "primaryLanguage")
+              }
+            }
+
+            public struct Owner: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Organization", "User"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("login", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("avatarUrl", arguments: ["size": 150], type: .nonNull(.scalar(String.self))),
+                  GraphQLField("url", type: .nonNull(.scalar(String.self))),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public static func makeOrganization(login: String, avatarUrl: String, url: String) -> Owner {
+                return Owner(unsafeResultMap: ["__typename": "Organization", "login": login, "avatarUrl": avatarUrl, "url": url])
+              }
+
+              public static func makeUser(login: String, avatarUrl: String, url: String) -> Owner {
+                return Owner(unsafeResultMap: ["__typename": "User", "login": login, "avatarUrl": avatarUrl, "url": url])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The username used to login.
+              public var login: String {
+                get {
+                  return resultMap["login"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "login")
+                }
+              }
+
+              /// A URL pointing to the owner's public avatar.
+              public var avatarUrl: String {
+                get {
+                  return resultMap["avatarUrl"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "avatarUrl")
+                }
+              }
+
+              /// The HTTP URL for the owner.
+              public var url: String {
+                get {
+                  return resultMap["url"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "url")
+                }
+              }
+            }
+
+            public struct PrimaryLanguage: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Language"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("color", type: .scalar(String.self)),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(name: String, color: String? = nil) {
+                self.init(unsafeResultMap: ["__typename": "Language", "name": name, "color": color])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The name of the current language.
+              public var name: String {
+                get {
+                  return resultMap["name"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "name")
+                }
+              }
+
+              /// The color defined for the current language.
+              public var color: String? {
+                get {
+                  return resultMap["color"] as? String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "color")
+                }
+              }
+            }
+          }
+        }
+      }
+
+      public struct ContributionsCollection: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["ContributionsCollection"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("contributionCalendar", type: .nonNull(.object(ContributionCalendar.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(contributionCalendar: ContributionCalendar) {
+          self.init(unsafeResultMap: ["__typename": "ContributionsCollection", "contributionCalendar": contributionCalendar.resultMap])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// A calendar of this user's contributions on GitHub.
+        public var contributionCalendar: ContributionCalendar {
+          get {
+            return ContributionCalendar(unsafeResultMap: resultMap["contributionCalendar"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "contributionCalendar")
+          }
+        }
+
+        public struct ContributionCalendar: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["ContributionCalendar"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("totalContributions", type: .nonNull(.scalar(Int.self))),
+              GraphQLField("weeks", type: .nonNull(.list(.nonNull(.object(Week.selections))))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(totalContributions: Int, weeks: [Week]) {
+            self.init(unsafeResultMap: ["__typename": "ContributionCalendar", "totalContributions": totalContributions, "weeks": weeks.map { (value: Week) -> ResultMap in value.resultMap }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// The count of total contributions in the calendar.
+          public var totalContributions: Int {
+            get {
+              return resultMap["totalContributions"]! as! Int
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "totalContributions")
+            }
+          }
+
+          /// A list of the weeks of contributions in this calendar.
+          public var weeks: [Week] {
+            get {
+              return (resultMap["weeks"] as! [ResultMap]).map { (value: ResultMap) -> Week in Week(unsafeResultMap: value) }
+            }
+            set {
+              resultMap.updateValue(newValue.map { (value: Week) -> ResultMap in value.resultMap }, forKey: "weeks")
+            }
+          }
+
+          public struct Week: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["ContributionCalendarWeek"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("firstDay", type: .nonNull(.scalar(String.self))),
+                GraphQLField("contributionDays", type: .nonNull(.list(.nonNull(.object(ContributionDay.selections))))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(firstDay: String, contributionDays: [ContributionDay]) {
+              self.init(unsafeResultMap: ["__typename": "ContributionCalendarWeek", "firstDay": firstDay, "contributionDays": contributionDays.map { (value: ContributionDay) -> ResultMap in value.resultMap }])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The date of the earliest square in this week.
+            public var firstDay: String {
+              get {
+                return resultMap["firstDay"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "firstDay")
+              }
+            }
+
+            /// The days of contributions in this week.
+            public var contributionDays: [ContributionDay] {
+              get {
+                return (resultMap["contributionDays"] as! [ResultMap]).map { (value: ResultMap) -> ContributionDay in ContributionDay(unsafeResultMap: value) }
+              }
+              set {
+                resultMap.updateValue(newValue.map { (value: ContributionDay) -> ResultMap in value.resultMap }, forKey: "contributionDays")
+              }
+            }
+
+            public struct ContributionDay: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["ContributionCalendarDay"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("contributionCount", type: .nonNull(.scalar(Int.self))),
+                  GraphQLField("contributionLevel", type: .nonNull(.scalar(ContributionLevel.self))),
+                  GraphQLField("date", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("weekday", type: .nonNull(.scalar(Int.self))),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(contributionCount: Int, contributionLevel: ContributionLevel, date: String, weekday: Int) {
+                self.init(unsafeResultMap: ["__typename": "ContributionCalendarDay", "contributionCount": contributionCount, "contributionLevel": contributionLevel, "date": date, "weekday": weekday])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// How many contributions were made by the user on this day.
+              public var contributionCount: Int {
+                get {
+                  return resultMap["contributionCount"]! as! Int
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "contributionCount")
+                }
+              }
+
+              /// Indication of contributions, relative to other days. Can be used to indicate which color to represent this day on a calendar.
+              public var contributionLevel: ContributionLevel {
+                get {
+                  return resultMap["contributionLevel"]! as! ContributionLevel
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "contributionLevel")
+                }
+              }
+
+              /// The day this square represents.
+              public var date: String {
+                get {
+                  return resultMap["date"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "date")
+                }
+              }
+
+              /// A number representing which day of the week this square represents, e.g., 1 is Monday.
+              public var weekday: Int {
+                get {
+                  return resultMap["weekday"]! as! Int
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "weekday")
+                }
+              }
+            }
+          }
+        }
+      }
     }
 
     public struct Organization: GraphQLSelectionSet {
@@ -20743,6 +21455,7 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
           GraphQLField("teams", type: .nonNull(.object(Team.selections))),
           GraphQLField("membersWithRole", type: .nonNull(.object(MembersWithRole.selections))),
           GraphQLField("viewerIsAMember", type: .nonNull(.scalar(Bool.self))),
+          GraphQLField("pinnedItems", arguments: ["types": ["REPOSITORY"], "first": 20], type: .nonNull(.object(PinnedItem.selections))),
         ]
       }
 
@@ -20752,8 +21465,8 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
         self.resultMap = unsafeResultMap
       }
 
-      public init(nodeId: GraphQLID, userId: Int? = nil, loginName: String, name: String? = nil, htmlUrl: String, avatarUrl: String, bio: String? = nil, email: String? = nil, location: String? = nil, blog: String? = nil, createdAt: String, updatedAt: String, repositories: Repository, teams: Team, membersWithRole: MembersWithRole, viewerIsAMember: Bool) {
-        self.init(unsafeResultMap: ["__typename": "Organization", "node_id": nodeId, "user_id": userId, "loginName": loginName, "name": name, "html_url": htmlUrl, "avatar_url": avatarUrl, "bio": bio, "email": email, "location": location, "blog": blog, "created_at": createdAt, "updated_at": updatedAt, "repositories": repositories.resultMap, "teams": teams.resultMap, "membersWithRole": membersWithRole.resultMap, "viewerIsAMember": viewerIsAMember])
+      public init(nodeId: GraphQLID, userId: Int? = nil, loginName: String, name: String? = nil, htmlUrl: String, avatarUrl: String, bio: String? = nil, email: String? = nil, location: String? = nil, blog: String? = nil, createdAt: String, updatedAt: String, repositories: Repository, teams: Team, membersWithRole: MembersWithRole, viewerIsAMember: Bool, pinnedItems: PinnedItem) {
+        self.init(unsafeResultMap: ["__typename": "Organization", "node_id": nodeId, "user_id": userId, "loginName": loginName, "name": name, "html_url": htmlUrl, "avatar_url": avatarUrl, "bio": bio, "email": email, "location": location, "blog": blog, "created_at": createdAt, "updated_at": updatedAt, "repositories": repositories.resultMap, "teams": teams.resultMap, "membersWithRole": membersWithRole.resultMap, "viewerIsAMember": viewerIsAMember, "pinnedItems": pinnedItems.resultMap])
       }
 
       public var __typename: String {
@@ -20924,6 +21637,16 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
         }
       }
 
+      /// A list of repositories and gists this profile owner has pinned to their profile
+      public var pinnedItems: PinnedItem {
+        get {
+          return PinnedItem(unsafeResultMap: resultMap["pinnedItems"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "pinnedItems")
+        }
+      }
+
       public struct Repository: GraphQLSelectionSet {
         public static let possibleTypes: [String] = ["RepositoryConnection"]
 
@@ -21040,6 +21763,340 @@ public final class UserOrOrgInfoQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue, forKey: "totalCount")
+          }
+        }
+      }
+
+      public struct PinnedItem: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["PinnableItemConnection"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+            GraphQLField("nodes", type: .list(.object(Node.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(totalCount: Int, nodes: [Node?]? = nil) {
+          self.init(unsafeResultMap: ["__typename": "PinnableItemConnection", "totalCount": totalCount, "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// Identifies the total count of items in the connection.
+        public var totalCount: Int {
+          get {
+            return resultMap["totalCount"]! as! Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "totalCount")
+          }
+        }
+
+        /// A list of nodes.
+        public var nodes: [Node?]? {
+          get {
+            return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+          }
+          set {
+            resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+          }
+        }
+
+        public struct Node: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Gist", "Repository"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLTypeCase(
+                variants: ["Repository": AsRepository.selections],
+                default: [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                ]
+              )
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public static func makeGist() -> Node {
+            return Node(unsafeResultMap: ["__typename": "Gist"])
+          }
+
+          public static func makeRepository(owner: AsRepository.Owner, name: String, isPrivate: Bool, nameWithOwner: String, url: String, description: String? = nil, stargazerCount: Int, primaryLanguage: AsRepository.PrimaryLanguage? = nil) -> Node {
+            return Node(unsafeResultMap: ["__typename": "Repository", "owner": owner.resultMap, "name": name, "isPrivate": isPrivate, "nameWithOwner": nameWithOwner, "url": url, "description": description, "stargazerCount": stargazerCount, "primaryLanguage": primaryLanguage.flatMap { (value: AsRepository.PrimaryLanguage) -> ResultMap in value.resultMap }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var asRepository: AsRepository? {
+            get {
+              if !AsRepository.possibleTypes.contains(__typename) { return nil }
+              return AsRepository(unsafeResultMap: resultMap)
+            }
+            set {
+              guard let newValue = newValue else { return }
+              resultMap = newValue.resultMap
+            }
+          }
+
+          public struct AsRepository: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Repository"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("owner", type: .nonNull(.object(Owner.selections))),
+                GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                GraphQLField("isPrivate", type: .nonNull(.scalar(Bool.self))),
+                GraphQLField("nameWithOwner", type: .nonNull(.scalar(String.self))),
+                GraphQLField("url", type: .nonNull(.scalar(String.self))),
+                GraphQLField("description", type: .scalar(String.self)),
+                GraphQLField("stargazerCount", type: .nonNull(.scalar(Int.self))),
+                GraphQLField("primaryLanguage", type: .object(PrimaryLanguage.selections)),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(owner: Owner, name: String, isPrivate: Bool, nameWithOwner: String, url: String, description: String? = nil, stargazerCount: Int, primaryLanguage: PrimaryLanguage? = nil) {
+              self.init(unsafeResultMap: ["__typename": "Repository", "owner": owner.resultMap, "name": name, "isPrivate": isPrivate, "nameWithOwner": nameWithOwner, "url": url, "description": description, "stargazerCount": stargazerCount, "primaryLanguage": primaryLanguage.flatMap { (value: PrimaryLanguage) -> ResultMap in value.resultMap }])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The User owner of the repository.
+            public var owner: Owner {
+              get {
+                return Owner(unsafeResultMap: resultMap["owner"]! as! ResultMap)
+              }
+              set {
+                resultMap.updateValue(newValue.resultMap, forKey: "owner")
+              }
+            }
+
+            /// The name of the repository.
+            public var name: String {
+              get {
+                return resultMap["name"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "name")
+              }
+            }
+
+            /// Identifies if the repository is private or internal.
+            public var isPrivate: Bool {
+              get {
+                return resultMap["isPrivate"]! as! Bool
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "isPrivate")
+              }
+            }
+
+            /// The repository's name with owner.
+            public var nameWithOwner: String {
+              get {
+                return resultMap["nameWithOwner"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "nameWithOwner")
+              }
+            }
+
+            /// The HTTP URL for this repository
+            public var url: String {
+              get {
+                return resultMap["url"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "url")
+              }
+            }
+
+            /// The description of the repository.
+            public var description: String? {
+              get {
+                return resultMap["description"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "description")
+              }
+            }
+
+            /// Returns a count of how many stargazers there are on this object
+            public var stargazerCount: Int {
+              get {
+                return resultMap["stargazerCount"]! as! Int
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "stargazerCount")
+              }
+            }
+
+            /// The primary language of the repository's code.
+            public var primaryLanguage: PrimaryLanguage? {
+              get {
+                return (resultMap["primaryLanguage"] as? ResultMap).flatMap { PrimaryLanguage(unsafeResultMap: $0) }
+              }
+              set {
+                resultMap.updateValue(newValue?.resultMap, forKey: "primaryLanguage")
+              }
+            }
+
+            public struct Owner: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Organization", "User"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("login", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("avatarUrl", arguments: ["size": 150], type: .nonNull(.scalar(String.self))),
+                  GraphQLField("url", type: .nonNull(.scalar(String.self))),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public static func makeOrganization(login: String, avatarUrl: String, url: String) -> Owner {
+                return Owner(unsafeResultMap: ["__typename": "Organization", "login": login, "avatarUrl": avatarUrl, "url": url])
+              }
+
+              public static func makeUser(login: String, avatarUrl: String, url: String) -> Owner {
+                return Owner(unsafeResultMap: ["__typename": "User", "login": login, "avatarUrl": avatarUrl, "url": url])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The username used to login.
+              public var login: String {
+                get {
+                  return resultMap["login"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "login")
+                }
+              }
+
+              /// A URL pointing to the owner's public avatar.
+              public var avatarUrl: String {
+                get {
+                  return resultMap["avatarUrl"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "avatarUrl")
+                }
+              }
+
+              /// The HTTP URL for the owner.
+              public var url: String {
+                get {
+                  return resultMap["url"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "url")
+                }
+              }
+            }
+
+            public struct PrimaryLanguage: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Language"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("color", type: .scalar(String.self)),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(name: String, color: String? = nil) {
+                self.init(unsafeResultMap: ["__typename": "Language", "name": name, "color": color])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The name of the current language.
+              public var name: String {
+                get {
+                  return resultMap["name"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "name")
+                }
+              }
+
+              /// The color defined for the current language.
+              public var color: String? {
+                get {
+                  return resultMap["color"] as? String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "color")
+                }
+              }
+            }
           }
         }
       }
@@ -21366,7 +22423,7 @@ public final class ViewerInfoQuery: GraphQLQuery {
         }
       }
 
-      /// Whether or not this user is followed by the viewer.
+      /// Whether or not this user is followed by the viewer. Inverse of is_following_viewer.
       public var viewerIsFollowing: Bool {
         get {
           return resultMap["viewerIsFollowing"]! as! Bool
@@ -22401,6 +23458,1265 @@ public final class AvatarQuery: GraphQLQuery {
         }
         set {
           resultMap.updateValue(newValue, forKey: "avatarUrl")
+        }
+      }
+    }
+  }
+}
+
+public final class UserContributionDetailQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query UserContributionDetail($loginName: String!) {
+      user(login: $loginName) {
+        __typename
+        contributionsCollection {
+          __typename
+          contributionCalendar {
+            __typename
+            totalContributions
+            weeks {
+              __typename
+              firstDay
+              contributionDays {
+                __typename
+                contributionCount
+                contributionLevel
+                date
+                weekday
+              }
+            }
+          }
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "UserContributionDetail"
+
+  public var loginName: String
+
+  public init(loginName: String) {
+    self.loginName = loginName
+  }
+
+  public var variables: GraphQLMap? {
+    return ["loginName": loginName]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("user", arguments: ["login": GraphQLVariable("loginName")], type: .object(User.selections)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(user: User? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "user": user.flatMap { (value: User) -> ResultMap in value.resultMap }])
+    }
+
+    /// Lookup a user by login.
+    public var user: User? {
+      get {
+        return (resultMap["user"] as? ResultMap).flatMap { User(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "user")
+      }
+    }
+
+    public struct User: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["User"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("contributionsCollection", type: .nonNull(.object(ContributionsCollection.selections))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(contributionsCollection: ContributionsCollection) {
+        self.init(unsafeResultMap: ["__typename": "User", "contributionsCollection": contributionsCollection.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// The collection of contributions this user has made to different repositories.
+      public var contributionsCollection: ContributionsCollection {
+        get {
+          return ContributionsCollection(unsafeResultMap: resultMap["contributionsCollection"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "contributionsCollection")
+        }
+      }
+
+      public struct ContributionsCollection: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["ContributionsCollection"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("contributionCalendar", type: .nonNull(.object(ContributionCalendar.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(contributionCalendar: ContributionCalendar) {
+          self.init(unsafeResultMap: ["__typename": "ContributionsCollection", "contributionCalendar": contributionCalendar.resultMap])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// A calendar of this user's contributions on GitHub.
+        public var contributionCalendar: ContributionCalendar {
+          get {
+            return ContributionCalendar(unsafeResultMap: resultMap["contributionCalendar"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "contributionCalendar")
+          }
+        }
+
+        public struct ContributionCalendar: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["ContributionCalendar"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("totalContributions", type: .nonNull(.scalar(Int.self))),
+              GraphQLField("weeks", type: .nonNull(.list(.nonNull(.object(Week.selections))))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(totalContributions: Int, weeks: [Week]) {
+            self.init(unsafeResultMap: ["__typename": "ContributionCalendar", "totalContributions": totalContributions, "weeks": weeks.map { (value: Week) -> ResultMap in value.resultMap }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// The count of total contributions in the calendar.
+          public var totalContributions: Int {
+            get {
+              return resultMap["totalContributions"]! as! Int
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "totalContributions")
+            }
+          }
+
+          /// A list of the weeks of contributions in this calendar.
+          public var weeks: [Week] {
+            get {
+              return (resultMap["weeks"] as! [ResultMap]).map { (value: ResultMap) -> Week in Week(unsafeResultMap: value) }
+            }
+            set {
+              resultMap.updateValue(newValue.map { (value: Week) -> ResultMap in value.resultMap }, forKey: "weeks")
+            }
+          }
+
+          public struct Week: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["ContributionCalendarWeek"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("firstDay", type: .nonNull(.scalar(String.self))),
+                GraphQLField("contributionDays", type: .nonNull(.list(.nonNull(.object(ContributionDay.selections))))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(firstDay: String, contributionDays: [ContributionDay]) {
+              self.init(unsafeResultMap: ["__typename": "ContributionCalendarWeek", "firstDay": firstDay, "contributionDays": contributionDays.map { (value: ContributionDay) -> ResultMap in value.resultMap }])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The date of the earliest square in this week.
+            public var firstDay: String {
+              get {
+                return resultMap["firstDay"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "firstDay")
+              }
+            }
+
+            /// The days of contributions in this week.
+            public var contributionDays: [ContributionDay] {
+              get {
+                return (resultMap["contributionDays"] as! [ResultMap]).map { (value: ResultMap) -> ContributionDay in ContributionDay(unsafeResultMap: value) }
+              }
+              set {
+                resultMap.updateValue(newValue.map { (value: ContributionDay) -> ResultMap in value.resultMap }, forKey: "contributionDays")
+              }
+            }
+
+            public struct ContributionDay: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["ContributionCalendarDay"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("contributionCount", type: .nonNull(.scalar(Int.self))),
+                  GraphQLField("contributionLevel", type: .nonNull(.scalar(ContributionLevel.self))),
+                  GraphQLField("date", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("weekday", type: .nonNull(.scalar(Int.self))),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(contributionCount: Int, contributionLevel: ContributionLevel, date: String, weekday: Int) {
+                self.init(unsafeResultMap: ["__typename": "ContributionCalendarDay", "contributionCount": contributionCount, "contributionLevel": contributionLevel, "date": date, "weekday": weekday])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// How many contributions were made by the user on this day.
+              public var contributionCount: Int {
+                get {
+                  return resultMap["contributionCount"]! as! Int
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "contributionCount")
+                }
+              }
+
+              /// Indication of contributions, relative to other days. Can be used to indicate which color to represent this day on a calendar.
+              public var contributionLevel: ContributionLevel {
+                get {
+                  return resultMap["contributionLevel"]! as! ContributionLevel
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "contributionLevel")
+                }
+              }
+
+              /// The day this square represents.
+              public var date: String {
+                get {
+                  return resultMap["date"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "date")
+                }
+              }
+
+              /// A number representing which day of the week this square represents, e.g., 1 is Monday.
+              public var weekday: Int {
+                get {
+                  return resultMap["weekday"]! as! Int
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "weekday")
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class UserPinnedItemQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query UserPinnedItem($login: String!) {
+      user(login: $login) {
+        __typename
+        pinnedItems(types: [REPOSITORY], first: 20) {
+          __typename
+          totalCount
+          nodes {
+            __typename
+            ... on Repository {
+              owner {
+                __typename
+                login
+                avatarUrl(size: 150)
+                url
+              }
+              name
+              isPrivate
+              nameWithOwner
+              url
+              description
+              stargazerCount
+              forkCount
+              primaryLanguage {
+                __typename
+                name
+                color
+              }
+            }
+          }
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "UserPinnedItem"
+
+  public var login: String
+
+  public init(login: String) {
+    self.login = login
+  }
+
+  public var variables: GraphQLMap? {
+    return ["login": login]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("user", arguments: ["login": GraphQLVariable("login")], type: .object(User.selections)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(user: User? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "user": user.flatMap { (value: User) -> ResultMap in value.resultMap }])
+    }
+
+    /// Lookup a user by login.
+    public var user: User? {
+      get {
+        return (resultMap["user"] as? ResultMap).flatMap { User(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "user")
+      }
+    }
+
+    public struct User: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["User"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("pinnedItems", arguments: ["types": ["REPOSITORY"], "first": 20], type: .nonNull(.object(PinnedItem.selections))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(pinnedItems: PinnedItem) {
+        self.init(unsafeResultMap: ["__typename": "User", "pinnedItems": pinnedItems.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// A list of repositories and gists this profile owner has pinned to their profile
+      public var pinnedItems: PinnedItem {
+        get {
+          return PinnedItem(unsafeResultMap: resultMap["pinnedItems"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "pinnedItems")
+        }
+      }
+
+      public struct PinnedItem: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["PinnableItemConnection"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+            GraphQLField("nodes", type: .list(.object(Node.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(totalCount: Int, nodes: [Node?]? = nil) {
+          self.init(unsafeResultMap: ["__typename": "PinnableItemConnection", "totalCount": totalCount, "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// Identifies the total count of items in the connection.
+        public var totalCount: Int {
+          get {
+            return resultMap["totalCount"]! as! Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "totalCount")
+          }
+        }
+
+        /// A list of nodes.
+        public var nodes: [Node?]? {
+          get {
+            return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+          }
+          set {
+            resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+          }
+        }
+
+        public struct Node: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Gist", "Repository"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLTypeCase(
+                variants: ["Repository": AsRepository.selections],
+                default: [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                ]
+              )
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public static func makeGist() -> Node {
+            return Node(unsafeResultMap: ["__typename": "Gist"])
+          }
+
+          public static func makeRepository(owner: AsRepository.Owner, name: String, isPrivate: Bool, nameWithOwner: String, url: String, description: String? = nil, stargazerCount: Int, forkCount: Int, primaryLanguage: AsRepository.PrimaryLanguage? = nil) -> Node {
+            return Node(unsafeResultMap: ["__typename": "Repository", "owner": owner.resultMap, "name": name, "isPrivate": isPrivate, "nameWithOwner": nameWithOwner, "url": url, "description": description, "stargazerCount": stargazerCount, "forkCount": forkCount, "primaryLanguage": primaryLanguage.flatMap { (value: AsRepository.PrimaryLanguage) -> ResultMap in value.resultMap }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var asRepository: AsRepository? {
+            get {
+              if !AsRepository.possibleTypes.contains(__typename) { return nil }
+              return AsRepository(unsafeResultMap: resultMap)
+            }
+            set {
+              guard let newValue = newValue else { return }
+              resultMap = newValue.resultMap
+            }
+          }
+
+          public struct AsRepository: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Repository"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("owner", type: .nonNull(.object(Owner.selections))),
+                GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                GraphQLField("isPrivate", type: .nonNull(.scalar(Bool.self))),
+                GraphQLField("nameWithOwner", type: .nonNull(.scalar(String.self))),
+                GraphQLField("url", type: .nonNull(.scalar(String.self))),
+                GraphQLField("description", type: .scalar(String.self)),
+                GraphQLField("stargazerCount", type: .nonNull(.scalar(Int.self))),
+                GraphQLField("forkCount", type: .nonNull(.scalar(Int.self))),
+                GraphQLField("primaryLanguage", type: .object(PrimaryLanguage.selections)),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(owner: Owner, name: String, isPrivate: Bool, nameWithOwner: String, url: String, description: String? = nil, stargazerCount: Int, forkCount: Int, primaryLanguage: PrimaryLanguage? = nil) {
+              self.init(unsafeResultMap: ["__typename": "Repository", "owner": owner.resultMap, "name": name, "isPrivate": isPrivate, "nameWithOwner": nameWithOwner, "url": url, "description": description, "stargazerCount": stargazerCount, "forkCount": forkCount, "primaryLanguage": primaryLanguage.flatMap { (value: PrimaryLanguage) -> ResultMap in value.resultMap }])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The User owner of the repository.
+            public var owner: Owner {
+              get {
+                return Owner(unsafeResultMap: resultMap["owner"]! as! ResultMap)
+              }
+              set {
+                resultMap.updateValue(newValue.resultMap, forKey: "owner")
+              }
+            }
+
+            /// The name of the repository.
+            public var name: String {
+              get {
+                return resultMap["name"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "name")
+              }
+            }
+
+            /// Identifies if the repository is private or internal.
+            public var isPrivate: Bool {
+              get {
+                return resultMap["isPrivate"]! as! Bool
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "isPrivate")
+              }
+            }
+
+            /// The repository's name with owner.
+            public var nameWithOwner: String {
+              get {
+                return resultMap["nameWithOwner"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "nameWithOwner")
+              }
+            }
+
+            /// The HTTP URL for this repository
+            public var url: String {
+              get {
+                return resultMap["url"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "url")
+              }
+            }
+
+            /// The description of the repository.
+            public var description: String? {
+              get {
+                return resultMap["description"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "description")
+              }
+            }
+
+            /// Returns a count of how many stargazers there are on this object
+            public var stargazerCount: Int {
+              get {
+                return resultMap["stargazerCount"]! as! Int
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "stargazerCount")
+              }
+            }
+
+            /// Returns how many forks there are of this repository in the whole network.
+            public var forkCount: Int {
+              get {
+                return resultMap["forkCount"]! as! Int
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "forkCount")
+              }
+            }
+
+            /// The primary language of the repository's code.
+            public var primaryLanguage: PrimaryLanguage? {
+              get {
+                return (resultMap["primaryLanguage"] as? ResultMap).flatMap { PrimaryLanguage(unsafeResultMap: $0) }
+              }
+              set {
+                resultMap.updateValue(newValue?.resultMap, forKey: "primaryLanguage")
+              }
+            }
+
+            public struct Owner: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Organization", "User"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("login", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("avatarUrl", arguments: ["size": 150], type: .nonNull(.scalar(String.self))),
+                  GraphQLField("url", type: .nonNull(.scalar(String.self))),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public static func makeOrganization(login: String, avatarUrl: String, url: String) -> Owner {
+                return Owner(unsafeResultMap: ["__typename": "Organization", "login": login, "avatarUrl": avatarUrl, "url": url])
+              }
+
+              public static func makeUser(login: String, avatarUrl: String, url: String) -> Owner {
+                return Owner(unsafeResultMap: ["__typename": "User", "login": login, "avatarUrl": avatarUrl, "url": url])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The username used to login.
+              public var login: String {
+                get {
+                  return resultMap["login"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "login")
+                }
+              }
+
+              /// A URL pointing to the owner's public avatar.
+              public var avatarUrl: String {
+                get {
+                  return resultMap["avatarUrl"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "avatarUrl")
+                }
+              }
+
+              /// The HTTP URL for the owner.
+              public var url: String {
+                get {
+                  return resultMap["url"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "url")
+                }
+              }
+            }
+
+            public struct PrimaryLanguage: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Language"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("color", type: .scalar(String.self)),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(name: String, color: String? = nil) {
+                self.init(unsafeResultMap: ["__typename": "Language", "name": name, "color": color])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The name of the current language.
+              public var name: String {
+                get {
+                  return resultMap["name"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "name")
+                }
+              }
+
+              /// The color defined for the current language.
+              public var color: String? {
+                get {
+                  return resultMap["color"] as? String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "color")
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class OrgPinnedItemQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query OrgPinnedItem($login: String!) {
+      organization(login: $login) {
+        __typename
+        pinnedItems(types: [REPOSITORY], first: 20) {
+          __typename
+          totalCount
+          nodes {
+            __typename
+            ... on Repository {
+              owner {
+                __typename
+                login
+                avatarUrl(size: 150)
+                url
+              }
+              name
+              isPrivate
+              nameWithOwner
+              url
+              description
+              stargazerCount
+              forkCount
+              primaryLanguage {
+                __typename
+                name
+                color
+              }
+            }
+          }
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "OrgPinnedItem"
+
+  public var login: String
+
+  public init(login: String) {
+    self.login = login
+  }
+
+  public var variables: GraphQLMap? {
+    return ["login": login]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("organization", arguments: ["login": GraphQLVariable("login")], type: .object(Organization.selections)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(organization: Organization? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "organization": organization.flatMap { (value: Organization) -> ResultMap in value.resultMap }])
+    }
+
+    /// Lookup a organization by login.
+    public var organization: Organization? {
+      get {
+        return (resultMap["organization"] as? ResultMap).flatMap { Organization(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "organization")
+      }
+    }
+
+    public struct Organization: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["Organization"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("pinnedItems", arguments: ["types": ["REPOSITORY"], "first": 20], type: .nonNull(.object(PinnedItem.selections))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(pinnedItems: PinnedItem) {
+        self.init(unsafeResultMap: ["__typename": "Organization", "pinnedItems": pinnedItems.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// A list of repositories and gists this profile owner has pinned to their profile
+      public var pinnedItems: PinnedItem {
+        get {
+          return PinnedItem(unsafeResultMap: resultMap["pinnedItems"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "pinnedItems")
+        }
+      }
+
+      public struct PinnedItem: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["PinnableItemConnection"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+            GraphQLField("nodes", type: .list(.object(Node.selections))),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(totalCount: Int, nodes: [Node?]? = nil) {
+          self.init(unsafeResultMap: ["__typename": "PinnableItemConnection", "totalCount": totalCount, "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// Identifies the total count of items in the connection.
+        public var totalCount: Int {
+          get {
+            return resultMap["totalCount"]! as! Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "totalCount")
+          }
+        }
+
+        /// A list of nodes.
+        public var nodes: [Node?]? {
+          get {
+            return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+          }
+          set {
+            resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+          }
+        }
+
+        public struct Node: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Gist", "Repository"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLTypeCase(
+                variants: ["Repository": AsRepository.selections],
+                default: [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                ]
+              )
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public static func makeGist() -> Node {
+            return Node(unsafeResultMap: ["__typename": "Gist"])
+          }
+
+          public static func makeRepository(owner: AsRepository.Owner, name: String, isPrivate: Bool, nameWithOwner: String, url: String, description: String? = nil, stargazerCount: Int, forkCount: Int, primaryLanguage: AsRepository.PrimaryLanguage? = nil) -> Node {
+            return Node(unsafeResultMap: ["__typename": "Repository", "owner": owner.resultMap, "name": name, "isPrivate": isPrivate, "nameWithOwner": nameWithOwner, "url": url, "description": description, "stargazerCount": stargazerCount, "forkCount": forkCount, "primaryLanguage": primaryLanguage.flatMap { (value: AsRepository.PrimaryLanguage) -> ResultMap in value.resultMap }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          public var asRepository: AsRepository? {
+            get {
+              if !AsRepository.possibleTypes.contains(__typename) { return nil }
+              return AsRepository(unsafeResultMap: resultMap)
+            }
+            set {
+              guard let newValue = newValue else { return }
+              resultMap = newValue.resultMap
+            }
+          }
+
+          public struct AsRepository: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Repository"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("owner", type: .nonNull(.object(Owner.selections))),
+                GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                GraphQLField("isPrivate", type: .nonNull(.scalar(Bool.self))),
+                GraphQLField("nameWithOwner", type: .nonNull(.scalar(String.self))),
+                GraphQLField("url", type: .nonNull(.scalar(String.self))),
+                GraphQLField("description", type: .scalar(String.self)),
+                GraphQLField("stargazerCount", type: .nonNull(.scalar(Int.self))),
+                GraphQLField("forkCount", type: .nonNull(.scalar(Int.self))),
+                GraphQLField("primaryLanguage", type: .object(PrimaryLanguage.selections)),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(owner: Owner, name: String, isPrivate: Bool, nameWithOwner: String, url: String, description: String? = nil, stargazerCount: Int, forkCount: Int, primaryLanguage: PrimaryLanguage? = nil) {
+              self.init(unsafeResultMap: ["__typename": "Repository", "owner": owner.resultMap, "name": name, "isPrivate": isPrivate, "nameWithOwner": nameWithOwner, "url": url, "description": description, "stargazerCount": stargazerCount, "forkCount": forkCount, "primaryLanguage": primaryLanguage.flatMap { (value: PrimaryLanguage) -> ResultMap in value.resultMap }])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The User owner of the repository.
+            public var owner: Owner {
+              get {
+                return Owner(unsafeResultMap: resultMap["owner"]! as! ResultMap)
+              }
+              set {
+                resultMap.updateValue(newValue.resultMap, forKey: "owner")
+              }
+            }
+
+            /// The name of the repository.
+            public var name: String {
+              get {
+                return resultMap["name"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "name")
+              }
+            }
+
+            /// Identifies if the repository is private or internal.
+            public var isPrivate: Bool {
+              get {
+                return resultMap["isPrivate"]! as! Bool
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "isPrivate")
+              }
+            }
+
+            /// The repository's name with owner.
+            public var nameWithOwner: String {
+              get {
+                return resultMap["nameWithOwner"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "nameWithOwner")
+              }
+            }
+
+            /// The HTTP URL for this repository
+            public var url: String {
+              get {
+                return resultMap["url"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "url")
+              }
+            }
+
+            /// The description of the repository.
+            public var description: String? {
+              get {
+                return resultMap["description"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "description")
+              }
+            }
+
+            /// Returns a count of how many stargazers there are on this object
+            public var stargazerCount: Int {
+              get {
+                return resultMap["stargazerCount"]! as! Int
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "stargazerCount")
+              }
+            }
+
+            /// Returns how many forks there are of this repository in the whole network.
+            public var forkCount: Int {
+              get {
+                return resultMap["forkCount"]! as! Int
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "forkCount")
+              }
+            }
+
+            /// The primary language of the repository's code.
+            public var primaryLanguage: PrimaryLanguage? {
+              get {
+                return (resultMap["primaryLanguage"] as? ResultMap).flatMap { PrimaryLanguage(unsafeResultMap: $0) }
+              }
+              set {
+                resultMap.updateValue(newValue?.resultMap, forKey: "primaryLanguage")
+              }
+            }
+
+            public struct Owner: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Organization", "User"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("login", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("avatarUrl", arguments: ["size": 150], type: .nonNull(.scalar(String.self))),
+                  GraphQLField("url", type: .nonNull(.scalar(String.self))),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public static func makeOrganization(login: String, avatarUrl: String, url: String) -> Owner {
+                return Owner(unsafeResultMap: ["__typename": "Organization", "login": login, "avatarUrl": avatarUrl, "url": url])
+              }
+
+              public static func makeUser(login: String, avatarUrl: String, url: String) -> Owner {
+                return Owner(unsafeResultMap: ["__typename": "User", "login": login, "avatarUrl": avatarUrl, "url": url])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The username used to login.
+              public var login: String {
+                get {
+                  return resultMap["login"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "login")
+                }
+              }
+
+              /// A URL pointing to the owner's public avatar.
+              public var avatarUrl: String {
+                get {
+                  return resultMap["avatarUrl"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "avatarUrl")
+                }
+              }
+
+              /// The HTTP URL for the owner.
+              public var url: String {
+                get {
+                  return resultMap["url"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "url")
+                }
+              }
+            }
+
+            public struct PrimaryLanguage: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Language"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("color", type: .scalar(String.self)),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(name: String, color: String? = nil) {
+                self.init(unsafeResultMap: ["__typename": "Language", "name": name, "color": color])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The name of the current language.
+              public var name: String {
+                get {
+                  return resultMap["name"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "name")
+                }
+              }
+
+              /// The color defined for the current language.
+              public var color: String? {
+                get {
+                  return resultMap["color"] as? String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "color")
+                }
+              }
+            }
+          }
         }
       }
     }

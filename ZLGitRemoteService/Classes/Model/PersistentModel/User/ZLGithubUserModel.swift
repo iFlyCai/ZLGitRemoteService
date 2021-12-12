@@ -53,6 +53,7 @@ import MJExtension
     open var location: String?
     open var email: String?
     open var bio: String?
+    open var twitter_username: String?
     
     open var followers: Int = 0
     open var following: Int = 0
@@ -112,106 +113,6 @@ import MJExtension
         return super.mj_newValue(fromOldValue: oldValue, property: property)
     }
     
-    
-    convenience init(queryData: UserInfoQuery.Data){
-        self.init()
-        user_id = queryData.user?.userId == nil ? nil : String(queryData.user!.userId!)
-        node_id = queryData.user?.nodeId
-        loginName = queryData.user?.loginName
-        html_url = queryData.user?.htmlUrl
-        avatar_url = queryData.user?.avatarUrl
-        type = .user
-        
-        name = queryData.user?.name
-        company = queryData.user?.company
-        blog = queryData.user?.blog
-        location = queryData.user?.location
-        email = queryData.user?.email
-        bio = queryData.user?.bio
-        
-        followers = queryData.user?.followers.totalCount ?? 0
-        following = queryData.user?.following.totalCount ?? 0
-        gists = queryData.user?.gists.totalCount ?? 0
-        repositories = queryData.user?.repositories.totalCount ?? 0
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        created_at = dateFormatter.date(from: queryData.user?.createdAt ?? "")
-        updated_at = dateFormatter.date(from: queryData.user?.updatedAt ?? "")
-        
-        statusMessage = queryData.user?.status?.message
-        isViewer = queryData.user?.isViewer ?? false
-        viewerIsFollowing = queryData.user?.viewerIsFollowing ?? false
-        isDeveloperProgramMember = queryData.user?.isDeveloperProgramMember ?? false
-    }
-    
-    convenience init(viewerQueryData: ViewerInfoQuery.Data){
-        self.init()
-        user_id = String(viewerQueryData.viewer.userId ?? 0)
-        node_id = viewerQueryData.viewer.nodeId
-        loginName = viewerQueryData.viewer.loginName
-        html_url = viewerQueryData.viewer.htmlUrl
-        avatar_url = viewerQueryData.viewer.avatarUrl
-        type = .user
-        
-        name = viewerQueryData.viewer.name
-        company = viewerQueryData.viewer.company
-        blog = viewerQueryData.viewer.blog
-        location = viewerQueryData.viewer.location
-        email = viewerQueryData.viewer.email
-        bio = viewerQueryData.viewer.bio
-        
-        followers = viewerQueryData.viewer.followers.totalCount
-        following = viewerQueryData.viewer.following.totalCount
-        gists = viewerQueryData.viewer.gists.totalCount
-        repositories = viewerQueryData.viewer.repositories.totalCount
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        created_at = dateFormatter.date(from: viewerQueryData.viewer.createdAt )
-        updated_at = dateFormatter.date(from: viewerQueryData.viewer.updatedAt )
-        
-        statusMessage = viewerQueryData.viewer.status?.message
-        isViewer = viewerQueryData.viewer.isViewer
-        viewerIsFollowing = viewerQueryData.viewer.viewerIsFollowing
-        isDeveloperProgramMember = viewerQueryData.viewer.isDeveloperProgramMember
-    }
-    
-    convenience init(UserOrOrgQueryData queryData: UserOrOrgInfoQuery.Data){
-        self.init()
-        user_id = queryData.user?.userId == nil ? nil : String(queryData.user!.userId!)
-        node_id = queryData.user?.nodeId
-        loginName = queryData.user?.loginName
-        html_url = queryData.user?.htmlUrl
-        avatar_url = queryData.user?.avatarUrl
-        type = .user
-        
-        name = queryData.user?.name
-        company = queryData.user?.company
-        blog = queryData.user?.blog
-        location = queryData.user?.location
-        email = queryData.user?.email
-        bio = queryData.user?.bio
-        
-        followers = queryData.user?.followers.totalCount ?? 0
-        following = queryData.user?.following.totalCount ?? 0
-        gists = queryData.user?.gists.totalCount ?? 0
-        repositories = queryData.user?.repositories.totalCount ?? 0
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        created_at = dateFormatter.date(from: queryData.user?.createdAt ?? "")
-        updated_at = dateFormatter.date(from: queryData.user?.updatedAt ?? "")
-        
-        statusMessage = queryData.user?.status?.message
-        isViewer = queryData.user?.isViewer ?? false
-        viewerIsFollowing = queryData.user?.viewerIsFollowing ?? false
-        isDeveloperProgramMember = queryData.user?.isDeveloperProgramMember ?? false
-    }
-    
     override class func supportsSecureCoding() -> Bool {
         return true
     }
@@ -266,62 +167,6 @@ import MJExtension
             return nil
         }
         return super.mj_newValue(fromOldValue: oldValue, property: property)
-    }
-    
-    convenience init(queryData: OrgInfoQuery.Data){
-        self.init()
-        
-        user_id = String(queryData.organization?.userId ?? 0)
-        node_id = queryData.organization?.nodeId
-        loginName = queryData.organization?.loginName
-        html_url = queryData.organization?.htmlUrl
-        avatar_url = queryData.organization?.avatarUrl
-        type = .organization
-        
-        name = queryData.organization?.name
-        blog = queryData.organization?.blog
-        location = queryData.organization?.location
-        email = queryData.organization?.email
-        bio = queryData.organization?.bio
-        
-        members = queryData.organization?.membersWithRole.totalCount ?? 0
-        teams = queryData.organization?.teams.totalCount ?? 0
-        repositories = queryData.organization?.repositories.totalCount ?? 0
-        viewerIsAMember = queryData.organization?.viewerIsAMember ?? false
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        created_at = dateFormatter.date(from: queryData.organization?.createdAt ?? "")
-        updated_at = dateFormatter.date(from: queryData.organization?.updatedAt ?? "")
-    }
-    
-    convenience init(UserOrOrgQueryData queryData: UserOrOrgInfoQuery.Data){
-        self.init()
-        
-        user_id = String(queryData.organization?.userId ?? 0)
-        node_id = queryData.organization?.nodeId
-        loginName = queryData.organization?.loginName
-        html_url = queryData.organization?.htmlUrl
-        avatar_url = queryData.organization?.avatarUrl
-        type = .organization
-        
-        name = queryData.organization?.name
-        blog = queryData.organization?.blog
-        location = queryData.organization?.location
-        email = queryData.organization?.email
-        bio = queryData.organization?.bio
-        
-        members = queryData.organization?.membersWithRole.totalCount ?? 0
-        teams = queryData.organization?.teams.totalCount ?? 0
-        repositories = queryData.organization?.repositories.totalCount ?? 0
-        viewerIsAMember = queryData.organization?.viewerIsAMember ?? false
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        created_at = dateFormatter.date(from: queryData.organization?.createdAt ?? "")
-        updated_at = dateFormatter.date(from: queryData.organization?.updatedAt ?? "")
     }
     
     override class func supportsSecureCoding() -> Bool {

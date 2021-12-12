@@ -93,3 +93,4 @@ iOSInjectionProject/
 **/*.DS_Store
 
 Example/Pods/
+ZLGitRemoteService/Classes/Network/Graphql/graphql.config.js
