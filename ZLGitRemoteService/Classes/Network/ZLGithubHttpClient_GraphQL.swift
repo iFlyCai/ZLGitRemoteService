@@ -22,7 +22,7 @@ private class ZLTokenIntercetor : ApolloInterceptor {
         request: HTTPRequest<Operation>,
         response: HTTPResponse<Operation>?,
         completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void){
-        request.addHeader(name:"Authorization", value: "token \(ZLGithubHttpClient.default().token)")
+        request.addHeader(name:"Authorization", value: "Bearer \(ZLGithubHttpClient.default().token)")
         chain.proceedAsync(request: request, response: response, completion: completion)
     }
 }

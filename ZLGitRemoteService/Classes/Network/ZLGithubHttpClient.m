@@ -123,7 +123,7 @@
         
     AFHTTPSessionManager *sessionManager = [self getDefaultSessionManager];
     
-    [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"token %@",self.token] forHTTPHeaderField:@"Authorization"];
+    [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",self.token] forHTTPHeaderField:@"Authorization"];
     sessionManager.requestSerializer.cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
     for(NSString *header in headers.allKeys){
         [sessionManager.requestSerializer setValue:headers[header] forHTTPHeaderField:header];
@@ -443,7 +443,7 @@
     
     AFHTTPSessionManager *sessionManager = [self getDefaultSessionManager];
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"token %@",token] forHTTPHeaderField:@"Authorization"];
+    [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",token] forHTTPHeaderField:@"Authorization"];
     
     [sessionManager GET:url
              parameters:@{}
@@ -1122,7 +1122,7 @@
     
     AFHTTPSessionManager *sessionManager = [self getDefaultSessionManager];
     
-    [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"token %@",self.token] forHTTPHeaderField:@"Authorization"];
+    [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",self.token] forHTTPHeaderField:@"Authorization"];
     
     if(acceptType) {
         [sessionManager.requestSerializer setValue:acceptType forHTTPHeaderField:@"Accept"];
@@ -2060,7 +2060,7 @@
   
     AFHTTPSessionManager *sessionManager = [self getDefaultSessionManager];
     
-    [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"token %@",self.token] forHTTPHeaderField:@"Authorization"];
+    [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"Bearer %@",self.token] forHTTPHeaderField:@"Authorization"];
     sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
     
@@ -2245,11 +2245,13 @@
                     NSString * loginName = nil;
                     NSString * name = nil;
                     
-                    NSArray<OCGumboElement *>* aTagArray = article.Query(@"a");
-                    if([aTagArray count] >= 4){
+                    NSArray<OCGumboElement *>* divTagArray = article.Query(@"div.col-md-6");
+                    
+                    if([divTagArray count] >= 1){
+                        NSArray<OCGumboElement *>* aTagArray = divTagArray[0].Query(@"a");
                         NSCharacterSet * set = [NSCharacterSet characterSetWithCharactersInString:@" \n"];
-                        name = [aTagArray[2].text() stringByTrimmingCharactersInSet:set];
-                        loginName = [aTagArray[3].text() stringByTrimmingCharactersInSet:set];
+                        name = [aTagArray.firstObject.text() stringByTrimmingCharactersInSet:set];
+                        loginName = [aTagArray.lastObject.text() stringByTrimmingCharactersInSet:set];
                     }
                     
                     if([loginName length] > 0){
