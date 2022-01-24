@@ -212,6 +212,349 @@ public enum ContributionLevel: RawRepresentable, Equatable, Hashable, CaseIterab
   }
 }
 
+/// The semantic purpose of the column - todo, in progress, or done.
+public enum ProjectColumnPurpose: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  /// The column contains cards still to be worked on
+  case todo
+  /// The column contains cards which are currently being worked on
+  case inProgress
+  /// The column contains cards which are complete
+  case done
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "TODO": self = .todo
+      case "IN_PROGRESS": self = .inProgress
+      case "DONE": self = .done
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .todo: return "TODO"
+      case .inProgress: return "IN_PROGRESS"
+      case .done: return "DONE"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: ProjectColumnPurpose, rhs: ProjectColumnPurpose) -> Bool {
+    switch (lhs, rhs) {
+      case (.todo, .todo): return true
+      case (.inProgress, .inProgress): return true
+      case (.done, .done): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [ProjectColumnPurpose] {
+    return [
+      .todo,
+      .inProgress,
+      .done,
+    ]
+  }
+}
+
+/// State of the project; either 'open' or 'closed'
+public enum ProjectState: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  /// The project is open.
+  case `open`
+  /// The project is closed.
+  case closed
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "OPEN": self = .open
+      case "CLOSED": self = .closed
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .open: return "OPEN"
+      case .closed: return "CLOSED"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: ProjectState, rhs: ProjectState) -> Bool {
+    switch (lhs, rhs) {
+      case (.open, .open): return true
+      case (.closed, .closed): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [ProjectState] {
+    return [
+      .open,
+      .closed,
+    ]
+  }
+}
+
+/// The possible errors that will prevent a user from updating a comment.
+public enum CommentCannotUpdateReason: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  /// Unable to create comment because repository is archived.
+  case archived
+  /// You must be the author or have write access to this repository to update this comment.
+  case insufficientAccess
+  /// Unable to create comment because issue is locked.
+  case locked
+  /// You must be logged in to update this comment.
+  case loginRequired
+  /// Repository is under maintenance.
+  case maintenance
+  /// At least one email address must be verified to update this comment.
+  case verifiedEmailRequired
+  /// You cannot update this comment
+  case denied
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "ARCHIVED": self = .archived
+      case "INSUFFICIENT_ACCESS": self = .insufficientAccess
+      case "LOCKED": self = .locked
+      case "LOGIN_REQUIRED": self = .loginRequired
+      case "MAINTENANCE": self = .maintenance
+      case "VERIFIED_EMAIL_REQUIRED": self = .verifiedEmailRequired
+      case "DENIED": self = .denied
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .archived: return "ARCHIVED"
+      case .insufficientAccess: return "INSUFFICIENT_ACCESS"
+      case .locked: return "LOCKED"
+      case .loginRequired: return "LOGIN_REQUIRED"
+      case .maintenance: return "MAINTENANCE"
+      case .verifiedEmailRequired: return "VERIFIED_EMAIL_REQUIRED"
+      case .denied: return "DENIED"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: CommentCannotUpdateReason, rhs: CommentCannotUpdateReason) -> Bool {
+    switch (lhs, rhs) {
+      case (.archived, .archived): return true
+      case (.insufficientAccess, .insufficientAccess): return true
+      case (.locked, .locked): return true
+      case (.loginRequired, .loginRequired): return true
+      case (.maintenance, .maintenance): return true
+      case (.verifiedEmailRequired, .verifiedEmailRequired): return true
+      case (.denied, .denied): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [CommentCannotUpdateReason] {
+    return [
+      .archived,
+      .insufficientAccess,
+      .locked,
+      .loginRequired,
+      .maintenance,
+      .verifiedEmailRequired,
+      .denied,
+    ]
+  }
+}
+
+/// The possible states of a subscription.
+public enum SubscriptionState: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  /// The User is only notified when participating or @mentioned.
+  case unsubscribed
+  /// The User is notified of all conversations.
+  case subscribed
+  /// The User is never notified.
+  case ignored
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "UNSUBSCRIBED": self = .unsubscribed
+      case "SUBSCRIBED": self = .subscribed
+      case "IGNORED": self = .ignored
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .unsubscribed: return "UNSUBSCRIBED"
+      case .subscribed: return "SUBSCRIBED"
+      case .ignored: return "IGNORED"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: SubscriptionState, rhs: SubscriptionState) -> Bool {
+    switch (lhs, rhs) {
+      case (.unsubscribed, .unsubscribed): return true
+      case (.subscribed, .subscribed): return true
+      case (.ignored, .ignored): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [SubscriptionState] {
+    return [
+      .unsubscribed,
+      .subscribed,
+      .ignored,
+    ]
+  }
+}
+
+/// Autogenerated input type of AddAssigneesToAssignable
+public struct AddAssigneesToAssignableInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - assignableId: The id of the assignable object to add assignees to.
+  ///   - assigneeIds: The id of users to add as assignees.
+  ///   - clientMutationId: A unique identifier for the client performing the mutation.
+  public init(assignableId: GraphQLID, assigneeIds: [GraphQLID], clientMutationId: Swift.Optional<String?> = nil) {
+    graphQLMap = ["assignableId": assignableId, "assigneeIds": assigneeIds, "clientMutationId": clientMutationId]
+  }
+
+  /// The id of the assignable object to add assignees to.
+  public var assignableId: GraphQLID {
+    get {
+      return graphQLMap["assignableId"] as! GraphQLID
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "assignableId")
+    }
+  }
+
+  /// The id of users to add as assignees.
+  public var assigneeIds: [GraphQLID] {
+    get {
+      return graphQLMap["assigneeIds"] as! [GraphQLID]
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "assigneeIds")
+    }
+  }
+
+  /// A unique identifier for the client performing the mutation.
+  public var clientMutationId: Swift.Optional<String?> {
+    get {
+      return graphQLMap["clientMutationId"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "clientMutationId")
+    }
+  }
+}
+
+/// Autogenerated input type of RemoveAssigneesFromAssignable
+public struct RemoveAssigneesFromAssignableInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - assignableId: The id of the assignable object to remove assignees from.
+  ///   - assigneeIds: The id of users to remove as assignees.
+  ///   - clientMutationId: A unique identifier for the client performing the mutation.
+  public init(assignableId: GraphQLID, assigneeIds: [GraphQLID], clientMutationId: Swift.Optional<String?> = nil) {
+    graphQLMap = ["assignableId": assignableId, "assigneeIds": assigneeIds, "clientMutationId": clientMutationId]
+  }
+
+  /// The id of the assignable object to remove assignees from.
+  public var assignableId: GraphQLID {
+    get {
+      return graphQLMap["assignableId"] as! GraphQLID
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "assignableId")
+    }
+  }
+
+  /// The id of users to remove as assignees.
+  public var assigneeIds: [GraphQLID] {
+    get {
+      return graphQLMap["assigneeIds"] as! [GraphQLID]
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "assigneeIds")
+    }
+  }
+
+  /// A unique identifier for the client performing the mutation.
+  public var clientMutationId: Swift.Optional<String?> {
+    get {
+      return graphQLMap["clientMutationId"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "clientMutationId")
+    }
+  }
+}
+
+/// Autogenerated input type of AddComment
+public struct AddCommentInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  /// - Parameters:
+  ///   - subjectId: The Node ID of the subject to modify.
+  ///   - body: The contents of the comment.
+  ///   - clientMutationId: A unique identifier for the client performing the mutation.
+  public init(subjectId: GraphQLID, body: String, clientMutationId: Swift.Optional<String?> = nil) {
+    graphQLMap = ["subjectId": subjectId, "body": body, "clientMutationId": clientMutationId]
+  }
+
+  /// The Node ID of the subject to modify.
+  public var subjectId: GraphQLID {
+    get {
+      return graphQLMap["subjectId"] as! GraphQLID
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "subjectId")
+    }
+  }
+
+  /// The contents of the comment.
+  public var body: String {
+    get {
+      return graphQLMap["body"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "body")
+    }
+  }
+
+  /// A unique identifier for the client performing the mutation.
+  public var clientMutationId: Swift.Optional<String?> {
+    get {
+      return graphQLMap["clientMutationId"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "clientMutationId")
+    }
+  }
+}
+
 public final class ViewerPullRequestQuery: GraphQLQuery {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition: String =
@@ -24715,6 +25058,1691 @@ public final class OrgPinnedItemQuery: GraphQLQuery {
                   resultMap.updateValue(newValue, forKey: "color")
                 }
               }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class IssueEditInfoQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query issueEditInfo($owner: String!, $name: String!, $number: Int!) {
+      repository(owner: $owner, name: $name) {
+        __typename
+        issue(number: $number) {
+          __typename
+          id
+          title
+          number
+          closed
+          labels(first: 50) {
+            __typename
+            totalCount
+            nodes {
+              __typename
+              id
+              color
+              name
+            }
+          }
+          assignees(first: 20) {
+            __typename
+            nodes {
+              __typename
+              id
+              login
+              avatarUrl(size: 150)
+            }
+            totalCount
+          }
+          participants(first: 50) {
+            __typename
+            nodes {
+              __typename
+              id
+              login
+              avatarUrl(size: 150)
+            }
+            totalCount
+          }
+          milestone {
+            __typename
+            title
+            url
+            description
+            createdAt
+            creator {
+              __typename
+              login
+              avatarUrl
+            }
+            closed
+            closedAt
+            progressPercentage
+          }
+          projectCards(first: 5) {
+            __typename
+            totalCount
+            nodes {
+              __typename
+              column {
+                __typename
+                name
+                purpose
+              }
+              project {
+                __typename
+                name
+                progress {
+                  __typename
+                  donePercentage
+                  doneCount
+                  todoPercentage
+                  todoCount
+                  inProgressPercentage
+                  inProgressCount
+                  enabled
+                }
+                state
+              }
+              url
+            }
+          }
+          locked
+          viewerCanReact
+          viewerCanUpdate
+          viewerCanSubscribe
+          viewerDidAuthor
+          viewerCannotUpdateReasons
+          isPinned
+          isReadByViewer
+          viewerSubscription
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "issueEditInfo"
+
+  public var owner: String
+  public var name: String
+  public var number: Int
+
+  public init(owner: String, name: String, number: Int) {
+    self.owner = owner
+    self.name = name
+    self.number = number
+  }
+
+  public var variables: GraphQLMap? {
+    return ["owner": owner, "name": name, "number": number]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("repository", arguments: ["owner": GraphQLVariable("owner"), "name": GraphQLVariable("name")], type: .object(Repository.selections)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(repository: Repository? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "repository": repository.flatMap { (value: Repository) -> ResultMap in value.resultMap }])
+    }
+
+    /// Lookup a given repository by the owner and repository name.
+    public var repository: Repository? {
+      get {
+        return (resultMap["repository"] as? ResultMap).flatMap { Repository(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "repository")
+      }
+    }
+
+    public struct Repository: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["Repository"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("issue", arguments: ["number": GraphQLVariable("number")], type: .object(Issue.selections)),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(issue: Issue? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Repository", "issue": issue.flatMap { (value: Issue) -> ResultMap in value.resultMap }])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// Returns a single issue from the current repository by number.
+      public var issue: Issue? {
+        get {
+          return (resultMap["issue"] as? ResultMap).flatMap { Issue(unsafeResultMap: $0) }
+        }
+        set {
+          resultMap.updateValue(newValue?.resultMap, forKey: "issue")
+        }
+      }
+
+      public struct Issue: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["Issue"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+            GraphQLField("title", type: .nonNull(.scalar(String.self))),
+            GraphQLField("number", type: .nonNull(.scalar(Int.self))),
+            GraphQLField("closed", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("labels", arguments: ["first": 50], type: .object(Label.selections)),
+            GraphQLField("assignees", arguments: ["first": 20], type: .nonNull(.object(Assignee.selections))),
+            GraphQLField("participants", arguments: ["first": 50], type: .nonNull(.object(Participant.selections))),
+            GraphQLField("milestone", type: .object(Milestone.selections)),
+            GraphQLField("projectCards", arguments: ["first": 5], type: .nonNull(.object(ProjectCard.selections))),
+            GraphQLField("locked", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("viewerCanReact", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("viewerCanUpdate", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("viewerCanSubscribe", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("viewerDidAuthor", type: .nonNull(.scalar(Bool.self))),
+            GraphQLField("viewerCannotUpdateReasons", type: .nonNull(.list(.nonNull(.scalar(CommentCannotUpdateReason.self))))),
+            GraphQLField("isPinned", type: .scalar(Bool.self)),
+            GraphQLField("isReadByViewer", type: .scalar(Bool.self)),
+            GraphQLField("viewerSubscription", type: .scalar(SubscriptionState.self)),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(id: GraphQLID, title: String, number: Int, closed: Bool, labels: Label? = nil, assignees: Assignee, participants: Participant, milestone: Milestone? = nil, projectCards: ProjectCard, locked: Bool, viewerCanReact: Bool, viewerCanUpdate: Bool, viewerCanSubscribe: Bool, viewerDidAuthor: Bool, viewerCannotUpdateReasons: [CommentCannotUpdateReason], isPinned: Bool? = nil, isReadByViewer: Bool? = nil, viewerSubscription: SubscriptionState? = nil) {
+          self.init(unsafeResultMap: ["__typename": "Issue", "id": id, "title": title, "number": number, "closed": closed, "labels": labels.flatMap { (value: Label) -> ResultMap in value.resultMap }, "assignees": assignees.resultMap, "participants": participants.resultMap, "milestone": milestone.flatMap { (value: Milestone) -> ResultMap in value.resultMap }, "projectCards": projectCards.resultMap, "locked": locked, "viewerCanReact": viewerCanReact, "viewerCanUpdate": viewerCanUpdate, "viewerCanSubscribe": viewerCanSubscribe, "viewerDidAuthor": viewerDidAuthor, "viewerCannotUpdateReasons": viewerCannotUpdateReasons, "isPinned": isPinned, "isReadByViewer": isReadByViewer, "viewerSubscription": viewerSubscription])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var id: GraphQLID {
+          get {
+            return resultMap["id"]! as! GraphQLID
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "id")
+          }
+        }
+
+        /// Identifies the issue title.
+        public var title: String {
+          get {
+            return resultMap["title"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "title")
+          }
+        }
+
+        /// Identifies the issue number.
+        public var number: Int {
+          get {
+            return resultMap["number"]! as! Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "number")
+          }
+        }
+
+        /// `true` if the object is closed (definition of closed may depend on type)
+        public var closed: Bool {
+          get {
+            return resultMap["closed"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "closed")
+          }
+        }
+
+        /// A list of labels associated with the object.
+        public var labels: Label? {
+          get {
+            return (resultMap["labels"] as? ResultMap).flatMap { Label(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "labels")
+          }
+        }
+
+        /// A list of Users assigned to this object.
+        public var assignees: Assignee {
+          get {
+            return Assignee(unsafeResultMap: resultMap["assignees"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "assignees")
+          }
+        }
+
+        /// A list of Users that are participating in the Issue conversation.
+        public var participants: Participant {
+          get {
+            return Participant(unsafeResultMap: resultMap["participants"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "participants")
+          }
+        }
+
+        /// Identifies the milestone associated with the issue.
+        public var milestone: Milestone? {
+          get {
+            return (resultMap["milestone"] as? ResultMap).flatMap { Milestone(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "milestone")
+          }
+        }
+
+        /// List of project cards associated with this issue.
+        public var projectCards: ProjectCard {
+          get {
+            return ProjectCard(unsafeResultMap: resultMap["projectCards"]! as! ResultMap)
+          }
+          set {
+            resultMap.updateValue(newValue.resultMap, forKey: "projectCards")
+          }
+        }
+
+        /// `true` if the object is locked
+        public var locked: Bool {
+          get {
+            return resultMap["locked"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "locked")
+          }
+        }
+
+        /// Can user react to this subject
+        public var viewerCanReact: Bool {
+          get {
+            return resultMap["viewerCanReact"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "viewerCanReact")
+          }
+        }
+
+        /// Check if the current viewer can update this object.
+        public var viewerCanUpdate: Bool {
+          get {
+            return resultMap["viewerCanUpdate"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "viewerCanUpdate")
+          }
+        }
+
+        /// Check if the viewer is able to change their subscription status for the repository.
+        public var viewerCanSubscribe: Bool {
+          get {
+            return resultMap["viewerCanSubscribe"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "viewerCanSubscribe")
+          }
+        }
+
+        /// Did the viewer author this comment.
+        public var viewerDidAuthor: Bool {
+          get {
+            return resultMap["viewerDidAuthor"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "viewerDidAuthor")
+          }
+        }
+
+        /// Reasons why the current viewer can not update this comment.
+        public var viewerCannotUpdateReasons: [CommentCannotUpdateReason] {
+          get {
+            return resultMap["viewerCannotUpdateReasons"]! as! [CommentCannotUpdateReason]
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "viewerCannotUpdateReasons")
+          }
+        }
+
+        /// Indicates whether or not this issue is currently pinned to the repository issues list
+        public var isPinned: Bool? {
+          get {
+            return resultMap["isPinned"] as? Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "isPinned")
+          }
+        }
+
+        /// Is this issue read by the viewer
+        public var isReadByViewer: Bool? {
+          get {
+            return resultMap["isReadByViewer"] as? Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "isReadByViewer")
+          }
+        }
+
+        /// Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.
+        public var viewerSubscription: SubscriptionState? {
+          get {
+            return resultMap["viewerSubscription"] as? SubscriptionState
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "viewerSubscription")
+          }
+        }
+
+        public struct Label: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["LabelConnection"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+              GraphQLField("nodes", type: .list(.object(Node.selections))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(totalCount: Int, nodes: [Node?]? = nil) {
+            self.init(unsafeResultMap: ["__typename": "LabelConnection", "totalCount": totalCount, "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// Identifies the total count of items in the connection.
+          public var totalCount: Int {
+            get {
+              return resultMap["totalCount"]! as! Int
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "totalCount")
+            }
+          }
+
+          /// A list of nodes.
+          public var nodes: [Node?]? {
+            get {
+              return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+            }
+            set {
+              resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+            }
+          }
+
+          public struct Node: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Label"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+                GraphQLField("color", type: .nonNull(.scalar(String.self))),
+                GraphQLField("name", type: .nonNull(.scalar(String.self))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(id: GraphQLID, color: String, name: String) {
+              self.init(unsafeResultMap: ["__typename": "Label", "id": id, "color": color, "name": name])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            public var id: GraphQLID {
+              get {
+                return resultMap["id"]! as! GraphQLID
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "id")
+              }
+            }
+
+            /// Identifies the label color.
+            public var color: String {
+              get {
+                return resultMap["color"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "color")
+              }
+            }
+
+            /// Identifies the label name.
+            public var name: String {
+              get {
+                return resultMap["name"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "name")
+              }
+            }
+          }
+        }
+
+        public struct Assignee: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["UserConnection"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("nodes", type: .list(.object(Node.selections))),
+              GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(nodes: [Node?]? = nil, totalCount: Int) {
+            self.init(unsafeResultMap: ["__typename": "UserConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, "totalCount": totalCount])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// A list of nodes.
+          public var nodes: [Node?]? {
+            get {
+              return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+            }
+            set {
+              resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+            }
+          }
+
+          /// Identifies the total count of items in the connection.
+          public var totalCount: Int {
+            get {
+              return resultMap["totalCount"]! as! Int
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "totalCount")
+            }
+          }
+
+          public struct Node: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["User"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+                GraphQLField("login", type: .nonNull(.scalar(String.self))),
+                GraphQLField("avatarUrl", arguments: ["size": 150], type: .nonNull(.scalar(String.self))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(id: GraphQLID, login: String, avatarUrl: String) {
+              self.init(unsafeResultMap: ["__typename": "User", "id": id, "login": login, "avatarUrl": avatarUrl])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            public var id: GraphQLID {
+              get {
+                return resultMap["id"]! as! GraphQLID
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "id")
+              }
+            }
+
+            /// The username used to login.
+            public var login: String {
+              get {
+                return resultMap["login"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "login")
+              }
+            }
+
+            /// A URL pointing to the user's public avatar.
+            public var avatarUrl: String {
+              get {
+                return resultMap["avatarUrl"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "avatarUrl")
+              }
+            }
+          }
+        }
+
+        public struct Participant: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["UserConnection"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("nodes", type: .list(.object(Node.selections))),
+              GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(nodes: [Node?]? = nil, totalCount: Int) {
+            self.init(unsafeResultMap: ["__typename": "UserConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, "totalCount": totalCount])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// A list of nodes.
+          public var nodes: [Node?]? {
+            get {
+              return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+            }
+            set {
+              resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+            }
+          }
+
+          /// Identifies the total count of items in the connection.
+          public var totalCount: Int {
+            get {
+              return resultMap["totalCount"]! as! Int
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "totalCount")
+            }
+          }
+
+          public struct Node: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["User"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+                GraphQLField("login", type: .nonNull(.scalar(String.self))),
+                GraphQLField("avatarUrl", arguments: ["size": 150], type: .nonNull(.scalar(String.self))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(id: GraphQLID, login: String, avatarUrl: String) {
+              self.init(unsafeResultMap: ["__typename": "User", "id": id, "login": login, "avatarUrl": avatarUrl])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            public var id: GraphQLID {
+              get {
+                return resultMap["id"]! as! GraphQLID
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "id")
+              }
+            }
+
+            /// The username used to login.
+            public var login: String {
+              get {
+                return resultMap["login"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "login")
+              }
+            }
+
+            /// A URL pointing to the user's public avatar.
+            public var avatarUrl: String {
+              get {
+                return resultMap["avatarUrl"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "avatarUrl")
+              }
+            }
+          }
+        }
+
+        public struct Milestone: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Milestone"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("title", type: .nonNull(.scalar(String.self))),
+              GraphQLField("url", type: .nonNull(.scalar(String.self))),
+              GraphQLField("description", type: .scalar(String.self)),
+              GraphQLField("createdAt", type: .nonNull(.scalar(String.self))),
+              GraphQLField("creator", type: .object(Creator.selections)),
+              GraphQLField("closed", type: .nonNull(.scalar(Bool.self))),
+              GraphQLField("closedAt", type: .scalar(String.self)),
+              GraphQLField("progressPercentage", type: .nonNull(.scalar(Double.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(title: String, url: String, description: String? = nil, createdAt: String, creator: Creator? = nil, closed: Bool, closedAt: String? = nil, progressPercentage: Double) {
+            self.init(unsafeResultMap: ["__typename": "Milestone", "title": title, "url": url, "description": description, "createdAt": createdAt, "creator": creator.flatMap { (value: Creator) -> ResultMap in value.resultMap }, "closed": closed, "closedAt": closedAt, "progressPercentage": progressPercentage])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// Identifies the title of the milestone.
+          public var title: String {
+            get {
+              return resultMap["title"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "title")
+            }
+          }
+
+          /// The HTTP URL for this milestone
+          public var url: String {
+            get {
+              return resultMap["url"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "url")
+            }
+          }
+
+          /// Identifies the description of the milestone.
+          public var description: String? {
+            get {
+              return resultMap["description"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "description")
+            }
+          }
+
+          /// Identifies the date and time when the object was created.
+          public var createdAt: String {
+            get {
+              return resultMap["createdAt"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "createdAt")
+            }
+          }
+
+          /// Identifies the actor who created the milestone.
+          public var creator: Creator? {
+            get {
+              return (resultMap["creator"] as? ResultMap).flatMap { Creator(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "creator")
+            }
+          }
+
+          /// `true` if the object is closed (definition of closed may depend on type)
+          public var closed: Bool {
+            get {
+              return resultMap["closed"]! as! Bool
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "closed")
+            }
+          }
+
+          /// Identifies the date and time when the object was closed.
+          public var closedAt: String? {
+            get {
+              return resultMap["closedAt"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "closedAt")
+            }
+          }
+
+          /// Identifies the percentage complete for the milestone
+          public var progressPercentage: Double {
+            get {
+              return resultMap["progressPercentage"]! as! Double
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "progressPercentage")
+            }
+          }
+
+          public struct Creator: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["Bot", "EnterpriseUserAccount", "Mannequin", "Organization", "User"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("login", type: .nonNull(.scalar(String.self))),
+                GraphQLField("avatarUrl", type: .nonNull(.scalar(String.self))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public static func makeBot(login: String, avatarUrl: String) -> Creator {
+              return Creator(unsafeResultMap: ["__typename": "Bot", "login": login, "avatarUrl": avatarUrl])
+            }
+
+            public static func makeEnterpriseUserAccount(login: String, avatarUrl: String) -> Creator {
+              return Creator(unsafeResultMap: ["__typename": "EnterpriseUserAccount", "login": login, "avatarUrl": avatarUrl])
+            }
+
+            public static func makeMannequin(login: String, avatarUrl: String) -> Creator {
+              return Creator(unsafeResultMap: ["__typename": "Mannequin", "login": login, "avatarUrl": avatarUrl])
+            }
+
+            public static func makeOrganization(login: String, avatarUrl: String) -> Creator {
+              return Creator(unsafeResultMap: ["__typename": "Organization", "login": login, "avatarUrl": avatarUrl])
+            }
+
+            public static func makeUser(login: String, avatarUrl: String) -> Creator {
+              return Creator(unsafeResultMap: ["__typename": "User", "login": login, "avatarUrl": avatarUrl])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The username of the actor.
+            public var login: String {
+              get {
+                return resultMap["login"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "login")
+              }
+            }
+
+            /// A URL pointing to the actor's public avatar.
+            public var avatarUrl: String {
+              get {
+                return resultMap["avatarUrl"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "avatarUrl")
+              }
+            }
+          }
+        }
+
+        public struct ProjectCard: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["ProjectCardConnection"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("totalCount", type: .nonNull(.scalar(Int.self))),
+              GraphQLField("nodes", type: .list(.object(Node.selections))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(totalCount: Int, nodes: [Node?]? = nil) {
+            self.init(unsafeResultMap: ["__typename": "ProjectCardConnection", "totalCount": totalCount, "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// Identifies the total count of items in the connection.
+          public var totalCount: Int {
+            get {
+              return resultMap["totalCount"]! as! Int
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "totalCount")
+            }
+          }
+
+          /// A list of nodes.
+          public var nodes: [Node?]? {
+            get {
+              return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+            }
+            set {
+              resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+            }
+          }
+
+          public struct Node: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["ProjectCard"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("column", type: .object(Column.selections)),
+                GraphQLField("project", type: .nonNull(.object(Project.selections))),
+                GraphQLField("url", type: .nonNull(.scalar(String.self))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(column: Column? = nil, project: Project, url: String) {
+              self.init(unsafeResultMap: ["__typename": "ProjectCard", "column": column.flatMap { (value: Column) -> ResultMap in value.resultMap }, "project": project.resultMap, "url": url])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The project column this card is associated under. A card may only belong to one
+            /// project column at a time. The column field will be null if the card is created
+            /// in a pending state and has yet to be associated with a column. Once cards are
+            /// associated with a column, they will not become pending in the future.
+            public var column: Column? {
+              get {
+                return (resultMap["column"] as? ResultMap).flatMap { Column(unsafeResultMap: $0) }
+              }
+              set {
+                resultMap.updateValue(newValue?.resultMap, forKey: "column")
+              }
+            }
+
+            /// The project that contains this card.
+            public var project: Project {
+              get {
+                return Project(unsafeResultMap: resultMap["project"]! as! ResultMap)
+              }
+              set {
+                resultMap.updateValue(newValue.resultMap, forKey: "project")
+              }
+            }
+
+            /// The HTTP URL for this card
+            public var url: String {
+              get {
+                return resultMap["url"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "url")
+              }
+            }
+
+            public struct Column: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["ProjectColumn"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("purpose", type: .scalar(ProjectColumnPurpose.self)),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(name: String, purpose: ProjectColumnPurpose? = nil) {
+                self.init(unsafeResultMap: ["__typename": "ProjectColumn", "name": name, "purpose": purpose])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The project column's name.
+              public var name: String {
+                get {
+                  return resultMap["name"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "name")
+                }
+              }
+
+              /// The semantic purpose of the column
+              public var purpose: ProjectColumnPurpose? {
+                get {
+                  return resultMap["purpose"] as? ProjectColumnPurpose
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "purpose")
+                }
+              }
+            }
+
+            public struct Project: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Project"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("progress", type: .nonNull(.object(Progress.selections))),
+                  GraphQLField("state", type: .nonNull(.scalar(ProjectState.self))),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(name: String, progress: Progress, state: ProjectState) {
+                self.init(unsafeResultMap: ["__typename": "Project", "name": name, "progress": progress.resultMap, "state": state])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The project's name.
+              public var name: String {
+                get {
+                  return resultMap["name"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "name")
+                }
+              }
+
+              /// Project progress details.
+              public var progress: Progress {
+                get {
+                  return Progress(unsafeResultMap: resultMap["progress"]! as! ResultMap)
+                }
+                set {
+                  resultMap.updateValue(newValue.resultMap, forKey: "progress")
+                }
+              }
+
+              /// Whether the project is open or closed.
+              public var state: ProjectState {
+                get {
+                  return resultMap["state"]! as! ProjectState
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "state")
+                }
+              }
+
+              public struct Progress: GraphQLSelectionSet {
+                public static let possibleTypes: [String] = ["ProjectProgress"]
+
+                public static var selections: [GraphQLSelection] {
+                  return [
+                    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                    GraphQLField("donePercentage", type: .nonNull(.scalar(Double.self))),
+                    GraphQLField("doneCount", type: .nonNull(.scalar(Int.self))),
+                    GraphQLField("todoPercentage", type: .nonNull(.scalar(Double.self))),
+                    GraphQLField("todoCount", type: .nonNull(.scalar(Int.self))),
+                    GraphQLField("inProgressPercentage", type: .nonNull(.scalar(Double.self))),
+                    GraphQLField("inProgressCount", type: .nonNull(.scalar(Int.self))),
+                    GraphQLField("enabled", type: .nonNull(.scalar(Bool.self))),
+                  ]
+                }
+
+                public private(set) var resultMap: ResultMap
+
+                public init(unsafeResultMap: ResultMap) {
+                  self.resultMap = unsafeResultMap
+                }
+
+                public init(donePercentage: Double, doneCount: Int, todoPercentage: Double, todoCount: Int, inProgressPercentage: Double, inProgressCount: Int, enabled: Bool) {
+                  self.init(unsafeResultMap: ["__typename": "ProjectProgress", "donePercentage": donePercentage, "doneCount": doneCount, "todoPercentage": todoPercentage, "todoCount": todoCount, "inProgressPercentage": inProgressPercentage, "inProgressCount": inProgressCount, "enabled": enabled])
+                }
+
+                public var __typename: String {
+                  get {
+                    return resultMap["__typename"]! as! String
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "__typename")
+                  }
+                }
+
+                /// The percentage of done cards.
+                public var donePercentage: Double {
+                  get {
+                    return resultMap["donePercentage"]! as! Double
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "donePercentage")
+                  }
+                }
+
+                /// The number of done cards.
+                public var doneCount: Int {
+                  get {
+                    return resultMap["doneCount"]! as! Int
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "doneCount")
+                  }
+                }
+
+                /// The percentage of to do cards.
+                public var todoPercentage: Double {
+                  get {
+                    return resultMap["todoPercentage"]! as! Double
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "todoPercentage")
+                  }
+                }
+
+                /// The number of to do cards.
+                public var todoCount: Int {
+                  get {
+                    return resultMap["todoCount"]! as! Int
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "todoCount")
+                  }
+                }
+
+                /// The percentage of in-progress cards.
+                public var inProgressPercentage: Double {
+                  get {
+                    return resultMap["inProgressPercentage"]! as! Double
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "inProgressPercentage")
+                  }
+                }
+
+                /// The number of in-progress cards.
+                public var inProgressCount: Int {
+                  get {
+                    return resultMap["inProgressCount"]! as! Int
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "inProgressCount")
+                  }
+                }
+
+                /// Whether progress tracking is enabled and cards with purpose exist for this project
+                public var enabled: Bool {
+                  get {
+                    return resultMap["enabled"]! as! Bool
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "enabled")
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class EditIssueAssigneesMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation editIssueAssignees($addInput: AddAssigneesToAssignableInput!, $removeInput: RemoveAssigneesFromAssignableInput!) {
+      addAssigneesToAssignable(input: $addInput) {
+        __typename
+        clientMutationId
+      }
+      removeAssigneesFromAssignable(input: $removeInput) {
+        __typename
+        clientMutationId
+      }
+    }
+    """
+
+  public let operationName: String = "editIssueAssignees"
+
+  public var addInput: AddAssigneesToAssignableInput
+  public var removeInput: RemoveAssigneesFromAssignableInput
+
+  public init(addInput: AddAssigneesToAssignableInput, removeInput: RemoveAssigneesFromAssignableInput) {
+    self.addInput = addInput
+    self.removeInput = removeInput
+  }
+
+  public var variables: GraphQLMap? {
+    return ["addInput": addInput, "removeInput": removeInput]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("addAssigneesToAssignable", arguments: ["input": GraphQLVariable("addInput")], type: .object(AddAssigneesToAssignable.selections)),
+        GraphQLField("removeAssigneesFromAssignable", arguments: ["input": GraphQLVariable("removeInput")], type: .object(RemoveAssigneesFromAssignable.selections)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(addAssigneesToAssignable: AddAssigneesToAssignable? = nil, removeAssigneesFromAssignable: RemoveAssigneesFromAssignable? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "addAssigneesToAssignable": addAssigneesToAssignable.flatMap { (value: AddAssigneesToAssignable) -> ResultMap in value.resultMap }, "removeAssigneesFromAssignable": removeAssigneesFromAssignable.flatMap { (value: RemoveAssigneesFromAssignable) -> ResultMap in value.resultMap }])
+    }
+
+    /// Adds assignees to an assignable object.
+    public var addAssigneesToAssignable: AddAssigneesToAssignable? {
+      get {
+        return (resultMap["addAssigneesToAssignable"] as? ResultMap).flatMap { AddAssigneesToAssignable(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "addAssigneesToAssignable")
+      }
+    }
+
+    /// Removes assignees from an assignable object.
+    public var removeAssigneesFromAssignable: RemoveAssigneesFromAssignable? {
+      get {
+        return (resultMap["removeAssigneesFromAssignable"] as? ResultMap).flatMap { RemoveAssigneesFromAssignable(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "removeAssigneesFromAssignable")
+      }
+    }
+
+    public struct AddAssigneesToAssignable: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["AddAssigneesToAssignablePayload"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("clientMutationId", type: .scalar(String.self)),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(clientMutationId: String? = nil) {
+        self.init(unsafeResultMap: ["__typename": "AddAssigneesToAssignablePayload", "clientMutationId": clientMutationId])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// A unique identifier for the client performing the mutation.
+      public var clientMutationId: String? {
+        get {
+          return resultMap["clientMutationId"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "clientMutationId")
+        }
+      }
+    }
+
+    public struct RemoveAssigneesFromAssignable: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["RemoveAssigneesFromAssignablePayload"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("clientMutationId", type: .scalar(String.self)),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(clientMutationId: String? = nil) {
+        self.init(unsafeResultMap: ["__typename": "RemoveAssigneesFromAssignablePayload", "clientMutationId": clientMutationId])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// A unique identifier for the client performing the mutation.
+      public var clientMutationId: String? {
+        get {
+          return resultMap["clientMutationId"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "clientMutationId")
+        }
+      }
+    }
+  }
+}
+
+public final class AddIssueCommentMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    mutation addIssueComment($addInput: AddCommentInput!) {
+      addComment(input: $addInput) {
+        __typename
+        clientMutationId
+        timelineEdge {
+          __typename
+          cursor
+          node {
+            __typename
+          }
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "addIssueComment"
+
+  public var addInput: AddCommentInput
+
+  public init(addInput: AddCommentInput) {
+    self.addInput = addInput
+  }
+
+  public var variables: GraphQLMap? {
+    return ["addInput": addInput]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Mutation"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("addComment", arguments: ["input": GraphQLVariable("addInput")], type: .object(AddComment.selections)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(addComment: AddComment? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "addComment": addComment.flatMap { (value: AddComment) -> ResultMap in value.resultMap }])
+    }
+
+    /// Adds a comment to an Issue or Pull Request.
+    public var addComment: AddComment? {
+      get {
+        return (resultMap["addComment"] as? ResultMap).flatMap { AddComment(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "addComment")
+      }
+    }
+
+    public struct AddComment: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["AddCommentPayload"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("clientMutationId", type: .scalar(String.self)),
+          GraphQLField("timelineEdge", type: .object(TimelineEdge.selections)),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(clientMutationId: String? = nil, timelineEdge: TimelineEdge? = nil) {
+        self.init(unsafeResultMap: ["__typename": "AddCommentPayload", "clientMutationId": clientMutationId, "timelineEdge": timelineEdge.flatMap { (value: TimelineEdge) -> ResultMap in value.resultMap }])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// A unique identifier for the client performing the mutation.
+      public var clientMutationId: String? {
+        get {
+          return resultMap["clientMutationId"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "clientMutationId")
+        }
+      }
+
+      /// The edge from the subject's timeline connection.
+      public var timelineEdge: TimelineEdge? {
+        get {
+          return (resultMap["timelineEdge"] as? ResultMap).flatMap { TimelineEdge(unsafeResultMap: $0) }
+        }
+        set {
+          resultMap.updateValue(newValue?.resultMap, forKey: "timelineEdge")
+        }
+      }
+
+      public struct TimelineEdge: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["IssueTimelineItemEdge"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("cursor", type: .nonNull(.scalar(String.self))),
+            GraphQLField("node", type: .object(Node.selections)),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(cursor: String, node: Node? = nil) {
+          self.init(unsafeResultMap: ["__typename": "IssueTimelineItemEdge", "cursor": cursor, "node": node.flatMap { (value: Node) -> ResultMap in value.resultMap }])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// A cursor for use in pagination.
+        public var cursor: String {
+          get {
+            return resultMap["cursor"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "cursor")
+          }
+        }
+
+        /// The item at the end of the edge.
+        public var node: Node? {
+          get {
+            return (resultMap["node"] as? ResultMap).flatMap { Node(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "node")
+          }
+        }
+
+        public struct Node: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["AssignedEvent", "ClosedEvent", "Commit", "CrossReferencedEvent", "DemilestonedEvent", "IssueComment", "LabeledEvent", "LockedEvent", "MilestonedEvent", "ReferencedEvent", "RenamedTitleEvent", "ReopenedEvent", "SubscribedEvent", "TransferredEvent", "UnassignedEvent", "UnlabeledEvent", "UnlockedEvent", "UnsubscribedEvent", "UserBlockedEvent"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public static func makeAssignedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "AssignedEvent"])
+          }
+
+          public static func makeClosedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "ClosedEvent"])
+          }
+
+          public static func makeCommit() -> Node {
+            return Node(unsafeResultMap: ["__typename": "Commit"])
+          }
+
+          public static func makeCrossReferencedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "CrossReferencedEvent"])
+          }
+
+          public static func makeDemilestonedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "DemilestonedEvent"])
+          }
+
+          public static func makeIssueComment() -> Node {
+            return Node(unsafeResultMap: ["__typename": "IssueComment"])
+          }
+
+          public static func makeLabeledEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "LabeledEvent"])
+          }
+
+          public static func makeLockedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "LockedEvent"])
+          }
+
+          public static func makeMilestonedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "MilestonedEvent"])
+          }
+
+          public static func makeReferencedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "ReferencedEvent"])
+          }
+
+          public static func makeRenamedTitleEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "RenamedTitleEvent"])
+          }
+
+          public static func makeReopenedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "ReopenedEvent"])
+          }
+
+          public static func makeSubscribedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "SubscribedEvent"])
+          }
+
+          public static func makeTransferredEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "TransferredEvent"])
+          }
+
+          public static func makeUnassignedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "UnassignedEvent"])
+          }
+
+          public static func makeUnlabeledEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "UnlabeledEvent"])
+          }
+
+          public static func makeUnlockedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "UnlockedEvent"])
+          }
+
+          public static func makeUnsubscribedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "UnsubscribedEvent"])
+          }
+
+          public static func makeUserBlockedEvent() -> Node {
+            return Node(unsafeResultMap: ["__typename": "UserBlockedEvent"])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
             }
           }
         }

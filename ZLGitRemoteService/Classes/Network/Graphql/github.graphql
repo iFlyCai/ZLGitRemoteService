@@ -1392,3 +1392,119 @@ query OrgPinnedItem($login:String!){
     }
   }
 }
+
+# 查询issue的可编辑信息
+query issueEditInfo($owner: String!, $name: String!, $number: Int!) {
+  repository(owner: $owner, name: $name) {
+    issue(number: $number) {
+      id 
+      title
+      number
+      closed
+      
+      # label
+      labels(first: 50) {
+        totalCount
+        nodes {
+          id 
+          color
+          name
+        }
+      }
+      
+      # 受理人 
+      assignees(first: 20) {
+        nodes {
+          id 
+          login
+          avatarUrl(size: 150)
+        }
+        totalCount
+      }
+      participants(first: 50) {
+        nodes {
+          id 
+          login
+          avatarUrl(size: 150)
+        }
+        totalCount
+      }
+      
+      # 里程碑
+      milestone {
+        title
+        url
+        description
+        createdAt
+        creator {
+          login
+          avatarUrl
+        }
+        closed
+        closedAt
+        progressPercentage
+      }
+      
+      # 项目 最多5个
+      projectCards(first:5) {
+        totalCount
+        nodes {
+          column{
+            name 
+            purpose
+          }
+          project{
+            name 
+            progress{
+              donePercentage
+              doneCount
+              todoPercentage
+              todoCount
+              inProgressPercentage
+              inProgressCount
+              enabled
+            }
+            state
+          }
+          url
+        }
+      }
+      
+      # 操作
+      locked
+      viewerCanReact
+      viewerCanUpdate
+      viewerCanSubscribe
+      viewerDidAuthor
+      viewerCannotUpdateReasons
+      isPinned
+      isReadByViewer
+      viewerSubscription
+    }
+  }
+}
+
+# 编辑issue assignee
+mutation editIssueAssignees($addInput: AddAssigneesToAssignableInput!, $removeInput: RemoveAssigneesFromAssignableInput!) {
+  addAssigneesToAssignable(input:$addInput){
+    clientMutationId
+  }
+  
+  removeAssigneesFromAssignable(input:$removeInput) {
+    clientMutationId
+  }
+}
+
+# 添加issue评论
+mutation addIssueComment($addInput: AddCommentInput!) {
+  addComment(input: $addInput){
+    clientMutationId
+    timelineEdge{
+      cursor
+      node{
+        __typename
+      }
+    }
+    
+  }
+}

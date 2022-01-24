@@ -224,6 +224,87 @@
 }
 
 
+
+- (void) getIssueEditInfoWithLoginName:(NSString * _Nonnull) loginName
+                                        repoName:(NSString * _Nonnull) repoName
+                                          number:(int) number
+                                    serialNumber:(NSString * _Nonnull) serialNumber
+                                  completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
+    
+    GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
+    {
+        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
+        repoResultModel.result = result;
+        repoResultModel.serialNumber = serialNumber;
+        repoResultModel.data = responseObject;
+        
+        if(handle)
+        {
+            ZLMainThreadDispatch(handle(repoResultModel);)
+        }
+    };
+    
+    [[ZLGithubHttpClient defaultClient] getEditIssueInfoWithLogin:loginName
+                                                         repoName:repoName
+                                                           number:number
+                                                     serialNumber:serialNumber
+                                                            block:response];
+    
+}
+
+
+- (void) addIssueCommentWithLoginName:(NSString * _Nonnull) issueId
+                                        comment:(NSString * _Nonnull) comment
+                                   serialNumber:(NSString * _Nonnull) serialNumber
+                                 completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
+    
+    GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
+    {
+        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
+        repoResultModel.result = result;
+        repoResultModel.serialNumber = serialNumber;
+        repoResultModel.data = responseObject;
+        
+        if(handle)
+        {
+            ZLMainThreadDispatch(handle(repoResultModel);)
+        }
+    };
+    
+    [[ZLGithubHttpClient defaultClient] addIssueCommentWithIssueId:issueId
+                                                       commentBody:comment
+                                                      serialNumber:serialNumber
+                                                             block:response];
+}
+
+- (void) editIssueAssigneesWithIssueId:(NSString *) issueId
+                             addedList:(NSArray<NSString *> *) addedList
+                           removedList:(NSArray<NSString *> *) removedList
+                          serialNumber:(NSString * _Nonnull) serialNumber
+                        completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
+    
+    GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
+    {
+        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
+        repoResultModel.result = result;
+        repoResultModel.serialNumber = serialNumber;
+        repoResultModel.data = responseObject;
+        
+        if(handle)
+        {
+            ZLMainThreadDispatch(handle(repoResultModel);)
+        }
+    };
+    
+    [[ZLGithubHttpClient defaultClient] editIssueAssigneesWithIssueId:issueId
+                                                       addedAssignees:addedList
+                                                     removedAssignees:removedList
+                                                         serialNumber:serialNumber
+                                                                block:response];
+}
+
+
+
 - (void) createIssueWithFullName:(NSString *) fullName
                            title:(NSString *) title
                             body:(NSString *) body

@@ -144,7 +144,51 @@ public extension ZLGithubHttpClient{
     }
     
     
+    func baseMutation<Mutation: GraphQLMutation>(mutation: Mutation,
+                                                 serialNumber: String,
+                                                 block: @escaping GithubResponseSwift) {
+        analytics.log(.URLUse(url: mutation.operationName))
+        
+        self.apolloClient.perform(mutation: mutation,
+                                  publishResultToStore: true,
+                                  queue: completeQueue) { result in
+            
+            var resultData : Any? = nil
+            var success = false
+            switch result{
+            case .success(_):do{
+                if let data = try? result.get().data{
+                    success = true
+                    let json = data.jsonObject
+                    let serialized = try! JSONSerialization.data(withJSONObject: json, options: [])
+                    let deserialized = try! JSONSerialization.jsonObject(with: serialized, options: []) as! JSONObject
+                    let result = try! type(of: mutation).Data(jsonObject: deserialized)
+                    resultData = result
+                } else {
+                    success = false
+                    let errorModel = ZLGithubRequestErrorModel()
+                    if let error = try? result.get().errors?.first{
+                        errorModel.message = error.localizedDescription
+                    }
+                    resultData = errorModel
+                    analytics.log(.URLFailed(url: mutation.operationName, error: errorModel.message))
+                }
+            }
+                break
+            case .failure(let error):do{
+                success = false
+                let errorModel = ZLGithubRequestErrorModel()
+                errorModel.message = error.localizedDescription
+                resultData = errorModel
+                analytics.log(.URLFailed(url: mutation.operationName, error: errorModel.message))
+            }
+                break
+            }
+            block(success,resultData,serialNumber)
+        }
+    }
     
+    // MARK: WorkBoard
     /**
      * @param serialNumber
      * @param block
@@ -254,6 +298,8 @@ public extension ZLGithubHttpClient{
         self.baseQuery(query: query, serialNumber: serialNumber, block: block)
     }
     
+    // MARK: issue info
+    
     /**
      * @param login
      * @param repoName
@@ -261,15 +307,69 @@ public extension ZLGithubHttpClient{
      *  查询某个issue
      */
     
-    @objc func getIssueInfo(login : String,
-                            repoName : String,
-                            number : Int,
-                            after : String?,
+    @objc func getIssueInfo(login: String,
+                            repoName: String,
+                            number: Int,
+                            after: String?,
                             serialNumber: String,
                             block: @escaping GithubResponseSwift){
         let query = IssueInfoQuery(owner: login, name: repoName, number: number, after:after)
         self.baseQuery(query: query, serialNumber: serialNumber, block: block)
     }
+    
+    /**
+     *  获取issue的可编辑信息
+     *
+     */
+    @objc func getEditIssueInfo(login : String,
+                                repoName : String,
+                                number : Int,
+                                serialNumber: String,
+                                block: @escaping GithubResponseSwift) {
+        let query = IssueEditInfoQuery(owner: login, name: repoName, number: number)
+        baseQuery(query: query, serialNumber: serialNumber, block: block)
+    }
+    
+    /**
+     * @param issueId
+     * @param commentBody
+     * @param serialNumber
+     *  添加issue 评论
+     *
+     */
+    @objc func addIssueComment(issueId: String,
+                               commentBody: String,
+                               serialNumber: String,
+                               block: @escaping GithubResponseSwift) {
+        
+        let input = AddCommentInput(subjectId: issueId, body: commentBody, clientMutationId: serialNumber)
+        let mutation = AddIssueCommentMutation(addInput: input)
+        baseMutation(mutation: mutation, serialNumber: serialNumber, block: block)
+    }
+    
+    /**
+     * @param issueId
+     * @param commentBody
+     * @param serialNumber
+     *   编辑issue的受理者
+     *
+     */
+    @objc func editIssueAssignees(issueId: String,
+                                  addedAssignees: [String],
+                                  removedAssignees: [String],
+                                  serialNumber: String,
+                                  block: @escaping GithubResponseSwift) {
+        
+        let addInput = AddAssigneesToAssignableInput(assignableId: issueId, assigneeIds: addedAssignees, clientMutationId: serialNumber)
+        let removeInput = RemoveAssigneesFromAssignableInput(assignableId: issueId, assigneeIds: removedAssignees, clientMutationId: serialNumber)
+        let mutation = EditIssueAssigneesMutation(addInput: addInput, removeInput: removeInput)
+        baseMutation(mutation: mutation, serialNumber: serialNumber, block: block)
+    }
+    
+    
+    
+    
+    // MARK: pull request info
     
     /**
      * @param login
