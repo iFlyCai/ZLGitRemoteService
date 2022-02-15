@@ -24,40 +24,22 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) dispatch_queue_t completeQueue;
 
 
-// 设置clientid clientSecret
-- (void) setClientId:(NSString *) clientid
-        clientSecret:(NSString *) clientSecret;
-
 /**
- *
- * OAuth 认证
- **/
-- (void) startOAuth:(GithubResponse) block
-       serialNumber:(NSString *) serialNumber;
-
-/**
- *
- * OAuth 认证后 获取token
- **/
-- (void) getAccessToken:(GithubResponse) block
-            queryString:(NSString *) queryString
-           serialNumber:(NSString *) serialNumber;
-    
-/**
- *
- * 注销
- **/
-- (void) logout:(GithubResponse __nullable) block
-   serialNumber:(NSString * __nullable) serialNumber;
-
-
-/**
- * 检查token是否有效；用于直接输入token
+ * 设置token，检查token是否有效
 *
  */
 - (void) checkTokenIsValid:(GithubResponse) block
                      token:(NSString *) token
               serialNumber:(NSString *) serialNumber;
+
+/**
+ *
+ * 注销
+ *  清除token，
+ *  清除cookie
+ **/
+- (void) logout:(GithubResponse __nullable) block
+   serialNumber:(NSString * __nullable) serialNumber;
 
 
 #pragma mark - users

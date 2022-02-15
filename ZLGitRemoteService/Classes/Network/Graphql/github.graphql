@@ -1472,9 +1472,13 @@ query issueEditInfo($owner: String!, $name: String!, $number: Int!) {
       
       # 操作
       locked
+      # 是否能够评论
       viewerCanReact
+      # 是否能够打开关闭issue
       viewerCanUpdate
+      # 是否能够订阅
       viewerCanSubscribe
+      # 是否为所有者
       viewerDidAuthor
       viewerCannotUpdateReasons
       isPinned

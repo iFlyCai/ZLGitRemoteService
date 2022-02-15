@@ -30,7 +30,6 @@ FOUNDATION_EXPORT const unsigned char ZLServiceFrameworkVersionString[];
 #import "ZLGithubIssueModel.h"
 #import "ZLGitHubEventModel.h"
 #import "ZLGithubEventType.h"
-#import "ZLLoginProcessModel.h"
 #import "ZLGithubRequestErrorModel.h"
 #import "ZLOperationResultModel.h"
 #import "ZLSearchFilterInfoModel.h"

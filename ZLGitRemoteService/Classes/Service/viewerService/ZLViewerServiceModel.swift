@@ -43,8 +43,8 @@ import UIKit
         case ZLLoginResult_Notification:do {
             
             // 登陆成功，获取登陆用户信息
-            if let loginProcess = notification.params as? ZLLoginProcessModel {
-                if loginProcess.loginStep == ZLLoginStep_Success {
+            if let resultModel = notification.params as? ZLOperationResultModel {
+                if resultModel.result {
                     let _ = self.getCurrentUserModelFromServer()
                 }
             }

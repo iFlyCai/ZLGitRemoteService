@@ -24,7 +24,6 @@
 #import "ZLGithubRequestErrorModel.h"
 #import "ZLSearchResultModel.h"
 #import "ZLGithubEventModel.h"
-#import "ZLLoginProcessModel.h"
 #import "ZLGithubRequestErrorModel.h"
 #import "ZLGithubGistModel.h"
 #import "ZLGithubRepositoryReadMeModel.h"
@@ -35,18 +34,9 @@
 #import "ZLGithubIssueModel.h"
 #import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
 
-#define OAuthScope          @"user,repo,gist,notifications,read:org,workflow"
-
 @interface ZLGithubHttpClient()
 
 @property (nonatomic, strong) NSURLSessionConfiguration * httpConfig;
-
-@property (nonatomic, copy) void(^ loginBlock)(NSURLRequest * _Nullable request,BOOL isNeedContinuedLogin,BOOL success);
-
-// 登录验证
-@property (nonatomic, copy) NSString* oauthState;
-@property (nonatomic, copy) NSString* clientId;
-@property (nonatomic, copy) NSString* clientSecret;
 
 @end
 
@@ -75,12 +65,6 @@
         
     }
     return self;
-}
-
-- (void) setClientId:(NSString *) clientid
-        clientSecret:(NSString *) clientSecret{
-    self.clientId = clientid;
-    self.clientSecret = clientSecret;
 }
 
 
@@ -248,165 +232,6 @@
 
 #pragma mark - OAuth
 
-/**
- *
- * OAuth 认证
- **/
-- (void) startOAuth:(GithubResponse) block
-       serialNumber:(NSString *) serialNumber
-{
-    if(self.clientId == nil || self.clientSecret == nil){
-        ZLLog_Error(@"HttpClient clientid is nil or clientsecret is nil");
-        return;
-    }
-    
-    NSString* authState = [NSString generateSerialNumber];
-    self.oauthState = authState;
-    
-    NSString * urlStr = [NSString stringWithFormat:@"%@?client_id=%@&scope=%@&state=%@",OAuthAuthorizeURL,self.clientId,OAuthScope,authState];
-    
-    AFHTTPSessionManager *sessionManager =  [self getDefaultSessionManager];
-    sessionManager.requestSerializer.timeoutInterval = 30;
-    
-    __weak typeof(self) weakSelf = self;
-    [sessionManager setTaskWillPerformHTTPRedirectionBlock:^NSURLRequest * _Nullable(NSURLSession * _Nonnull session, NSURLSessionTask * _Nonnull task, NSURLResponse * _Nonnull response, NSURLRequest * _Nonnull request) {
-        
-        if(![task.originalRequest.URL.absoluteString isEqualToString:urlStr])
-        {
-            return request;
-        }
-        
-        // 需要输入密码登陆
-        if([request.URL.absoluteString hasPrefix:OAuthLoginURL])
-        {
-            ZLLoginProcessModel * loginProcessModel = [[ZLLoginProcessModel alloc] init];
-            loginProcessModel.result = YES;
-            loginProcessModel.loginStep = ZLLoginStep_logining;
-            loginProcessModel.loginRequest = request;
-            loginProcessModel.serialNumber = serialNumber;
-            block(YES, loginProcessModel, serialNumber);
-            return nil;
-        }
-        // 获取token
-        else if([request.URL.absoluteString hasPrefix:OAuthCallBackURL])
-        {
-            ZLLoginProcessModel * loginProcessModel = [[ZLLoginProcessModel alloc] init];
-            loginProcessModel.result = YES;
-            loginProcessModel.loginStep = ZLLoginStep_getToken;
-            loginProcessModel.serialNumber = serialNumber;
-            block(YES, loginProcessModel, serialNumber);
-            
-            // OAuth 收到结果，接下来获取token
-            [weakSelf getAccessToken:block queryString:request.URL.query serialNumber:serialNumber];
-            return nil;
-        }
-        
-        return request;
-    }];
-    
-    
-    [sessionManager GET:urlStr
-             parameters:nil
-                headers:nil
-               progress:nil
-                success:nil
-                failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
-        NSHTTPURLResponse * response = (NSHTTPURLResponse*)task.response;
-        if(!NSLocationInRange(response.statusCode, NSMakeRange(100, 300)))
-        {
-            ZLLoginProcessModel * processModel = [[ZLLoginProcessModel alloc] init];
-            processModel.result = false;
-            processModel.loginStep = ZLLoginStep_checkIsLogined;
-            processModel.serialNumber = serialNumber;
-            ZLGithubRequestErrorModel *errorModel = [ZLGithubRequestErrorModel errorModelWithStatusCode:response.statusCode message:error.localizedDescription documentation_url:nil];
-            processModel.errorModel = errorModel;
-            block(NO,processModel,serialNumber);
-        }
-        
-    }];
-    
-}
-
-
-- (void) getAccessToken:(GithubResponse) block
-            queryString:(NSString *) queryString
-           serialNumber:(NSString *) serialNumber
-{
-    if(self.clientId == nil || self.clientSecret == nil){
-        ZLLog_Error(@"HttpClient clientid is nil or clientsecret is nil");
-        return;
-    }
-    
-    if(![queryString containsString:@"code"] || ![queryString containsString:@"state"]){
-        ZLLog_Error(@"queryString = %@, code or state not exist",queryString);
-        return;
-    }
-    
-    NSString * code = nil;
-    NSString * state = nil;
-    
-    NSArray * entrys = [queryString componentsSeparatedByString:@"&"];
-    
-    for(NSString * entry in entrys){
-        NSArray * tmpArray = [entry componentsSeparatedByString:@"="];
-        if([tmpArray.firstObject isEqualToString:@"code"]){
-            code = tmpArray.lastObject;
-        }
-        if([tmpArray.firstObject isEqualToString:@"state"]){
-            state = tmpArray.lastObject;
-        }
-    }
-    
-    if(![state isEqualToString:self.oauthState]){
-        ZLLog_Error(@"queryString = %@, statet is not match",queryString);
-        return;
-    }
-    
-    NSDictionary * params = @{@"client_id":self.clientId,@"client_secret":self.clientSecret,@"code":code == nil ? @"" : code,@"state":state == nil ? @"" : state};
-    
-    __weak typeof(self) weakSelf = self;
-    void(^successBlock)(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) =
-    ^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-    {
-        ZLGithubHttpClient *strongSelf = weakSelf;
-        NSDictionary * dic = (NSDictionary *) responseObject;
-        strongSelf->_token = [dic objectForKey:@"access_token"];
-        [[ZLSharedDataManager sharedInstance] setGithubAccessToken:strongSelf->_token];
-        
-        ZLLoginProcessModel * processModel = [[ZLLoginProcessModel alloc] init];
-        processModel.result = YES;
-        processModel.loginStep = ZLLoginStep_Success;
-        processModel.serialNumber = serialNumber;
-        block(YES,processModel,serialNumber);
-    };
-    
-    void(^failedBlock)(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) =
-    ^(NSURLSessionDataTask * _Nonnull task, NSError *  error)
-    {
-        ZLLoginProcessModel * processModel = [[ZLLoginProcessModel alloc] init];
-        processModel.result = false;
-        processModel.loginStep = ZLLoginStep_getToken;
-        processModel.serialNumber = serialNumber;
-        NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-        ZLGithubRequestErrorModel *errorModel = [ZLGithubRequestErrorModel errorModelWithStatusCode:response.statusCode message:error.localizedDescription documentation_url:nil];
-        processModel.errorModel = errorModel;
-        block(NO,processModel,serialNumber);
-    };
-    
-    AFHTTPSessionManager *sessionManager =  [self getDefaultSessionManager];
-    [sessionManager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-    
-    [sessionManager POST:OAuthAccessTokenURL
-              parameters:params
-                 headers:nil
-                progress:nil
-                 success:successBlock
-                 failure:failedBlock];
-    
-}
-
-
 - (void) checkTokenIsValid:(GithubResponse) block
                      token:(NSString *) token
               serialNumber:(NSString *) serialNumber{
@@ -419,25 +244,17 @@
     {
         ZLGithubHttpClient *strongSelf= weakSelf;
         strongSelf->_token= token;
-        
-        ZLLoginProcessModel * processModel = [[ZLLoginProcessModel alloc] init];
-        processModel.result = YES;
-        processModel.loginStep = ZLLoginStep_Success;
-        processModel.serialNumber = serialNumber;
-        block(YES,processModel,serialNumber);
+        block(YES,nil,serialNumber);
     };
     
     void(^failedBlock)(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) =
     ^(NSURLSessionDataTask * _Nonnull task, NSError *  error)
     {
-        ZLLoginProcessModel * processModel = [[ZLLoginProcessModel alloc] init];
-        processModel.result = false;
-        processModel.loginStep = ZLLoginStep_init;
-        processModel.serialNumber = serialNumber;
         NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-        ZLGithubRequestErrorModel *errorModel = [ZLGithubRequestErrorModel errorModelWithStatusCode:response.statusCode message:error.localizedDescription documentation_url:nil];
-        processModel.errorModel = errorModel;
-        block(NO,processModel,serialNumber);
+        ZLGithubRequestErrorModel *errorModel = [ZLGithubRequestErrorModel errorModelWithStatusCode:response.statusCode
+                                                                                            message:error.localizedDescription
+                                                                                  documentation_url:nil];
+        block(NO,errorModel,serialNumber);
     };
     
     

@@ -34,9 +34,7 @@ import SYDCentralPivot
         return ZLServiceManager()
     }
     
-    public func initManager(clientId: String, clientSecret: String, buglyId: String){
-        
-        ZLGithubHttpClient.default().setClientId(clientId, clientSecret: clientSecret)
+    public func initManager(buglyId: String){
         
         ZLBuglyManager.shared().setUp(buglyId);
         

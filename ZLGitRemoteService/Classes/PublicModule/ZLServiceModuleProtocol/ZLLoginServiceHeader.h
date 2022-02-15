@@ -11,16 +11,6 @@
 
 #import "ZLBaseServiceModel.h"
 
-typedef enum : NSUInteger {
-    ZLLoginStep_init,
-    ZLLoginStep_checkIsLogined,
-    ZLLoginStep_logining,
-    ZLLoginStep_getToken,
-    ZLLoginStep_checkToken,
-    ZLLoginStep_Success,
-} ZLLoginStep;
-
-
 static NSNotificationName const _Nonnull ZLLoginResult_Notification = @"ZLLoginResult_Notification";
 static NSNotificationName const _Nonnull ZLLogoutResult_Notification = @"ZLLogoutResult_Notification";
 
@@ -29,47 +19,21 @@ static NSNotificationName const _Nonnull ZLLogoutResult_Notification = @"ZLLogou
 
 @property(nonatomic, nullable, readonly) NSString* accessToken;
 
-/**
- *
- * 当前登陆的过程
- **/
-- (ZLLoginStep) currentLoginStep;
 
-
-#pragma mark - oauth login action
-
-
-- (void) stopLogin:(NSString *_Nonnull) serialNumber;
-    
+#pragma mark - login action
 
 /**
  * 注销登录
  *
  **/
-- (void) logout:(NSString *_Nonnull) serialNumber;
+- (void) logout:(NSString * _Nonnull) serialNumber;
 
 /**
- *
- * 进行登陆
- **/
-- (void) startOAuth:(NSString *_Nonnull) serialNumber;
-
-/**
- * 登陆认证后，获取token
- *
- **/
-- (void) getAccessToken:(NSString *_Nonnull) queryString
-           serialNumber:(NSString *_Nonnull) serialNumber;
-
-
-
-#pragma mark - token login action
-/***
-  * 检查access token是否有效
+ * 检查access token是否有效
  */
 
-- (void) checkTokenIsValid:(NSString *_Nonnull) token
-              serialNumber:(NSString *_Nonnull) serialNumber;
+- (void) setAccessToken:(NSString * _Nonnull) token
+           serialNumber:(NSString * _Nonnull) serialNumber;
 
 
 @end
