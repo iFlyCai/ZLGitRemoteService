@@ -2177,6 +2177,8 @@
                     model.full_name = [fullName substringFromIndex:1];
                     model.owner = [ZLGithubUserBriefModel new];
                     model.owner.loginName = [model.full_name componentsSeparatedByString:@"/"].firstObject;
+                    NSString *loginNamePath = [model.owner.loginName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
+                    model.owner.avatar_url = [NSString stringWithFormat:@"https://avatars.githubusercontent.com/%@", loginNamePath];
                     model.name = [model.full_name componentsSeparatedByString:@"/"].lastObject;
                     model.desc_Repo = desc;
                     model.language = language;
