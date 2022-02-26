@@ -110,10 +110,10 @@ static NSNotificationName const _Nonnull ZLGetMyEventResult_Notification = @"ZLG
  * @param comment 评论
  * @param serialNumber 流水号
  **/
-- (void) addIssueCommentWithLoginName:(NSString * _Nonnull) issueId
-                              comment:(NSString * _Nonnull) comment
-                         serialNumber:(NSString * _Nonnull) serialNumber
-                       completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle;
+- (void) addIssueCommentWithIssueId:(NSString * _Nonnull) issueId
+                            comment:(NSString * _Nonnull) comment
+                       serialNumber:(NSString * _Nonnull) serialNumber
+                     completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle;
 
 
 /**

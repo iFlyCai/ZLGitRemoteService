@@ -253,10 +253,10 @@
 }
 
 
-- (void) addIssueCommentWithLoginName:(NSString * _Nonnull) issueId
-                                        comment:(NSString * _Nonnull) comment
-                                   serialNumber:(NSString * _Nonnull) serialNumber
-                                 completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
+- (void) addIssueCommentWithIssueId:(NSString * _Nonnull) issueId
+                            comment:(NSString * _Nonnull) comment
+                       serialNumber:(NSString * _Nonnull) serialNumber
+                     completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
     
     GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
     {

@@ -259,14 +259,15 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
     nameWithOwner
     owner {
       login
-      avatarUrl(size:150)
+      avatarUrl(size: 150)
     }
     issue(number: $number) {
+      id
       title
       number
       author {
         login
-        avatarUrl(size:150)
+        avatarUrl(size: 150)
       }
       bodyText
       bodyHTML
@@ -287,7 +288,7 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
             id
             actor {
               login
-              avatarUrl(size:150)
+              avatarUrl(size: 150)
             }
             createdAt
           }
@@ -295,7 +296,7 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
             id
             actor {
               login
-              avatarUrl(size:150)
+              avatarUrl(size: 150)
             }
             assignee {
               __typename
@@ -322,10 +323,59 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
             actor {
               login
             }
+            createdAt
+            deletedCommentAuthor{
+              login
+            }
           }
           ... on ConnectedEvent {
             actor {
               login
+            }
+            isCrossRepository
+            source{
+              ... on Issue{
+                id
+                title
+                repository{
+                  owner{
+                    login
+                  }
+                  name
+                }
+              }
+              ... on PullRequest{
+                id
+                title
+                repository{
+                  owner{
+                    login
+                  }
+                  name
+                }               
+              }
+            }
+           subject{
+              ... on Issue{
+                id
+                title
+                repository{
+                  owner{
+                    login
+                  }
+                  name
+                }
+              }
+              ... on PullRequest{
+                id
+                title
+                repository{
+                  owner{
+                    login
+                  }
+                  name
+                }               
+              }
             }
           }
           ... on ConvertedNoteToIssueEvent {
@@ -376,7 +426,7 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
             id
             author {
               login
-              avatarUrl(size:150)
+              avatarUrl(size: 150)
             }
             bodyText
             bodyHTML
@@ -465,6 +515,21 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
             actor {
               login
             }
+            assignee {
+              __typename
+              ... on User {
+                login
+              }
+              ... on Bot {
+                login
+              }
+              ... on Mannequin {
+                login
+              }
+              ... on Organization {
+                login
+              }
+            }
           }
           ... on UnlabeledEvent {
             actor {
@@ -489,6 +554,17 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
             actor {
               login
             }
+            issue {
+              id
+              title
+              number
+              repository{
+                name
+                owner{
+                  login
+                }
+              }
+            }
           }
           ... on UnsubscribedEvent {
             actor {
@@ -503,11 +579,53 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
               login
             }
           }
+          ... on DemilestonedEvent {
+            actor {
+              login
+            }
+            milestoneTitle
+          }
+          ... on MovedColumnsInProjectEvent {
+            actor {
+              login
+            }
+            createdAt
+            databaseId
+            id
+          }
+          ... on ConvertedNoteToIssueEvent {
+            actor {
+              login
+            }
+            createdAt
+            databaseId
+            id
+          }
+          ... on ConvertedToDiscussionEvent{
+            actor {
+              login
+            }
+            createdAt
+            discussion{
+              number 
+              repository{
+                owner{
+                  login
+                }
+                name
+              }
+              id 
+              title
+            }
+            id
+          }
+        
         }
       }
     }
   }
 }
+
 
 # 查询pr的信息
 query prInfo($owner: String!, $name: String!, $number: Int!, $after: String) {
