@@ -4677,6 +4677,7 @@ public final class IssueInfoQuery: GraphQLQuery {
             login
             avatarUrl(size: 150)
           }
+          viewerCanReact
           bodyText
           bodyHTML
           state
@@ -5269,6 +5270,7 @@ public final class IssueInfoQuery: GraphQLQuery {
             GraphQLField("title", type: .nonNull(.scalar(String.self))),
             GraphQLField("number", type: .nonNull(.scalar(Int.self))),
             GraphQLField("author", type: .object(Author.selections)),
+            GraphQLField("viewerCanReact", type: .nonNull(.scalar(Bool.self))),
             GraphQLField("bodyText", type: .nonNull(.scalar(String.self))),
             GraphQLField("bodyHTML", type: .nonNull(.scalar(String.self))),
             GraphQLField("state", type: .nonNull(.scalar(IssueState.self))),
@@ -5285,8 +5287,8 @@ public final class IssueInfoQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public init(id: GraphQLID, title: String, number: Int, author: Author? = nil, bodyText: String, bodyHtml: String, state: IssueState, closed: Bool, closedAt: String? = nil, createdAt: String, timelineItems: TimelineItem) {
-          self.init(unsafeResultMap: ["__typename": "Issue", "id": id, "title": title, "number": number, "author": author.flatMap { (value: Author) -> ResultMap in value.resultMap }, "bodyText": bodyText, "bodyHTML": bodyHtml, "state": state, "closed": closed, "closedAt": closedAt, "createdAt": createdAt, "timelineItems": timelineItems.resultMap])
+        public init(id: GraphQLID, title: String, number: Int, author: Author? = nil, viewerCanReact: Bool, bodyText: String, bodyHtml: String, state: IssueState, closed: Bool, closedAt: String? = nil, createdAt: String, timelineItems: TimelineItem) {
+          self.init(unsafeResultMap: ["__typename": "Issue", "id": id, "title": title, "number": number, "author": author.flatMap { (value: Author) -> ResultMap in value.resultMap }, "viewerCanReact": viewerCanReact, "bodyText": bodyText, "bodyHTML": bodyHtml, "state": state, "closed": closed, "closedAt": closedAt, "createdAt": createdAt, "timelineItems": timelineItems.resultMap])
         }
 
         public var __typename: String {
@@ -5334,6 +5336,16 @@ public final class IssueInfoQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue?.resultMap, forKey: "author")
+          }
+        }
+
+        /// Can user react to this subject
+        public var viewerCanReact: Bool {
+          get {
+            return resultMap["viewerCanReact"]! as! Bool
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "viewerCanReact")
           }
         }
 
