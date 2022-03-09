@@ -367,6 +367,117 @@ public extension ZLGithubHttpClient{
     }
     
     
+    /**
+     * @param issueId/prid
+     * @param lock 锁定/解锁
+     * @param serialNumber
+     *  锁定/解锁issue/pr
+     *
+     */
+    @objc func lockLockable(id: String,
+                            lock: Bool,
+                            serialNumber: String,
+                            block: @escaping GithubResponseSwift) {
+        
+        
+        if lock {
+            // 锁定
+            let input = LockLockableInput(lockableId: id, lockReason: nil, clientMutationId: serialNumber)
+            let mutation = LockLockableMutation(input: input)
+            baseMutation(mutation: mutation, serialNumber: serialNumber, block: { result,data,serialNumber in
+                if  result,
+                    let mutationResult = data as? LockLockableMutation.Data {
+                    if mutationResult.lockLockable?.lockedRecord?.locked ?? false {
+                        block(true,nil,serialNumber)
+                    } else {
+                        block(false,nil,serialNumber)
+                    }
+                } else {
+                    block(false,nil,serialNumber)
+                }
+            })
+            
+        } else {
+            
+            // 解锁
+            let input = UnlockLockableInput(lockableId: id, clientMutationId: serialNumber)
+            let mutation = UnlockLockableMutation(input: input)
+            baseMutation(mutation: mutation, serialNumber: serialNumber, block: { result,data,serialNumber in
+                if  result,
+                    let mutationResult = data as? UnlockLockableMutation.Data {
+                    if mutationResult.unlockLockable?.unlockedRecord?.locked ?? true{
+                        block(false,nil,serialNumber)
+                    } else {
+                        block(true,nil,serialNumber)
+                    }
+                } else {
+                    block(false,nil,serialNumber)
+                }
+            })
+        }
+    }
+    
+    /**
+     * @param id issueId
+     * @param open 打开/关闭
+     * @param serialNumber
+     *  打开/关闭issue
+     */
+    @objc func openIssue(id: String,
+                         open: Bool,
+                         serialNumber: String,
+                         block: @escaping GithubResponseSwift) {
+        
+        if open {
+            // 打开
+            let input = ReopenIssueInput(issueId: id, clientMutationId: serialNumber)
+            let mutation = ReopenIssueMutation(input: input)
+            baseMutation(mutation: mutation, serialNumber: serialNumber, block: { result,data,serialNumber in
+                if  result,
+                    let mutationResult = data as? ReopenIssueMutation.Data {
+                    if mutationResult.reopenIssue?.issue?.state == .open {
+                        block(true,nil,serialNumber)
+                    } else {
+                        block(false,nil,serialNumber)
+                    }
+                } else {
+                    block(false,nil,serialNumber)
+                }
+            })
+            
+        } else {
+            // 关闭
+            let input = CloseIssueInput(issueId: id, clientMutationId: serialNumber)
+            let mutation = CloseIssueMutation(input: input)
+            baseMutation(mutation: mutation, serialNumber: serialNumber, block: { result,data,serialNumber in
+                if  result,
+                    let mutationResult = data as? CloseIssueMutation.Data {
+                    if mutationResult.closeIssue?.issue?.state == .closed {
+                        block(true,nil,serialNumber)
+                    } else {
+                        block(false,nil,serialNumber)
+                    }
+                } else {
+                    block(false,nil,serialNumber)
+                }
+            })
+        }
+    }
+    
+    
+    @objc func subscribeSubscription(id: String,
+                                     subscribe: Bool,
+                                     serialNumber: String,
+                                     block: @escaping GithubResponseSwift) {
+        
+        let input = UpdateSubscriptionInput(subscribableId: id,
+                                            state: subscribe ? .subscribed : .unsubscribed ,
+                                            clientMutationId: serialNumber)
+        let mutation = UpdateSubscriptionMutation(updateInput: input)
+        baseMutation(mutation: mutation,serialNumber: serialNumber,block:block)
+    }
+    
+    
     
     
     // MARK: pull request info

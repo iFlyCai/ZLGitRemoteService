@@ -16,14 +16,14 @@
 
 @implementation ZLEventServiceModel
 
-+ (instancetype) sharedServiceModel
-{
++ (instancetype) sharedServiceModel{
+    
     static ZLEventServiceModel *eventServiceModel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         eventServiceModel = [[ZLEventServiceModel alloc] init];
     });
-
+    
     return eventServiceModel;
 }
 
@@ -36,8 +36,8 @@
  **/
 - (void) getMyEventsWithpage:(NSUInteger)page
                     per_page:(NSUInteger)per_page
-                serialNumber:(NSString *)serialNumber
-{
+                serialNumber:(NSString *)serialNumber {
+    
     __weak typeof(self) weakSelf = self;
     GithubResponse responseBlock = ^(BOOL result, id _Nullable responseObject, NSString * serialNumber) {
         
@@ -50,7 +50,7 @@
     };
     
     NSString * loginName = ZLServiceManager.sharedInstance.viewerServiceModel.currentUserLoginName;
-       
+    
     [[ZLGithubHttpClient defaultClient] getEventsForUser:loginName
                                                     page:page
                                                 per_page:per_page
@@ -65,9 +65,9 @@
  **/
 - (void) getEventsForUser:(NSString *) userName
                      page:(NSUInteger)page
-                per_page:(NSUInteger)per_page
-            serialNumber:(NSString *)serialNumber
-{
+                 per_page:(NSUInteger)per_page
+             serialNumber:(NSString *)serialNumber {
+    
     __weak typeof(self) weakSelf = self;
     GithubResponse responseBlock = ^(BOOL result, id _Nullable responseObject, NSString * serialNumber) {
         
@@ -78,7 +78,7 @@
         
         ZLMainThreadDispatch([weakSelf postNotification:ZLGetUserReceivedEventResult_Notification withParams:repoResultModel];)
     };
-           
+    
     [[ZLGithubHttpClient defaultClient] getEventsForUser:userName
                                                     page:page
                                                 per_page:per_page
@@ -92,19 +92,18 @@
  *
  **/
 - (void)getReceivedEventsForUser:(NSString *)userName
-                                    page:(NSUInteger)page
-                                per_page:(NSUInteger)per_page
-                            serialNumber:(NSString *)serialNumber
-{
+                            page:(NSUInteger)page
+                        per_page:(NSUInteger)per_page
+                    serialNumber:(NSString *)serialNumber {
     
     __weak typeof(self) weakSelf = self;
     GithubResponse responseBlock = ^(BOOL result, id _Nullable responseObject, NSString * serialNumber) {
-
+        
         ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
         repoResultModel.result = result;
         repoResultModel.serialNumber = serialNumber;
         repoResultModel.data = responseObject;
-
+        
         ZLMainThreadDispatch([weakSelf postNotification:ZLGetUserReceivedEventResult_Notification withParams:repoResultModel];)
     };
     
@@ -118,15 +117,15 @@
                                 page:(int) page
                             per_page:(int) per_page
                         serialNumber:(NSString * _Nonnull)serialNumber
-                      completeHandle:(void(^_Nonnull)(ZLOperationResultModel * _Nonnull)) handle{
+                      completeHandle:(void(^_Nonnull)(ZLOperationResultModel * _Nonnull)) handle {
     
     GithubResponse responseBlock = ^(BOOL result, id _Nullable responseObject, NSString * serialNumber) {
-
+        
         ZLOperationResultModel * resultModel = [[ZLOperationResultModel alloc] init];
         resultModel.result = result;
         resultModel.serialNumber = serialNumber;
         resultModel.data = responseObject;
-
+        
         ZLMainThreadDispatch(if(handle)handle(resultModel);)
     };
     
@@ -141,15 +140,15 @@
 
 - (void) markNotificationReadedWithNotificationId:(NSString * _Nonnull) notificationId
                                      serialNumber:(NSString * _Nonnull)serialNumber
-                                   completeHandle:(void(^_Nonnull)(ZLOperationResultModel * _Nonnull)) handle{
+                                   completeHandle:(void(^_Nonnull)(ZLOperationResultModel * _Nonnull)) handle {
     
     GithubResponse responseBlock = ^(BOOL result, id _Nullable responseObject, NSString * serialNumber) {
-
+        
         ZLOperationResultModel * resultModel = [[ZLOperationResultModel alloc] init];
         resultModel.result = result;
         resultModel.serialNumber = serialNumber;
         resultModel.data = responseObject;
-
+        
         ZLMainThreadDispatch(if(handle)handle(resultModel);)
     };
     
@@ -168,8 +167,8 @@
                      number:(int) number
                       after:(NSString * _Nullable) after
                serialNumber:(NSString *_Nonnull) serialNumber
-             completeHandle:(void(^_Nonnull)(ZLOperationResultModel * _Nonnull)) handle{
-   
+             completeHandle:(void(^_Nonnull)(ZLOperationResultModel * _Nonnull)) handle {
+    
     GithubResponse reposoneBlock = ^(BOOL result, id _Nullable responseObject, NSString * serialNumber) {
         
         ZLOperationResultModel * resultModel = [[ZLOperationResultModel alloc] init];
@@ -199,7 +198,7 @@
                                       number:(int) number
                                        after:(NSString * _Nullable) after
                                 serialNumber:(NSString * _Nonnull) serialNumber
-                              completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle{
+                              completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
     
     GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
     {
@@ -213,7 +212,7 @@
             ZLMainThreadDispatch(handle(repoResultModel);)
         }
     };
-   
+    
     [[ZLGithubHttpClient defaultClient] getIssueInfoWithLogin:loginName
                                                      repoName:repoName
                                                        number:number
@@ -226,10 +225,10 @@
 
 
 - (void) getIssueEditInfoWithLoginName:(NSString * _Nonnull) loginName
-                                        repoName:(NSString * _Nonnull) repoName
-                                          number:(int) number
-                                    serialNumber:(NSString * _Nonnull) serialNumber
-                                  completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
+                              repoName:(NSString * _Nonnull) repoName
+                                number:(int) number
+                          serialNumber:(NSString * _Nonnull) serialNumber
+                        completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
     
     GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
     {
@@ -311,7 +310,7 @@
                           labels:(NSArray *) labels
                        assignees:(NSArray *) assignees
                     serialNumber:(NSString *) serialNumber
-                  completeHandle:(void(^)(ZLOperationResultModel *)) handle{
+                  completeHandle:(void(^)(ZLOperationResultModel *)) handle {
     
     if(fullName.length == 0 || ![fullName containsString:@"/"])
     {
@@ -340,6 +339,84 @@
                                              labels:labels
                                           assignees:assignees
                                        serialNumber:serialNumber];
+}
+
+
+- (void) openOrCloseIssue:(NSString *) issueId
+                     open:(BOOL) open
+             serialNumber:(NSString *) serialNumber
+           completeHandle:(void(^)(ZLOperationResultModel *)) handle {
+    
+    GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
+    {
+        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
+        repoResultModel.result = result;
+        repoResultModel.serialNumber = serialNumber;
+        repoResultModel.data = responseObject;
+        
+        if(handle)
+        {
+            ZLMainThreadDispatch(handle(repoResultModel);)
+        }
+    };
+    
+    
+    [[ZLGithubHttpClient defaultClient] openIssueWithId:issueId
+                                                   open:open
+                                           serialNumber:serialNumber
+                                                  block:response];
+}
+
+
+- (void) lockOrUnlockLockable:(NSString *) lockableId
+                         lock:(BOOL) lock
+                 serialNumber:(NSString *) serialNumber
+               completeHandle:(void(^)(ZLOperationResultModel *)) handle {
+    
+    GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
+    {
+        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
+        repoResultModel.result = result;
+        repoResultModel.serialNumber = serialNumber;
+        repoResultModel.data = responseObject;
+        
+        if(handle)
+        {
+            ZLMainThreadDispatch(handle(repoResultModel);)
+        }
+    };
+    
+    
+    [[ZLGithubHttpClient defaultClient] lockLockableWithId:lockableId
+                                                      lock:lock
+                                              serialNumber:serialNumber
+                                                     block:response];
+}
+
+
+- (void) subscribeOrUnsubscribeSubscription:(NSString *) subscriptionId
+                                  subscribe:(BOOL) subscribe
+                               serialNumber:(NSString *) serialNumber
+                             completeHandle:(void(^)(ZLOperationResultModel *)) handle {
+    
+    GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
+    {
+        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
+        repoResultModel.result = result;
+        repoResultModel.serialNumber = serialNumber;
+        repoResultModel.data = responseObject;
+        
+        if(handle)
+        {
+            ZLMainThreadDispatch(handle(repoResultModel);)
+        }
+    };
+    
+    
+    [[ZLGithubHttpClient defaultClient] subscribeSubscriptionWithId:subscriptionId
+                                                          subscribe:subscribe
+                                                       serialNumber:serialNumber
+                                                              block:response];
 }
 
 

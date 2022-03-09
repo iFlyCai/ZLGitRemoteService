@@ -1,0 +1,1 @@
+sh run-bundled-codegen.sh codegen:generate --target=swift --includes=github.graphql --localSchemaFile="schema.json" "API.swift.new"

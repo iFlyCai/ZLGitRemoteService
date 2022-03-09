@@ -269,6 +269,8 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
         login
         avatarUrl(size: 150)
       }
+      # 是否可以评论
+      viewerCanReact
       bodyText
       bodyHTML
       state
@@ -1628,5 +1630,83 @@ mutation addIssueComment($addInput: AddCommentInput!) {
       }
     }
     
+  }
+}
+
+# 修改issue/pr订阅状态
+mutation updateSubscription($updateInput: UpdateSubscriptionInput!) {
+  updateSubscription(input: $updateInput){
+    clientMutationId
+    subscribable {
+      id
+      viewerCanSubscribe
+      viewerSubscription
+    }
+  }
+}
+
+# 关闭issue
+mutation closeIssue($input: CloseIssueInput!) {
+  closeIssue(input: $input){
+    clientMutationId
+    issue {
+      state
+      repository{
+        owner{
+          login
+          avatarUrl
+        }
+        name
+        nameWithOwner
+      }
+      number
+    }
+  }
+}
+
+# 打开issue
+mutation reopenIssue($input: ReopenIssueInput!) {
+  reopenIssue(input: $input){
+    clientMutationId
+    issue {
+      state
+      repository{
+        owner{
+          login
+          avatarUrl
+        }
+        name
+        nameWithOwner
+      }
+      number
+    }
+  }
+}
+
+# 锁定issue/pr
+mutation lockLockable($input: LockLockableInput!) {
+  lockLockable(input: $input) {
+    clientMutationId
+    lockedRecord{
+      locked
+      activeLockReason
+    }
+    actor{
+      login
+    }
+  }
+}
+
+# 解锁issue/pr
+mutation unlockLockable($input: UnlockLockableInput!) {
+  unlockLockable(input: $input) {
+    clientMutationId
+    unlockedRecord{
+      locked
+      activeLockReason
+    }
+    actor{
+      login
+    }
   }
 }

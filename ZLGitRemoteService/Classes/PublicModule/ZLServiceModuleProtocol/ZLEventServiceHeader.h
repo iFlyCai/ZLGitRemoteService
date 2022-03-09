@@ -117,15 +117,15 @@ static NSNotificationName const _Nonnull ZLGetMyEventResult_Notification = @"ZLG
 
 
 /**
- * @brief 边界issue 受理者
+ * @brief 编辑issue 受理者
  * @param issueId  graogql node id
  * @param addedList 添加的受理者id
  * @param removedList 移除的受理者id
  * @param serialNumber 流水号
  **/
-- (void) editIssueAssigneesWithIssueId:(NSString *) issueId
-                             addedList:(NSArray<NSString *> *) addedList
-                           removedList:(NSArray<NSString *> *) removedList
+- (void) editIssueAssigneesWithIssueId:(NSString * _Nonnull) issueId
+                             addedList:(NSArray<NSString *> * _Nonnull) addedList
+                           removedList:(NSArray<NSString *> * _Nonnull) removedList
                           serialNumber:(NSString * _Nonnull) serialNumber
                         completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle;
 
@@ -142,6 +142,39 @@ static NSNotificationName const _Nonnull ZLGetMyEventResult_Notification = @"ZLG
                        assignees:(NSArray * __nullable) assignees
                     serialNumber:(NSString * _Nonnull) serialNumber
                   completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle;
+
+/**
+ * @brief 打开/关闭issue
+ * @param issueId  graogql node id
+ * @param open 打开/关闭
+ * @param serialNumber 流水号
+ **/
+- (void) openOrCloseIssue:(NSString * _Nonnull) issueId
+                     open:(BOOL) open
+             serialNumber:(NSString * _Nonnull) serialNumber
+           completeHandle:(void(^ _Nonnull)(ZLOperationResultModel * _Nonnull)) handle;
+
+/**
+ * @brief 锁定/解锁 issue/pr
+ * @param lockableId  graogql node id
+ * @param lock 锁定/解锁
+ * @param serialNumber 流水号
+ **/
+- (void) lockOrUnlockLockable:(NSString * _Nonnull) lockableId
+                         lock:(BOOL) lock
+                 serialNumber:(NSString * _Nonnull) serialNumber
+               completeHandle:(void(^ _Nonnull)(ZLOperationResultModel * _Nonnull)) handle;
+
+/**
+ * @brief 订阅/取消订阅 issue/pr
+ * @param subscriptionId  graogql node id
+ * @param subscribe 订阅/取消订阅
+ * @param serialNumber 流水号
+ **/
+- (void) subscribeOrUnsubscribeSubscription:(NSString * _Nonnull) subscriptionId
+                                  subscribe:(BOOL) subscribe
+                               serialNumber:(NSString * _Nonnull) serialNumber
+                             completeHandle:(void(^ _Nonnull)(ZLOperationResultModel * _Nonnull)) handle;
 @end
 
 #endif /* ZLEventServiceHeader_h */
