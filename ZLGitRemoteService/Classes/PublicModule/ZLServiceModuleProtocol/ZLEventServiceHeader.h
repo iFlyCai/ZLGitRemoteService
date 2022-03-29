@@ -82,15 +82,28 @@ static NSNotificationName const _Nonnull ZLGetMyEventResult_Notification = @"ZLG
  * @param loginName 登录名
  * @param repoName 仓库名
  * @param number issue number
- * @param after
  * @param serialNumber 流水号
  **/
 - (void) getRepositoryIssueInfoWithLoginName:(NSString * _Nonnull) loginName
                                     repoName:(NSString * _Nonnull) repoName
                                       number:(int) number
-                                       after:(NSString * _Nullable) after
                                 serialNumber:(NSString * _Nonnull) serialNumber
                               completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle;
+
+/**
+ * @brief 获取issue timeline info
+ * @param loginName 登录名
+ * @param repoName 仓库名
+ * @param number issue number
+ * @param after
+ * @param serialNumber 流水号
+ **/
+- (void) getRepositoryIssueTimelineWithLoginName:(NSString * _Nonnull) loginName
+                                        repoName:(NSString * _Nonnull) repoName
+                                          number:(int) number
+                                           after:(NSString * _Nullable) after
+                                    serialNumber:(NSString * _Nonnull) serialNumber
+                                  completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle;
 /**
  * @brief 获取issue 的可编辑信息 如 受理者 label 里程碑 项目
  * @param loginName 登录名

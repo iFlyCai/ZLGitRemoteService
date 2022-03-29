@@ -304,16 +304,30 @@ public extension ZLGithubHttpClient{
      * @param login
      * @param repoName
      *  @param number
-     *  查询某个issue
+     *  查询某个issue info
      */
-    
     @objc func getIssueInfo(login: String,
                             repoName: String,
                             number: Int,
-                            after: String?,
                             serialNumber: String,
                             block: @escaping GithubResponseSwift){
-        let query = IssueInfoQuery(owner: login, name: repoName, number: number, after:after)
+        let query = IssueInfoQuery(owner: login, name: repoName, number: number)
+        self.baseQuery(query: query, serialNumber: serialNumber, block: block)
+    }
+    
+    /**
+     * @param login
+     * @param repoName
+     *  @param number
+     *  查询某个issue timeline
+     */
+    @objc func getIssueTimelinesInfo(login: String,
+                                     repoName: String,
+                                     number: Int,
+                                     after: String?,
+                                     serialNumber: String,
+                                     block: @escaping GithubResponseSwift){
+        let query = IssueTimeLineInfoQuery(owner: login, name: repoName, number: number, after: after)
         self.baseQuery(query: query, serialNumber: serialNumber, block: block)
     }
     

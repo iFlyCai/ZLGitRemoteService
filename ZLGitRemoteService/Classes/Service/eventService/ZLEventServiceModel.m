@@ -196,7 +196,6 @@
 - (void) getRepositoryIssueInfoWithLoginName:(NSString * _Nonnull) loginName
                                     repoName:(NSString * _Nonnull) repoName
                                       number:(int) number
-                                       after:(NSString * _Nullable) after
                                 serialNumber:(NSString * _Nonnull) serialNumber
                               completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
     
@@ -216,12 +215,40 @@
     [[ZLGithubHttpClient defaultClient] getIssueInfoWithLogin:loginName
                                                      repoName:repoName
                                                        number:number
-                                                        after:after
                                                  serialNumber:serialNumber
                                                         block:response];
     
 }
 
+
+- (void) getRepositoryIssueTimelineWithLoginName:(NSString * _Nonnull) loginName
+                                        repoName:(NSString * _Nonnull) repoName
+                                          number:(int) number
+                                           after:(NSString * _Nullable) after
+                                    serialNumber:(NSString * _Nonnull) serialNumber
+                                  completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle {
+    
+    GithubResponse response = ^(BOOL  result, id responseObject, NSString * serialNumber)
+    {
+        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
+        repoResultModel.result = result;
+        repoResultModel.serialNumber = serialNumber;
+        repoResultModel.data = responseObject;
+        
+        if(handle)
+        {
+            ZLMainThreadDispatch(handle(repoResultModel);)
+        }
+    };
+    
+    [[ZLGithubHttpClient defaultClient] getIssueTimelinesInfoWithLogin:loginName
+                                                              repoName:repoName
+                                                                number:number
+                                                                 after:after
+                                                          serialNumber:serialNumber
+                                                                 block:response];
+    
+}
 
 
 - (void) getIssueEditInfoWithLoginName:(NSString * _Nonnull) loginName

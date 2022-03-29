@@ -254,7 +254,7 @@ query WorkboardInfo{
 }
 
 # 查询某个issue
-query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) {
+query issueInfo($owner: String!, $name: String!, $number: Int!) {
   repository(owner: $owner, name: $name) {
     nameWithOwner
     owner {
@@ -277,6 +277,17 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
       closed
       closedAt
       createdAt
+    }
+  }
+}
+
+
+query issueTimeLineInfo($owner: String!, $name: String!, $number: Int!, $after: String) {
+  repository(owner: $owner, name: $name) {
+    nameWithOwner
+    issue(number: $number) {
+      number
+      # timeline
       timelineItems(first: 20, after: $after) {
         totalCount
         pageInfo {
@@ -627,7 +638,6 @@ query issueInfo($owner: String!, $name: String!, $number: Int!, $after: String) 
     }
   }
 }
-
 
 # 查询pr的信息
 query prInfo($owner: String!, $name: String!, $number: Int!, $after: String) {

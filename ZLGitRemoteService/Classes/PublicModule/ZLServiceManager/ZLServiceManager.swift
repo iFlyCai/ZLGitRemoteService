@@ -9,6 +9,31 @@
 import UIKit
 import SYDCentralPivot
 
+public func ZLLoginServiceShared() ->  ZLLoginServiceModuleProtocol? {
+    ZLServiceManager.sharedInstance.loginServiceModel
+}
+
+public func ZLViewerServiceShared() ->  ZLViewerServiceModuleProtocol? {
+    ZLServiceManager.sharedInstance.viewerServiceModel
+}
+
+public func ZLUserServiceShared() ->  ZLUserServiceModuleProtocol? {
+    ZLServiceManager.sharedInstance.userServiceModel
+}
+
+public func ZLRepoServiceShared() ->  ZLRepoServiceModuleProtocol? {
+    ZLServiceManager.sharedInstance.repoServiceModel
+}
+
+public func ZLSearchServiceShared() ->  ZLSearchServiceModuleProtocol? {
+    ZLServiceManager.sharedInstance.searchServiceModel
+}
+
+public func ZLEventServiceShared() ->  ZLEventServiceModuleProtocol? {
+    ZLServiceManager.sharedInstance.eventServiceModel
+}
+
+
 @objcMembers public class ZLServiceManager: NSObject {
 
     static public var sharedInstance = getSharedInstance()
