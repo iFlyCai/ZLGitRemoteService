@@ -21,6 +21,10 @@ import Foundation
     case review_request
 }
 
+@objc public enum ZLDiscussionFilterType : NSInteger{
+    case created
+    case commented
+}
 
 
 @objc public protocol ZLViewerServiceModuleProtocol : ZLBaseServiceModuleProtocol {
@@ -57,6 +61,12 @@ import Foundation
                   after: String? ,
                   serialNumber : String,
                   completeHandle: ((ZLOperationResultModel) -> Void)?)
+    
+    func getMyDiscussions(key: String?,
+                          filter: ZLDiscussionFilterType,
+                          after: String? ,
+                          serialNumber : String,
+                          completeHandle: ((ZLOperationResultModel) -> Void)?)
     
     func getMyOrgs(serialNumber : String,
                    completeHandle: ((ZLOperationResultModel) -> Void)?)

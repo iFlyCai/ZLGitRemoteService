@@ -245,6 +245,46 @@ import UIKit
         
     }
     
+    func getMyDiscussions(key: String?,
+                          filter: ZLDiscussionFilterType,
+                          after: String? ,
+                          serialNumber : String,
+                          completeHandle: ((ZLOperationResultModel) -> Void)?){
+        
+        var filterStr = ""
+        
+        switch filter{
+        case .created:
+            filterStr = "author:@me"
+        case .commented:
+            filterStr = "commenter:@me"
+        }
+        
+        let query = "\(key ?? "") \(filterStr)"
+        
+        let githubResponse = {(result : Bool, responseObject : Any, serialNumber : String) in
+            
+            let resultModel : ZLOperationResultModel = ZLOperationResultModel()
+            resultModel.result = result
+            resultModel.data = responseObject
+            resultModel.serialNumber = serialNumber
+            
+            if completeHandle != nil {
+                DispatchQueue.main.async {
+                    completeHandle!(resultModel)
+                }
+            }
+            
+        }
+        
+        ZLGithubHttpClient.default().searchItem(after: after,
+                                                query: query,
+                                                type: .Discussion,
+                                                serialNumber: serialNumber,
+                                                block: githubResponse)
+        
+    }
+    
     func getMyOrgs(serialNumber : String,
                    completeHandle: ((ZLOperationResultModel) -> Void)?){
         

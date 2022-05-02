@@ -237,6 +237,7 @@ public extension ZLGithubHttpClient{
         case User
         case Repo
         case Issue
+        case Discussion
     }
 
     
@@ -253,6 +254,8 @@ public extension ZLGithubHttpClient{
             realType = .repository
         case .Issue:
             realType = .issue
+        case .Discussion:
+            realType = .discussion
         default:
             realType = .user
         }

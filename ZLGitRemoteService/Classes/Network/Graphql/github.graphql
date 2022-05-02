@@ -54,7 +54,7 @@ query viewerTopRepositories($after:String){
 }
 
 
-# 搜索 issue 或者 pr
+# 搜索 issue pr user repo discussion 
 query searchItem($after: String, $query: String!, $type: SearchType!) {
   search(query: $query, first: 20, type: $type, after: $after) {
     issueCount
@@ -151,6 +151,33 @@ query searchItem($after: String, $query: String!, $type: SearchType!) {
           color
         }
         isPrivate
+      }
+      ... on Discussion {
+        
+        author {
+          login
+          url 
+          avatarUrl(size:150)
+        }
+        repository {
+          nameWithOwner
+          name 
+          url 
+          owner {
+            login
+            url 
+            avatarUrl(size:150)
+          }
+        }
+        
+        id 
+        title
+        url 
+        createdAt
+        comments{
+          totalCount
+        }
+        upvoteCount
       }
     }
   }
