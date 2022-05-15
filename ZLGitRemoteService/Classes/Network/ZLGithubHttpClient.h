@@ -529,6 +529,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) trendingRepo:(GithubResponse)block
              language:(NSString * __nullable) language
+   spokenLanguageCode:(NSString * __nullable) spokenLanguageCode
             dateRange:(ZLDateRange) dateRange
          serialNumber:(NSString *) serialNumber;
 @end

@@ -2103,9 +2103,10 @@
 
 
 - (void) trendingRepo:(GithubResponse)block
-             language:(NSString *) language
+             language:(NSString * __nullable) language
+   spokenLanguageCode:(NSString * __nullable) spokenLanguageCode
             dateRange:(ZLDateRange) dateRange
-         serialNumber:(NSString *) serialNumber{
+         serialNumber:(NSString *) serialNumber {
     
     language = [language stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
 
@@ -2113,6 +2114,7 @@
     if([language length] > 0){
         url = [url stringByAppendingPathComponent:language];
     }
+
     switch (dateRange) {
         case ZLDateRangeDaily:
             url = [url stringByAppendingString:@"?since=daily"];
@@ -2125,6 +2127,12 @@
             break;
         default:
             break;
+    }
+    
+
+    if([spokenLanguageCode length] > 0) {
+        NSString* param = [NSString stringWithFormat:@"&spoken_language_code=%@",spokenLanguageCode];
+        url = [url stringByAppendingString:param];
     }
 
     GithubResponse newBlock = ^(BOOL result, id _Nullable responseObject, NSString * _Nonnull serialNumber) {

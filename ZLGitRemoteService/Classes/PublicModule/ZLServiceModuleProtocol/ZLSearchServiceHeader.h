@@ -71,6 +71,7 @@ static const NSNotificationName _Nonnull ZLSearchResult_Notification = @"ZLSearc
 - (NSArray * _Nullable) trendingWithType:(ZLSearchType) type
                                 language:(NSString *__nullable) language
                                dateRange:(ZLDateRange) dateRange
+                      spokenLanguageCode:(NSString *__nullable) spokenLanguageCode
                             serialNumber:(NSString *_Nonnull) serialNumber
                           completeHandle:(void(^_Nonnull)(ZLOperationResultModel *_Nonnull)) handle;
 

@@ -327,10 +327,11 @@
 #pragma mark - trending
 
 - (NSArray *) trendingWithType:(ZLSearchType) type
-                 language:(NSString *__nullable) language
-                dateRange:(ZLDateRange) dateRange
-             serialNumber:(NSString *) serialNumber
-           completeHandle:(void(^)(ZLOperationResultModel *)) handle{
+                      language:(NSString *__nullable) language
+                     dateRange:(ZLDateRange) dateRange
+            spokenLanguageCode:(NSString *__nullable) spokenLanguageCode
+                  serialNumber:(NSString *) serialNumber
+                completeHandle:(void(^)(ZLOperationResultModel *)) handle{
     
     GithubResponse response = ^(BOOL result,id responseObject,NSString * serialNumber){
         
@@ -376,6 +377,7 @@
              
              [[ZLGithubHttpClient defaultClient] trendingRepo:response
                                                      language:language
+                                           spokenLanguageCode:spokenLanguageCode
                                                     dateRange:dateRange
                                                  serialNumber:serialNumber];
              
