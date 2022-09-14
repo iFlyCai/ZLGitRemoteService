@@ -9,6 +9,7 @@
 
 #import "ZLSharedDataManager.h"
 #import "ZLKeyChainManager.h"
+#import <MJExtension/MJExtension.h>
 #import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
 
 
@@ -190,6 +191,7 @@
 #pragma mark - Trending Cache
 
 - (NSArray<ZLGithubRepositoryModel *> *) trendRepositoriesWithLanguage:(NSString *) languague
+                                                        spokenLanguage:(NSString *) spokenLanguage
                                                              dateRange:(ZLDateRange) range{
     NSString *rangeStr = @"";
     switch (range) {
@@ -206,18 +208,26 @@
             break;
     }
     
-    NSString *key = [NSString stringWithFormat:@"%@-%@-%@",ZLGithubTrendRepositoriesKey,languague == nil ? @"" : languague,rangeStr];
-        
-    NSData* data = [[NSUserDefaults standardUserDefaults] objectForKey:key];
-    NSArray * array = nil;
-    if(data) {
-        NSError *error = nil;
-        array = [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClass:[ZLBaseObject class]
-                                                          fromData:data
-                                                             error:&error];
-        NSLog(@"%@",error);
+    NSMutableString *key = [NSMutableString stringWithFormat:@"%@-%@-%@",ZLGithubTrendRepositoriesKey,languague == nil ? @"" : languague,rangeStr];
+    if(spokenLanguage != nil && [spokenLanguage length] > 0) {
+        [key appendFormat:@"-%@",spokenLanguage];
     }
-    return array;
+        
+    id result = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    if([result isKindOfClass:[NSString class]]) {
+        NSString *jsonStr = result;
+        NSData* data = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSError *error = nil;
+        id dicArray = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingFragmentsAllowed error:&error];
+        if(error == nil) {
+            return [ZLGithubRepositoryModel mj_objectArrayWithKeyValuesArray:dicArray];
+        }
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        return nil;
+    }
 }
 
 - (NSArray<ZLGithubUserModel *> *) trendUsersWithLanguage:(NSString *) languague
@@ -239,21 +249,27 @@
     
     NSString *key = [NSString stringWithFormat:@"%@-%@-%@",ZLGithubTrendUsersKey,languague == nil ? @"" : languague,rangeStr];
     
-    NSData* data = [[NSUserDefaults standardUserDefaults] objectForKey:key];
-    NSArray * array = nil;
-    if(data) {
+    id result = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    if([result isKindOfClass:[NSString class]]) {
+        NSString *jsonStr = result;
+        NSData* data = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
+        
         NSError *error = nil;
-        array = [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClass:[ZLBaseObject class]
-                                                          fromData:data
-                                                             error:&error];
-        NSLog(@"%@",error);
+        id dicArray = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingFragmentsAllowed error:&error];
+        if(error == nil) {
+            return [ZLGithubUserModel mj_objectArrayWithKeyValuesArray:dicArray];
+        }
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        return nil;
     }
-    return array;
 }
 
 
 - (void) setTrendRepositories:(NSArray<ZLGithubRepositoryModel *> *) array
                      language:(NSString *) languague
+               spokenLanguage:(NSString *) spokenLanguage
                     dateRange:(ZLDateRange) range{
     
     NSString *rangeStr = @"";
@@ -271,20 +287,28 @@
             break;
     }
     
-    NSString *key = [NSString stringWithFormat:@"%@-%@-%@",ZLGithubTrendRepositoriesKey,languague == nil ? @"" : languague,rangeStr];
+    NSMutableString *key = [NSMutableString stringWithFormat:@"%@-%@-%@",ZLGithubTrendRepositoriesKey,languague == nil ? @"" : languague,rangeStr];
+    if(spokenLanguage != nil && [spokenLanguage length] > 0) {
+        [key appendFormat:@"-%@",spokenLanguage];
+    }
     
     if(array == nil){
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize];
         return;
     }
-
-    NSError *error = nil;
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:array
-                                         requiringSecureCoding:YES
-                                                         error:&error];
     
-    if(nil == error) {
-        [[NSUserDefaults standardUserDefaults] setObject:data forKey:key];
+    NSMutableArray<NSDictionary *>* dicArray =  [ZLGithubRepositoryModel mj_keyValuesArrayWithObjectArray:array];
+    if([NSJSONSerialization isValidJSONObject:dicArray]) {
+        NSError *error = nil;
+        NSData* data = [NSJSONSerialization dataWithJSONObject:dicArray
+                                                       options:NSJSONWritingSortedKeys
+                                                         error:&error];
+        if( nil == error) {
+            NSString* jsonStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            [[NSUserDefaults standardUserDefaults] setObject:jsonStr forKey:key];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
     }
 }
 
@@ -311,16 +335,21 @@
     
     if(array == nil){
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+        [[NSUserDefaults standardUserDefaults] synchronize];
         return;
     }
-
-    NSError *error = nil;
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:array
-                                         requiringSecureCoding:YES
-                                                         error:&error];
     
-    if(nil == error) {
-        [[NSUserDefaults standardUserDefaults] setObject:data forKey:key];
+    NSMutableArray<NSDictionary *>* dicArray =  [ZLGithubUserModel mj_keyValuesArrayWithObjectArray:array];
+    if([NSJSONSerialization isValidJSONObject:dicArray]) {
+        NSError *error = nil;
+        NSData* data = [NSJSONSerialization dataWithJSONObject:dicArray
+                                                       options:NSJSONWritingSortedKeys
+                                                         error:&error];
+        if( nil == error) {
+            NSString* jsonStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            [[NSUserDefaults standardUserDefaults] setObject:jsonStr forKey:key];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
     }
 }
 

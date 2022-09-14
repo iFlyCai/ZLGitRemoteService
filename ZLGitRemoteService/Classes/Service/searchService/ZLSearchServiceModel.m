@@ -346,6 +346,7 @@
                 case ZLSearchTypeRepositories:
                     [[ZLSharedDataManager sharedInstance] setTrendRepositories:responseObject
                                                                       language:language
+                                                                spokenLanguage:spokenLanguageCode
                                                                      dateRange:dateRange];
                     break;
                 default:
@@ -382,6 +383,7 @@
                                                  serialNumber:serialNumber];
              
              return [[ZLSharedDataManager sharedInstance] trendRepositoriesWithLanguage:language
+                                                                         spokenLanguage:spokenLanguageCode
                                                                        dateRange:dateRange];
          }
          default:

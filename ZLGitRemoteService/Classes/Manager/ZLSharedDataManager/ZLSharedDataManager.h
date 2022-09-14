@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Trending Cache
 
 - (NSArray<ZLGithubRepositoryModel *> *) trendRepositoriesWithLanguage:(NSString *) languague
+                                                        spokenLanguage:(NSString *) spokenLanguage
                                                              dateRange:(ZLDateRange) range;
 
 - (NSArray<ZLGithubUserModel *> *) trendUsersWithLanguage:(NSString *) languague
@@ -68,6 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) setTrendRepositories:(NSArray<ZLGithubRepositoryModel *> *) array
                      language:(NSString *) languague
+               spokenLanguage:(NSString *) spokenLanguage
                     dateRange:(ZLDateRange) range;
 
 - (void) setTrendUsers:(NSArray<ZLGithubUserModel *> *) array
