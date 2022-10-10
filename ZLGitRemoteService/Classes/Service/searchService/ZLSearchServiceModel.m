@@ -19,7 +19,7 @@
 // tool
 #import "ZLSharedDataManager.h"
 
-#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
+#import "ZLGitRemoteService-Swift.h"
 
 @implementation ZLSearchServiceModel
 

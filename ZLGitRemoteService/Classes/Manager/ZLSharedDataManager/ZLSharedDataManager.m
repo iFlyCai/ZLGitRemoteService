@@ -10,7 +10,7 @@
 #import "ZLSharedDataManager.h"
 #import "ZLKeyChainManager.h"
 #import <MJExtension/MJExtension.h>
-#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
+#import "ZLGitRemoteService-Swift.h"
 
 
 #define ZLKeyChainService @"com.zm.fbd34c5a34be72f66c35.ZLGitHubClient"

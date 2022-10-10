@@ -32,7 +32,7 @@
 #import "ZLGithubRepositoryBranchModel.h"
 #import "ZLGithubContentModel.h"
 #import "ZLGithubIssueModel.h"
-#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
+#import "ZLGitRemoteService-Swift.h"
 
 @interface ZLGithubHttpClient()
 

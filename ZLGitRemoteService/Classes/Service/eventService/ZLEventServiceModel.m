@@ -11,7 +11,7 @@
 #import "ZLUserServiceModel.h"
 #import "ZLOperationResultModel.h"
 #import "ZLGithubHttpClient.h"
-#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
+#import "ZLGitRemoteService-Swift.h"
 
 
 @implementation ZLEventServiceModel

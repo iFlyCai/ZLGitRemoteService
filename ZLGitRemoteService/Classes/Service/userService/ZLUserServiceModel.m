@@ -19,7 +19,7 @@
 
 #import <MJExtension/MJExtension.h>
 
-#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
+#import "ZLGitRemoteService-Swift.h"
 
 
 @implementation ZLUserServiceModel

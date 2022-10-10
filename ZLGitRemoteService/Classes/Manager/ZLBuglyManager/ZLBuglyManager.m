@@ -11,7 +11,7 @@
 #import "ZLOperationResultModel.h"
 #import "ZLDeviceInfo.h"
 #import "ZLSharedDataManager.h"
-#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
+#import "ZLGitRemoteService-Swift.h"
 
 @interface ZLBuglyManager() <BuglyDelegate>
 

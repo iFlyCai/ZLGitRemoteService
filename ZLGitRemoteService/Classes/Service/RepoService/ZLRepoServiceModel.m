@@ -17,7 +17,7 @@
 
 #import "ZLGithubRequestErrorModel.h"
 #import "ZLOperationResultModel.h"
-#import <ZLGitRemoteService/ZLGitRemoteService-Swift.h>
+#import "ZLGitRemoteService-Swift.h"
 
 
 @implementation ZLRepoServiceModel
