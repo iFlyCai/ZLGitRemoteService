@@ -31,15 +31,7 @@ final class ZLFirebaseProvider : ProviderType {
 
 
 @objcMembers public class ZLAppEventForOC : NSObject {
-    
-    // result 0 成功 1 失败 2 手动停止
-    // step 失败时的进度
-    // way 0 auth 登陆  1 token登陆
-    
-    public static func loginEvent(result:Int,step:Int,way:Int,error: String?){
-        analytics.log(.login(result: result,step:step, way: way,error: error))
-    }
-    
+            
     public class func urlUse(url : String){
         analytics.log(.URLUse(url: url))
     }
@@ -57,7 +49,7 @@ final class ZLFirebaseProvider : ProviderType {
 
 
 public enum ZLAppEvent {
-    case login(result:Int,step:Int,way:Int,error:String?)
+    case githubOAuth(result:Bool,step:Int,msg:String,duration:TimeInterval)
     case viewItem(name:String)
     case URLUse(url:String)
     case URLFailed(url:String,error:String)
@@ -70,8 +62,8 @@ public enum ZLAppEvent {
 extension ZLAppEvent : EventType {
     public func name(for provider: ProviderType) -> String? {
         switch self {
-        case .login:
-            return  AnalyticsEventLogin
+        case .githubOAuth:
+            return "githubOAuth"
         case .viewItem:
             return AnalyticsEventViewItem
         case .URLUse:
@@ -93,8 +85,11 @@ extension ZLAppEvent : EventType {
     }
     public func parameters(for provider: ProviderType) -> [String: Any]? {
         switch self {
-        case .login(let result,let step,let way,let error):
-            return ["result":result,"step":step,"way":way,"error":error ?? "NULL"];
+        case .githubOAuth(let result,let step,let msg,let duration):
+            return ["result": result,
+                    "step": step,
+                    "msg": msg,
+                    "duration": duration]
         case .viewItem(let name):
             return ["itemName":name]
         case .URLUse(let url):
