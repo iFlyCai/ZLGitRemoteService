@@ -52,13 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
                     serialNumber:(NSString *) serialNumber;
 
 
-/**
- * @brief 根据loginName获取指定的用户信息
- * @param loginName 登陆名
- **/
-- (void) getUserInfo:(GithubResponse) block
-           loginName:(NSString *) loginName
-        serialNumber:(NSString *) serialNumber;
+
 
 
 /**
@@ -108,74 +102,17 @@ NS_ASSUME_NONNULL_BEGIN
                     serialNumber:(NSString *) serialNumber;
 
 
-/**
- * @brief 查询用户的contributions
- * @param loginName 用户的登录名
- **/
-- (void) getUserContributionsData:(GithubResponse) block
-                        loginName: (NSString * _Nonnull) loginName
-                     serialNumber: (NSString * _Nonnull) serialNumber;
+
 
 
 #pragma mark - repositories
-/**
- * @brief 获取当前登陆的用户 repositories信息
- * @param block 请求回调
- * @param page  第n页
- * @param per_page 一页多少记录
- * @param serialNumber 流水号 通过block回调原样返回
- **/
-- (void) getRepositoriesForCurrentLoginUser:(GithubResponse) block
-                                       page:(NSUInteger) page
-                                   per_page:(NSUInteger) per_page
-                               serialNumber:(NSString *) serialNumber;
 
 
 
 
-/**
- * @brief 获取某用户 repositories信息
- * @param block 请求回调
- * @param loginName 用户的登陆名
- * @param page  第n页
- * @param per_page 一页多少记录
- * @param serialNumber 流水号 通过block回调原样返回
- **/
-- (void) getRepositoriesForUser:(GithubResponse) block
-                      loginName:(NSString*) loginName
-                           page:(NSUInteger) page
-                       per_page:(NSUInteger) per_page
-                   serialNumber:(NSString *) serialNumber;
-
-
-/**
- * @brief 获取当前登陆的用户 标星的repositories信息
- * @param block 请求回调
- * @param page  第n页
- * @param per_page 一页多少记录
- * @param serialNumber 流水号 通过block回调原样返回
- **/
-- (void) getStarredRepositoriesForCurrentLoginUser:(GithubResponse) block
-                                              page:(NSUInteger) page
-                                          per_page:(NSUInteger) per_page
-                                      serialNumber:(NSString *) serialNumber;
 
 
 
-
-/**
- * @brief 获取某用户标星 repositories信息
- * @param block 请求回调
- * @param loginName 用户的登陆名
- * @param page  第n页
- * @param per_page 一页多少记录
- * @param serialNumber 流水号 通过block回调原样返回
- **/
-- (void) getStarredRepositoriesForUser:(GithubResponse) block
-                             loginName:(NSString*) loginName
-                                  page:(NSUInteger) page
-                              per_page:(NSUInteger) per_page
-                          serialNumber:(NSString *) serialNumber;
 
 
 /**
@@ -351,49 +288,6 @@ NS_ASSUME_NONNULL_BEGIN
          serialNumber:(NSString *) serialNumber;
 
 
-
-#pragma mark - gists
-
-- (void) getGistsForCurrentUser:(GithubResponse) block
-                           page:(NSUInteger) page
-                       per_page:(NSUInteger) per_page
-                   serialNumber:(NSString *) serialNumber;
-
-- (void) getGistsForUser:(GithubResponse) block
-               loginName:(NSString *) loginName
-                    page:(NSUInteger) page
-                per_page:(NSUInteger) per_page
-            serialNumber:(NSString *) serialNumber;
-
-#pragma mark - followers
-
-- (void) getFollowersForUser:(GithubResponse) block
-                   loginName:(NSString*) loginName
-                        page:(NSUInteger) page
-                    per_page:(NSUInteger) per_page
-                serialNumber:(NSString *) serialNumber;
-
-- (void) getUserFollowStatus: (GithubResponse) block
-                   loginName: (NSString *) loginName
-                serialNumber:(NSString *) serialNumber;
-
-- (void) followUser: (GithubResponse) block
-          loginName: (NSString *) loginName
-       serialNumber: (NSString *) serialNumber;
-
-- (void) unfollowUser: (GithubResponse) block
-            loginName: (NSString *) loginName
-         serialNumber: (NSString *) serialNumber;
-
-
-#pragma mark - following
-
-- (void) getFollowingForUser:(GithubResponse) block
-                   loginName:(NSString*) loginName
-                        page:(NSUInteger) page
-                    per_page:(NSUInteger) per_page
-                serialNumber:(NSString *) serialNumber;
-
 #pragma mark - events
 - (void)getReceivedEventsForUser:(NSString *)userName
                             page:(NSUInteger)page
@@ -493,25 +387,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) renderCodeToMarkdown:(GithubResponse) block
                           code:(NSString *) code
                  serialNumber:(NSString *) serialNumber;
-
-
-
-#pragma mark - Blocks
-
-- (void) getBlocks:(GithubResponse) block
-      serialNumber:(NSString *) serialNumber;
-
-- (void) getUserBlockStatus: (GithubResponse) block
-                  loginName: (NSString *) loginName
-               serialNumber:(NSString *) serialNumber;
-
-- (void) blockUser: (GithubResponse) block
-         loginName: (NSString *) loginName
-      serialNumber: (NSString *) serialNumber;
-
-- (void) unBlockUser: (GithubResponse) block
-           loginName: (NSString *) loginName
-        serialNumber: (NSString *) serialNumber;
 
 
 #pragma mark - config

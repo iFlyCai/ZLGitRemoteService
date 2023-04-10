@@ -62,9 +62,9 @@
         ZLMainThreadDispatch(if(handle){handle(userResultModel);})
     };
     
-    [[ZLGithubHttpClient defaultClient] getUserInfo:response
-                                          loginName:loginName
-                                       serialNumber:serailNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getUserInfoWithLogin:loginName
+                                                  serialNumber:serailNumber
+                                                      response:response];
         
     return [[ZLServiceManager sharedInstance].dbModule getUserOrOrgInfoWithLoginName:loginName];
 }
@@ -123,8 +123,10 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getUserFollowStatus:response loginName:loginName serialNumber:serialNumber];
     
+    [[ZLGithubHttpClientV2 defaultClient] getFollowStatusForLogin:loginName
+                                                     serialNumber:serialNumber
+                                                         response:response];
 }
 
 /**
@@ -152,8 +154,9 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] followUser:response loginName:loginName serialNumber:serialNumber];
-    
+    [[ZLGithubHttpClientV2 defaultClient] followUserWithLogin:loginName
+                                                 serialNumber:serialNumber
+                                                     response:response];
 }
 /**
  * @brief unfollow user
@@ -180,8 +183,9 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] unfollowUser:response loginName:loginName serialNumber:serialNumber];
-    
+    [[ZLGithubHttpClientV2 defaultClient] unfollowUserWithLogin:loginName
+                                                 serialNumber:serialNumber
+                                                     response:response];
 }
 
 #pragma mark - block
@@ -206,7 +210,10 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getBlocks:response serialNumber:serialNumber];
+    
+    
+    [[ZLGithubHttpClientV2 defaultClient] getBlockUsersWithSerialNumber:serialNumber
+                                                               response:response];
 }
 
 
@@ -228,9 +235,9 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getUserBlockStatus:response
-                                                 loginName:loginName
-                                              serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getBlockStatusForLogin:loginName
+                                                    serialNumber:serialNumber
+                                                        response:response];
 }
 
 - (void) blockUserWithLoginName: (NSString *) loginName
@@ -250,9 +257,9 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] blockUser:response
-                                        loginName:loginName
-                                     serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] blockUserWithLogin:loginName
+                                                serialNumber:serialNumber
+                                                    response:response];
     
 }
 
@@ -273,9 +280,9 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] unBlockUser:response
-                                         loginName:loginName
-                                      serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] unblockUserWithLogin:loginName
+                                                  serialNumber:serialNumber
+                                                      response:response];
 }
 
 
@@ -473,20 +480,17 @@
     
     if([currentLoginName isEqualToString:userLoginName])
     {
-        // 为当前登陆的用户
-        [[ZLGithubHttpClient defaultClient] getRepositoriesForCurrentLoginUser:responseBlock
-                                                                          page:page
-                                                                      per_page:per_page
-                                                                  serialNumber:serialNumber];
+        [[ZLGithubHttpClientV2 defaultClient] getRepositoriesForCurrentUserWithPage:page
+                                                                            perPage:per_page
+                                                                       serialNumber:serialNumber
+                                                                           response:responseBlock];
     }
     else
     {
         // 不是当前登陆的用户
-        [[ZLGithubHttpClient defaultClient] getRepositoriesForUser:responseBlock
-                                                         loginName:userLoginName
-                                                              page:page
-                                                          per_page:per_page
-                                                      serialNumber:serialNumber];
+        [[ZLGithubHttpClientV2 defaultClient] getRepositoriesForUserWithLogin:userLoginName
+                                                                         page:page
+                                                                      perPage:per_page serialNumber:serialNumber response:responseBlock];
     }
     
 }
@@ -514,11 +518,11 @@
     };
     
 
-    [[ZLGithubHttpClient defaultClient] getFollowersForUser:responseBlock
-                                                  loginName:userLoginName
-                                                       page:page
-                                                   per_page:per_page
-                                               serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getFollowersForUserWithLogin:userLoginName
+                                                                  page:page
+                                                               perPage:per_page
+                                                          serialNumber:serialNumber
+                                                              response:responseBlock];
 }
 
 
@@ -546,11 +550,10 @@
     };
     
     
-    [[ZLGithubHttpClient defaultClient] getFollowingForUser:responseBlock
-                                                  loginName:userLoginName
-                                                       page:page
-                                                   per_page:per_page
-                                               serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getFollowingsForUserWithLogin:userLoginName
+                                                                   page:page
+                                                                perPage:per_page
+                                                           serialNumber:serialNumber response:responseBlock];
 }
 
 
@@ -582,19 +585,19 @@
     if([currentLoginName isEqualToString:userLoginName])
     {
         // 为当前登陆的用户
-        [[ZLGithubHttpClient defaultClient] getStarredRepositoriesForCurrentLoginUser:responseBlock
-                                                                                 page:page
-                                                                             per_page:per_page
-                                                                         serialNumber:serialNumber];
+        [[ZLGithubHttpClientV2 defaultClient] getStarredsForCurrentUserWithPage:page
+                                                                        perPage:per_page
+                                                                   serialNumber:serialNumber
+                                                                       response:responseBlock];
     }
     else
     {
         // 不是当前登陆的用户
-        [[ZLGithubHttpClient defaultClient] getStarredRepositoriesForUser:responseBlock
-                                                                loginName:userLoginName
+        [[ZLGithubHttpClientV2 defaultClient] getStarredsForUserWithLogin:userLoginName
                                                                      page:page
-                                                                 per_page:per_page
-                                                             serialNumber:serialNumber];
+                                                                  perPage:per_page
+                                                             serialNumber:serialNumber
+                                                                 response:responseBlock];
     }
 }
 
@@ -627,12 +630,19 @@
     if([currentLoginName isEqualToString:userLoginName])
     {
         // 为当前登陆的用户
-        [[ZLGithubHttpClient defaultClient] getGistsForCurrentUser:responseBlock page:page per_page:per_page serialNumber:serialNumber];
+        [[ZLGithubHttpClientV2 defaultClient] getGistsForCurrentUserWithPage:page
+                                                                     perPage:per_page
+                                                                serialNumber:serialNumber
+                                                                    response:responseBlock];
     }
     else
     {
         // 不是当前登陆的用户
-        [[ZLGithubHttpClient defaultClient] getGistsForUser:responseBlock loginName:userLoginName page:page per_page:per_page serialNumber:serialNumber];
+        [[ZLGithubHttpClientV2 defaultClient] getGistsForUserWithLogin:userLoginName
+                                                                  page:page
+                                                               perPage:per_page
+                                                          serialNumber:serialNumber
+                                                              response:responseBlock];
     }
     
 }

@@ -64,5 +64,6 @@ Pod::Spec.new do |s|
   s.dependency 'Apollo', '~> 0.39.0'
   s.dependency 'SYDCentralPivot'
   s.dependency 'Bugly'
+  s.dependency 'Alamofire'
 
 end
