@@ -125,11 +125,11 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getRepositoryReadMeInfo:response
-                                                       fullName:fullName
-                                                         branch:branch
-                                                         isHTML:isHTML
-                                                   serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getRepoReadMeInfoWithFullName:fullName
+                                                                    ref:branch
+                                                          isHTMLContent:isHTML
+                                                           serialNumber:serialNumber
+                                                               response:response];
 }
 
 
@@ -159,12 +159,12 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getRepositoryPullRequestInfo:response
-                                                            fullName:fullName
-                                                               state:state
-                                                            per_page:per_page
-                                                                page:page
-                                                        serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getPRsForRepoWithFullName:fullName
+                                                              state:state
+                                                               page:page
+                                                           per_page:per_page
+                                                       serialNumber:serialNumber
+                                                           response:response];
 }
 
 
@@ -195,13 +195,17 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] getRepositoryCommitsInfo:response
-                                                        fullName:fullName
-                                                          branch:branch
-                                                           until:untilDate
-                                                           since:sinceDate
-                                                    serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getCommitsForRepoWithFullName:fullName
+                                                                   page:1
+                                                               per_page:30
+                                                                    sha:nil
+                                                                   path:nil
+                                                                 author:nil
+                                                              committer:nil
+                                                                  since:sinceDate
+                                                                  until:untilDate
+                                                           serialNumber:serialNumber
+                                                               response:response];
 }
 
 
@@ -233,10 +237,9 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] getRepositoryBranchesInfo:response
-                                                         fullName:fullName
-                                                     serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getBranchsForRepoWithFullName:fullName
+                                                           serialNumber:serialNumber
+                                                               response:response];
 }
 
 
@@ -272,10 +275,9 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] getRepositoryContributors:response
-                                                         fullName:fullName
-                                                     serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getContributorsForRepoWithFullName:fullName
+                                                                serialNumber:serialNumber
+                                                                    response:response];
 }
 
 
@@ -314,13 +316,11 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] getRepositoryIssues:response
-                                                   fullName:fullName
-                                                      state:state
-                                                   per_page:per_page
-                                                       page:page
-                                               serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getIssuesForRepoWithFullName:fullName
+                                                                 state:state
+                                                                  page:page
+                                                              per_page:per_page
+                                                          serialNumber:serialNumber response:response];
 }
 
 
@@ -350,7 +350,9 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] watchRepository:response fullName:fullName serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] watchRepoWithFullName:fullName
+                                                   serialNumber:serialNumber
+                                                       response:response];
 }
 
 - (void) unwatchRepoWithFullName:(NSString *) fullName
@@ -376,8 +378,9 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] unwatchRepository:response fullName:fullName serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] unwatchRepoWithFullName:fullName
+                                                     serialNumber:serialNumber
+                                                         response:response];
 }
 
 - (void) getRepoWatchStatusWithFullName:(NSString *) fullName
@@ -403,10 +406,10 @@
         }
     };
     
+    [[ZLGithubHttpClientV2 defaultClient] getWatchRepoStatusWithFullName:fullName
+                                                            serialNumber:serialNumber
+                                                                response:response];
     
-    [[ZLGithubHttpClient defaultClient] getWatchRepositoryStatus:response
-                                                        fullName:fullName
-                                                    serialNumber:serialNumber];
 }
 
 
@@ -436,11 +439,11 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getRepoWatchers:response
-                                               fullName:fullName
-                                               per_page:per_page
-                                                   page:page
-                                           serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getWatchersForRepoWithFullName:fullName
+                                                                    page:page
+                                                                per_page:per_page
+                                                            serialNumber:serialNumber
+                                                                response:response];
 }
 
 
@@ -469,8 +472,9 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] starRepository:response fullName:fullName serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] starRepoWithFullName:fullName
+                                                  serialNumber:serialNumber
+                                                      response:response];
 }
 
 - (void) unstarRepoWithFullName:(NSString *) fullName
@@ -496,8 +500,9 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] unstarRepository:response fullName:fullName serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] unstarRepoWithFullName:fullName
+                                                    serialNumber:serialNumber
+                                                        response:response];
 }
 
 - (void) getRepoStarStatusWithFullName:(NSString *) fullName
@@ -523,10 +528,9 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] getStarRepositoryStatus:response
-                                                       fullName:fullName
-                                                   serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getStarRepoStatusWithFullName:fullName
+                                                           serialNumber:serialNumber
+                                                               response:response];
 }
 
 - (void) getRepoStargazersWithFullName:(NSString *) fullName
@@ -554,14 +558,11 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] getRepoStargazers:response
-                                                 fullName:fullName
-                                                 per_page:per_page
-                                                     page:page
-                                             serialNumber:serialNumber];
-    
-    
+    [[ZLGithubHttpClientV2 defaultClient] getStargazersForRepoWithFullName:fullName
+                                                                      page:page
+                                                                  per_page:per_page
+                                                              serialNumber:serialNumber
+                                                                  response:response];
 }
 
 
@@ -592,10 +593,12 @@
     };
     
     
-    [[ZLGithubHttpClient defaultClient] forkRepository:response
-                                              fullName:fullName
-                                                   org:org
-                                          serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] forkRepoWithFullName:fullName
+                                                  organization:org
+                                                          name:nil
+                                           default_branch_only:false
+                                                  serialNumber:serialNumber
+                                                      response:response];
 }
 
 
@@ -624,11 +627,11 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getRepoForks:response
-                                            fullName:fullName
-                                            per_page:per_page
-                                                page:page
-                                        serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getForksForRepoWithFullName:fullName
+                                                                 page:page
+                                                             per_page:per_page
+                                                         serialNumber:serialNumber
+                                                             response:response];
 }
 
 #pragma mark - languages
@@ -651,7 +654,9 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getRepoLanguages:response fullName:fullName serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getLanguagesInfoForRepoWithFullName:fullName
+                                                                 serialNumber:serialNumber
+                                                                     response:response];
 }
 
 
@@ -677,11 +682,11 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getRepoWorkflows:response
-                                                fullName:fullName
-                                                per_page:per_page
-                                                    page:page
-                                            serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getWorkflowsForRepoWithFullName:fullName
+                                                                     page:page
+                                                                 per_page:per_page
+                                                             serialNumber:serialNumber
+                                                                 response:response];
 }
 
 
@@ -705,12 +710,12 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getRepoWorkflowRuns:response
-                                                   fullName:fullName
-                                                 workflowId:workflowId
-                                                   per_page:per_page
-                                                       page:page
-                                               serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getWorkflowRunsForRepoWithFullName:fullName
+                                                                  workflowId:workflowId
+                                                                        page:page
+                                                                    per_page:per_page
+                                                                serialNumber:serialNumber
+                                                                    response:response];
 }
 
 
@@ -732,10 +737,10 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] rerunRepoWorkflowRun:response
-                                                    fullName:fullName
-                                               workflowRunId:workflowRunId
-                                                serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] rerunWorkflowRunForRepoWithFullName:fullName
+                                                                workflowRunId:workflowRunId
+                                                                 serialNumber:serialNumber
+                                                                     response:response];
 }
 
 - (void) cancelRepoWorkflowRunWithFullName:(NSString *) fullName
@@ -756,10 +761,10 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] cancelRepoWorkflowRun:response
-                                                     fullName:fullName
-                                                workflowRunId:workflowRunId
-                                                 serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] cancelWorkflowRunForRepoWithFullName:fullName
+                                                                 workflowRunId:workflowRunId
+                                                                  serialNumber:serialNumber
+                                                                      response:response];
 }
 
 - (void) getRepoWorkflowRunLogWithFullName:(NSString *) fullName
@@ -780,10 +785,10 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getRepoWorkflowRunLog:response
-                                                     fullName:fullName
-                                                workflowRunId:workflowRunId
-                                                 serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getWorkflowRunLogForRepoWithFullName:fullName
+                                                                 workflowRunId:workflowRunId
+                                                                  serialNumber:serialNumber
+                                                                      response:response];
     
 }
 

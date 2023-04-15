@@ -131,71 +131,6 @@ NS_ASSUME_NONNULL_BEGIN
             per_page:(NSUInteger) per_page
         serialNumber:(NSString *) serialNumber;
 
-
-/**
- * @brief 根据fullName直接获取Repo的详细信息
- * @param block 请求回调
- * @param fullName octocat/Hello-World
- * @param serialNumber 流水号 通过block回调原样返回
- **/
-- (void) getRepositoryInfo:(GithubResponse) block
-                  fullName:(NSString *) fullName
-              serialNumber:(NSString *) serialNumber;
-
-
-/**
-* @brief 根据fullName直接获取Repo readme 信息
-* @param block 请求回调
-* @param fullName octocat/Hello-World
-* @param serialNumber 流水号 通过block回调原样返回
-**/
-- (void) getRepositoryReadMeInfo:(GithubResponse) block
-                        fullName:(NSString *) fullName
-                          branch:(NSString * __nullable)branch
-                          isHTML:(BOOL) isHTML
-                    serialNumber:(NSString *) serialNumber;
-
-
-/**
- * @brief 根据fullName直接获取Repo readme 信息
- * @param block 请求回调
- * @param fullName octocat/Hello-World
- * @param state closed / open / all
- * @param serialNumber 流水号 通过block回调原样返回
- **/
-- (void) getRepositoryPullRequestInfo:(GithubResponse) block
-                             fullName:(NSString *) fullName
-                                state:(NSString *) state
-                             per_page:(NSInteger) per_page
-                                 page:(NSInteger) page
-                         serialNumber:(NSString *) serialNumber;
-
-/**
- * @brief 根据fullName直接获取Repo readme 信息
- * @param block 请求回调
- * @param fullName octocat/Hello-World
- * @param untilDate  限制commit的最晚时间
- * @param sinceDate 限制commir的最早时间
- * @param serialNumber 流水号 通过block回调原样返回
- **/
-- (void) getRepositoryCommitsInfo:(GithubResponse) block
-                         fullName:(NSString *) fullName
-                           branch:(NSString *) branch
-                            until:(NSDate *) untilDate
-                            since:(NSDate *) sinceDate
-                     serialNumber:(NSString *) serialNumber;
-
-/**
- * @brief 根据fullName直接获取branches 信息
- * @param block 请求回调
- * @param fullName octocat/Hello-World
- * @param serialNumber 流水号 通过block回调原样返回
- **/
-- (void) getRepositoryBranchesInfo:(GithubResponse) block
-                          fullName:(NSString *) fullName
-                      serialNumber:(NSString *) serialNumber;
-
-
 /**
  * @brief 根据fullName直接获取contents 信息
  * @param block 请求回调
@@ -216,53 +151,6 @@ NS_ASSUME_NONNULL_BEGIN
                         branch:(NSString *) branch
                     acceptType:(NSString * __nullable) acceptType
                   serialNumber:(NSString *) serialNumber;
-
-
-- (void) getRepositoryContributors:(GithubResponse) block
-                          fullName:(NSString *) fullName
-                      serialNumber:(NSString *) serialNumber;
-
-
-#pragma mark - star repo
-
-- (void) getStarRepositoryStatus:(GithubResponse) block
-                        fullName:(NSString *) fullName
-                    serialNumber:(NSString *) serialNumber;
-
-- (void) starRepository:(GithubResponse) block
-               fullName:(NSString *) fullName
-           serialNumber:(NSString *) serialNumber;
-
-- (void) unstarRepository:(GithubResponse) block
-                 fullName:(NSString *) fullName
-             serialNumber:(NSString *) serialNumber;
-
-- (void) getRepoStargazers:(GithubResponse) block
-                  fullName:(NSString *) fullName
-                  per_page:(NSInteger) per_page
-                      page:(NSInteger) page
-              serialNumber:(NSString *) serialNumber;
-
-
-#pragma mark - watch repo
-
-- (void) getWatchRepositoryStatus:(GithubResponse) block
-                         fullName:(NSString *) fullName
-                     serialNumber:(NSString *) serialNumber;
-
-- (void) watchRepository:(GithubResponse) block
-                fullName:(NSString *) fullName
-            serialNumber:(NSString *) serialNumber;
-
-- (void) unwatchRepository:(GithubResponse) block
-                  fullName:(NSString *) fullName
-              serialNumber:(NSString *) serialNumber;
-
-- (void) getRepoWatchers:(GithubResponse) block
-                fullName:(NSString *) fullName
-                per_page:(NSInteger) per_page
-                    page:(NSInteger) page
-            serialNumber:(NSString *) serialNumber;
 
 
 #pragma mark - fork repo
