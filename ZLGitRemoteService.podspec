@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ZLGitRemoteService'
-  s.version          = '1.2.1'
+  s.version          = '1.4.0'
   s.summary          = 'A short description of ZLGitRemoteService.'
 
 # This description is used to generate tags and improve search results.
@@ -39,7 +39,6 @@ Pod::Spec.new do |s|
                            'ZLGitRemoteService/Classes/Manager/ZLBuglyManager/*.h',
                            'ZLGitRemoteService/Classes/PublicModule/**/*.h',
                            'ZLGitRemoteService/Classes/Network/ZLGithubHttpClient.h']
-  s.vendored_libraries = 'ZLGitRemoteService/Libs/libgumbo.a'
  # s.vendored_frameworks = 'ZLGitRemoteService/Frameworks/Bugly.framework'
   s.pod_target_xcconfig = { 'LIBRARY_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Libs",
                             'FRAMEWORK_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Frameworks",
@@ -64,5 +63,6 @@ Pod::Spec.new do |s|
   s.dependency 'Apollo', '~> 0.39.0'
   s.dependency 'SYDCentralPivot'
   s.dependency 'Bugly'
+  s.dependency 'Kanna'
 
 end
