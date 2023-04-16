@@ -8,6 +8,29 @@
 import Foundation
 import Alamofire
 
+@objc public enum ZLGithubMediaType: Int {
+    case json
+    case json_html
+    case json_raw
+    case json_text
+    case json_full
+    
+    var acceptType: String {
+        switch self {
+        case .json:
+            return "application/vnd.github.v3+json"
+        case .json_html:
+            return "application/vnd.github.v3.html+json"
+        case .json_raw:
+            return "application/vnd.github.v3.raw+json"
+        case .json_text:
+            return "application/vnd.github.v3.text+json"
+        case .json_full:
+            return "application/vnd.github.v3.full+json"
+        }
+    }
+}
+
 extension ZLGithubAPISwift {
  
     var method: HTTPMethod {
@@ -24,7 +47,8 @@ extension ZLGithubAPISwift {
             return .put
         case .forkRepo,
                 .cancelWorkflowRunForRepo,
-                .rerunWorkflowRunForRepo:
+                .rerunWorkflowRunForRepo,
+                .renderCodeToMarkdown:
             return .post
         default:
             return .get
@@ -42,8 +66,14 @@ extension ZLGithubAPISwift {
                 .getBlockedUsers,
                 .getBlockUserStatus:
             return ["Accept":"application/vnd.github.giant-sentry-fist-preview+json"]
-        case .getRepoReadMeInfo(_, _, let isHTMLContent):
-            return isHTMLContent ? ["Accept": "application/vnd.github.v3.html+json"] : [:]
+        case .getRepoReadMeInfo(_, _, let mediaType):
+            return ["Accept": mediaType.acceptType]
+        case .getFileContentForRepo(_, _ , _, let mediaType):
+            return ["Accept": mediaType.acceptType]
+        case .getAPPCommonConfig:
+            return ["Accept": "application/json"]
+        case .renderCodeToMarkdown:
+            return ["Accept": ZLGithubMediaType.json_html.acceptType]
         default:
             return [:]
         }
@@ -56,7 +86,8 @@ extension ZLGithubAPISwift {
         switch self {
         case .forkRepo,
                 .cancelWorkflowRunForRepo,
-                .rerunWorkflowRunForRepo:
+                .rerunWorkflowRunForRepo,
+                .renderCodeToMarkdown: 
             return JSONEncoding.default
         default:
             return URLEncoding.default
@@ -123,6 +154,10 @@ extension ZLGithubAPISwift {
             params = ["organization": organization,
                       "name": name,
                       "default_branch_only": default_branch_only]
+        case .getFileContentForRepo(_ , _, let ref, _):
+            params = ["ref":ref]
+        case .renderCodeToMarkdown(let code):
+            params = ["text": code]
         default:
             params = [:]
         }

@@ -88,8 +88,13 @@ extension ZLGithubAPISwift {
         case .currentUserGists,
                 .getGistsForUser:
             return .object(parseWrapper: ZLGithubAPIObjectTypeWrapper<ZLGithubGistModel>(isArray: true))
-        case .getRepoReadMeInfo(_, _, let isHTMLContent):
-            return isHTMLContent ? .string : .object(parseWrapper: ZLGithubAPIObjectTypeWrapper<ZLGithubContentModel>())
+        case .getRepoReadMeInfo(_, _, let mediaType):
+            switch mediaType {
+            case .json,.json_text,.json_full:
+                return .object(parseWrapper: ZLGithubAPIObjectTypeWrapper<ZLGithubContentModel>())
+            case .json_raw,.json_html:
+                return .string
+            }
         case .getPRsForRepo:
              return .object(parseWrapper: ZLGithubAPIObjectTypeWrapper<ZLGithubPullRequestModel>(isArray: true))
         case .getCommitsForRepo:
@@ -102,6 +107,15 @@ extension ZLGithubAPISwift {
             return .object(parseWrapper: ZLGithubAPIObjectTypeWrapper<ZLGithubIssueModel>(isArray: true))
         case .forkRepo:
             return .object(parseWrapper: ZLGithubAPIObjectTypeWrapper<ZLGithubRepositoryModel>())
+        case .getDirContentForRepo:
+            return .object(parseWrapper: ZLGithubAPIObjectTypeWrapper<ZLGithubContentModel>(isArray: true))
+        case .getFileContentForRepo(_, _, _ , let mediaType):
+            switch mediaType {
+            case .json,.json_text,.json_full:
+                return .object(parseWrapper: ZLGithubAPIObjectTypeWrapper<ZLGithubContentModel>())
+            case .json_raw,.json_html:
+                return .string
+            }
         case .getWorkflowsForRepo:
             return .custom(parseWrapper: ZLGithubAPIResultCustomParseWrapper(block: { api, _, data in
                 if let jsonObject = (data as NSObject).mj_JSONObject() as? [String: Any?],
@@ -126,6 +140,24 @@ extension ZLGithubAPISwift {
                         return ZLGithubOrgModel.mj_object(withKeyValues: data)
                     } else {
                         return ZLGithubUserModel.mj_object(withKeyValues: data)
+                    }
+                }
+                return nil
+            }))
+        case .getAPPCommonConfig:
+            return .custom(parseWrapper: ZLGithubAPIResultCustomParseWrapper(block: { api, _, data in
+                let appVersion = ZLDeviceInfo.getAppVersion()
+                if let jsonObject = (data as NSObject).mj_JSONObject() as? [String: Any?],
+                   let config = jsonObject[appVersion] as? [String: Any?] {
+                    return ZLGithubConfigModel.mj_object(withKeyValues: config)
+                }
+                return nil
+            }))
+        case .getDevelopLanguageList:
+            return .custom(parseWrapper: ZLGithubAPIResultCustomParseWrapper(block: { api, _, data in
+                if let jsonObject = (data as NSObject).mj_JSONObject() as? [[String: Any?]] {
+                    return jsonObject.compactMap { item in
+                        item["name"] as? String
                     }
                 }
                 return nil
@@ -164,6 +196,8 @@ extension ZLGithubAPISwift {
             }))
         case .getLanguagesInfoForRepo:
             return .jsonObject
+        case .renderCodeToMarkdown:
+            return .string
         default:
             return .data
 

@@ -263,7 +263,9 @@ public extension ZLGithubHttpClientV2 {
                                  isHTMLContent: Bool,
                                  serialNumber: String,
                                  response: @escaping GithubResponseSwift) {
-        let api = ZLGithubAPISwift.getRepoReadMeInfo(fullName: fullName, ref: ref, isHTMLContent: isHTMLContent)
+        let api = ZLGithubAPISwift.getRepoReadMeInfo(fullName: fullName,
+                                                     ref: ref,
+                                                     mediaType: isHTMLContent ? .json_html : .json)
         self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
     }
     
@@ -561,4 +563,62 @@ public extension ZLGithubHttpClientV2 {
                                                             workflowRunId: workflowRunId)
         self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
     }
+    
+    ///  获取仓库的指定目录内容
+    ///  - Parameters
+    ///    - fullName: 仓库名 existorlive/githubclient
+    ///    - path:  目录的路径
+    ///    - ref: 分支，传空使用默认分支
+    @objc func getDirContentForRepo(fullName: String,
+                                    path: String,
+                                    ref: String?,
+                                    serialNumber: String,
+                                    response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.getDirContentForRepo(fullName: fullName,
+                                                        path: path,
+                                                        ref: ref)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    ///  获取仓库的指定文件内容
+    ///  - Parameters
+    ///    - fullName: 仓库名 existorlive/githubclient
+    ///    - path:  仓库的路径
+    ///    - ref: 分支，传空使用默认分支
+    ///    - mediaType: 文件内容返回的类型 （text，html 或 raw）
+    @objc func getFileContentForRepo(fullName: String,
+                                    path: String,
+                                    ref: String?,
+                                     mediaType: ZLGithubMediaType,
+                                    serialNumber: String,
+                                    response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.getFileContentForRepo(fullName: fullName,
+                                                         path: path,
+                                                         ref: ref,
+                                                         mediaType: mediaType)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    ///  获取Github支持的开发语言列表
+    @objc func getDevelopLanguageList(serialNumber: String,
+                                      response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.getDevelopLanguageList
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    ///  将代码渲染为markdown
+    @objc func renderCodeToMarkdown(code: String,
+                                    serialNumber: String,
+                                    response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.renderCodeToMarkdown(code: code)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    ///  获取APP 配置文件
+    @objc func getAPPCommonConfig(serialNumber: String,
+                                  response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.getAPPCommonConfig
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
 }

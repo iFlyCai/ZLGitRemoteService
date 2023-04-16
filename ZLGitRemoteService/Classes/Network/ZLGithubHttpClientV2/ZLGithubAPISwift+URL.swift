@@ -86,6 +86,15 @@ extension ZLGithubAPISwift {
             return ZLGithubAPISwift.GitHubAPIURL + "/repos/" + fullName.urlPathEncoding + "actions/runs/" + workflowRunId.urlPathEncoding + "/cancel"
         case .getWorkflowRunLogForRepo(let fullName, let workflowRunId):
             return ZLGithubAPISwift.GitHubAPIURL + "/repos/" + fullName.urlPathEncoding + "actions/runs/" + workflowRunId.urlPathEncoding + "/logs"
+        case .getDirContentForRepo(let fullName, let path, _),
+                .getFileContentForRepo(let fullName, let path, _, _):
+            return ZLGithubAPISwift.GitHubAPIURL + "/repos/" + fullName.urlPathEncoding + "/contents/" + path.urlPathEncoding
+        case .getDevelopLanguageList:
+            return ZLGithubAPISwift.GitHubAPIURL + "/languages"
+        case .renderCodeToMarkdown(let code):
+            return ZLGithubAPISwift.GitHubAPIURL + "/markdown"
+        case .getAPPCommonConfig:
+            return "https://www.existorlive.cn/ZLGithubConfig/ZLGithubConfig.json"
         }
     }
 }

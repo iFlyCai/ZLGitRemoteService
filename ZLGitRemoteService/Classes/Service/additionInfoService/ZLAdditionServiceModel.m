@@ -19,6 +19,8 @@
 
 #import "ZLSharedDataManager.h"
 
+#import "ZLGitRemoteService-Swift.h"
+
 @implementation ZLAdditionServiceModel
 
 + (instancetype) sharedServiceModel
@@ -68,8 +70,8 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getLanguagesList:responseBlock
-                                            serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getDevelopLanguageListWithSerialNumber:serialNumber
+                                                                        response:responseBlock];
     
     return languageList;
 }
@@ -92,7 +94,9 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] renderCodeToMarkdown:responseBlock code:code serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] renderCodeToMarkdownWithCode:code
+                                                          serialNumber:serialNumber
+                                                              response:responseBlock];
     
     
 }
@@ -118,7 +122,8 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getGithubClientConfig:responseBlock serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getAPPCommonConfigWithSerialNumber:serialNumber
+                                                                    response:responseBlock];
 }
 
 

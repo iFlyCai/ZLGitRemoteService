@@ -823,12 +823,10 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] getRepositoryContentsInfo:response
-                                                         fullName:fullName
-                                                             path:path
-                                                           branch:branch
-                                                     serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getDirContentForRepoWithFullName:fullName
+                                                                      path:path
+                                                                       ref:branch
+                                                              serialNumber:serialNumber response:response];
 }
 
 
@@ -857,13 +855,11 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] getRepositoryFileInfo:response
-                                                     fullName:fullName
-                                                         path:path
-                                                       branch:branch
-                                                   acceptType:nil
-                                                 serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getFileContentForRepoWithFullName:fullName
+                                                                       path:path
+                                                                        ref:branch
+                                                                  mediaType:ZLGithubMediaTypeJson
+                                                               serialNumber:serialNumber response:response];
 }
 
 
@@ -894,12 +890,11 @@
     };
     
     
-    [[ZLGithubHttpClient defaultClient] getRepositoryFileInfo:response
-                                                     fullName:fullName
-                                                         path:path
-                                                       branch:branch
-                                                   acceptType:@"application/vnd.github.v3.html+json"
-                                                 serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getFileContentForRepoWithFullName:fullName
+                                                                       path:path
+                                                                        ref:branch
+                                                                  mediaType:ZLGithubMediaTypeJson_html
+                                                               serialNumber:serialNumber response:response];
 }
 
 
@@ -928,13 +923,11 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] getRepositoryFileInfo:response
-                                                     fullName:fullName
-                                                         path:path
-                                                       branch:branch
-                                                   acceptType:@"application/vnd.github.v3.raw+json"
-                                                 serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getFileContentForRepoWithFullName:fullName
+                                                                       path:path
+                                                                        ref:branch
+                                                                  mediaType:ZLGithubMediaTypeJson_raw
+                                                               serialNumber:serialNumber response:response];
 }
 
 @end

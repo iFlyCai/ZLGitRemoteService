@@ -163,29 +163,6 @@ NS_ASSUME_NONNULL_BEGIN
                   serialNumber:(NSString *) serialNumber;
 
 
-#pragma mark - fork repo
-
-
-/**
- * @brief fork repo
- * @param block 请求回调
- * @param fullName octocat/Hello-World
- * @param org 组织名  nil 默认fork至当前用户   非nil fork至org
- **/
-
-- (void) forkRepository:(GithubResponse) block
-               fullName:(NSString *) fullName
-                    org:(NSString * __nullable) org
-           serialNumber:(NSString *) serialNumber;
-
-
-- (void) getRepoForks:(GithubResponse) block
-             fullName:(NSString *) fullName
-             per_page:(NSInteger) per_page
-                 page:(NSInteger) page
-         serialNumber:(NSString *) serialNumber;
-
-
 #pragma mark - events
 - (void)getReceivedEventsForUser:(NSString *)userName
                             page:(NSUInteger)page
@@ -203,15 +180,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - Issues
-
-
-- (void) getRepositoryIssues:(GithubResponse) block
-                    fullName:(NSString *) fullName
-                       state:(NSString *) state
-                    per_page:(NSInteger) per_page
-                        page:(NSInteger) page
-                serialNumber:(NSString *) serialNumber;
-
 
 - (void) createIssue:(GithubResponse) block
             fullName:(NSString *) fullName
@@ -239,46 +207,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) getLanguagesList:(GithubResponse) block
              serialNumber:(NSString *) serialNumber;
-
-
-- (void) getRepoLanguages:(GithubResponse) block
-                 fullName:(NSString *) fullName
-             serialNumber:(NSString *) serialNumber;
-
-
-#pragma mark - action
-
-- (void) getRepoWorkflows:(GithubResponse) block
-                 fullName:(NSString *) fullName
-                 per_page:(NSInteger) per_page
-                     page:(NSInteger) page
-             serialNumber:(NSString *) serialNumer;
-
-
-
-- (void) getRepoWorkflowRuns:(GithubResponse) block
-                    fullName:(NSString *) fullName
-                  workflowId:(NSString *) workflowId
-                    per_page:(NSInteger) per_page
-                        page:(NSInteger) page
-                serialNumber:(NSString *) serialNumer;
-
-
-- (void) rerunRepoWorkflowRun:(GithubResponse) block
-                     fullName:(NSString *) fullName
-                workflowRunId:(NSString *) workflowRunId
-                 serialNumber:(NSString *) serialNumer;
-
-- (void) cancelRepoWorkflowRun:(GithubResponse) block
-                      fullName:(NSString *) fullName
-                 workflowRunId:(NSString *) workflowRunId
-                  serialNumber:(NSString *) serialNumer;
-
-- (void) getRepoWorkflowRunLog:(GithubResponse) block
-                      fullName:(NSString *) fullName
-                 workflowRunId:(NSString *) workflowRunId
-                  serialNumber:(NSString *) serialNumer;
-
 
 #pragma mark - markdown
 

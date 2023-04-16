@@ -11,6 +11,8 @@ import Alamofire
 
 enum ZLGithubAPISwift {
     
+    // MARK: User
+    
     /// 当前用户的Repo 包括private
     ///  - Parameters
     ///    - page: 页号 从 1 开始
@@ -99,14 +101,16 @@ enum ZLGithubAPISwift {
     case getGistsForUser(login: String,
                          page: Int,
                          per_page: Int)
+    
+    // MARK: Repo
     ///  获取readme
     ///  - Parameters
     ///    - fullName: 仓库名 existorlive/githubclient
     ///    - ref: 分支
-    ///    - isHTMLContent: 是否获取readme的html内容
+    ///    - mediaType:  返回的数据类型
     case getRepoReadMeInfo(fullName: String,
                            ref: String?,
-                           isHTMLContent: Bool)
+                           mediaType: ZLGithubMediaType)
     ///  获取仓库的PR列表
     ///  - Parameters
     ///    - fullName: 仓库名 existorlive/githubclient
@@ -253,6 +257,34 @@ enum ZLGithubAPISwift {
     ///    - workflowRunId:  workflowRunId
     case getWorkflowRunLogForRepo(fullName: String,
                                   workflowRunId: String)
+    ///  获取仓库的指定目录内容
+    ///  - Parameters
+    ///    - fullName: 仓库名 existorlive/githubclient
+    ///    - path:  目录的路径
+    ///    - ref: 分支，传空使用默认分支
+    case getDirContentForRepo(fullName: String,
+                              path: String,
+                              ref: String?)
+    ///  获取仓库的指定文件内容
+    ///  - Parameters
+    ///    - fullName: 仓库名 existorlive/githubclient
+    ///    - path:  仓库的路径
+    ///    - ref: 分支，传空使用默认分支
+    ///    - mediaType: 文件内容返回的类型 （text，html 或 raw）
+    case getFileContentForRepo(fullName: String,
+                               path: String,
+                               ref: String?,
+                               mediaType: ZLGithubMediaType)
+    
+    // MARK: other
+    ///  获取Github支持的开发语言列表
+    case getDevelopLanguageList
+    ///  将代码渲染为markdown
+    case renderCodeToMarkdown(code: String)
+    
+    
+    // MARK: 非Github API
+    case getAPPCommonConfig
 }
 
 
