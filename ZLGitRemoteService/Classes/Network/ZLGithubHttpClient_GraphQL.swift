@@ -8,6 +8,8 @@
 
 import Foundation
 import Apollo
+import Kanna
+import AFNetworking
 
 public typealias GithubResponseSwift = (Bool,Any?,String) -> Void
 
@@ -655,6 +657,196 @@ public extension ZLGithubHttpClient{
         }
     }
     
+    // MARK: trending
+    @objc func getTrendingReposSwift(language: String?,
+                                     spokenLanguageCode: String?,
+                                     dateRange: ZLDateRange,
+                                     serialNumber: String,
+                                     block: @escaping GithubResponseSwift){
+        
+        var url = "https://github.com/trending"
+        
+        if var language = language?.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) {
+            url = url.appending("/\(language)")
+        }
+        
+        switch dateRange {
+            case ZLDateRangeDaily:
+                url = url.appending("?since=daily")
+            case ZLDateRangeWeakly:
+                 url = url.appending("?since=weekly")
+            case ZLDateRangeMonthly:
+                 url = url.appending("?since=monthly")
+            default:
+                break
+        }
+        
+        if let spokenLanguageCode = spokenLanguageCode {
+            url = url.appending("&spoken_language_code=\(spokenLanguageCode)")
+        }
+        
+        
+        let response: GithubResponse = { result, data, serialNumber in
+            guard result,
+                  let data = data as? Data else {
+                block(result, data, serialNumber)
+                return 
+            }
+            
+            do {
+                let htmlDoc = try HTML(html:data, encoding: .utf8 )
+                
+                var repos = [ZLGithubRepositoryModel]()
+                
+                for article in htmlDoc.xpath("//article") {
+                    
+                    let h2 = article.xpath("//h2").first
+                    let p = article.xpath("//p").first
+                    let a = h2?.xpath("//a").first
+                
+                    guard var fullName = a?["href"] else { continue }
+                    fullName = String(fullName.suffix(from: fullName.index(after: fullName.startIndex)))
+                    
+                    let repoModel = ZLGithubRepositoryModel()
+                    repoModel.full_name = fullName
+                    repoModel.name = String(fullName.split(separator: "/").last ?? "")
+                    
+                    let owner = ZLGithubUserBriefModel()
+                    let loginName = String(fullName.split(separator: "/").first ?? "")
+                    owner.loginName = loginName
+                    owner.avatar_url = "https://avatars.githubusercontent.com/\(loginName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "")"
+                    repoModel.owner = owner
+                    
+                    let set = NSCharacterSet(charactersIn: " \n") as CharacterSet
+                    if let desc = p?.content?.trimmingCharacters(in: set){
+                        repoModel.desc_Repo = desc
+                    }
+                    
+                    for span in article.xpath("//span") {
+                        if let itemprop = span["itemprop"],
+                           itemprop == "programmingLanguage" {
+                            repoModel.language = span.content
+                            break
+                        }
+                    }
+                    
+                    for svg in article.xpath("//svg") {
+                        let ariaLabel = svg["aria-label"]
+                        if "star" == ariaLabel,
+                           let content = svg.parent?.content {
+                            var str =  content.trimmingCharacters(in: set)
+                            str = (str as NSString).replacingOccurrences(of: ",", with: "")
+                            if let num = Int(str) {
+                                repoModel.stargazers_count = num
+                            }
+                        }
+                        if "fork" == ariaLabel,
+                           let content = svg.parent?.content {
+                            var str =  content.trimmingCharacters(in: set)
+                            str = (str as NSString).replacingOccurrences(of: ",", with: "")
+                            if let num = Int(str) {
+                                repoModel.forks_count = num
+                            }
+                        }
+                    }
+                    repos.append(repoModel)
+                }
+                
+                block(true, repos, serialNumber)
+            
+            } catch {
+                block(false, data, serialNumber)
+            }
+        }
+                
+        let sessionManager = AFHTTPSessionManager(sessionConfiguration: httpConfig)
+        sessionManager.requestSerializer = AFHTTPRequestSerializer()
+        sessionManager.requestSerializer.timeoutInterval = 30
+        sessionManager.responseSerializer = AFHTTPResponseSerializer()
+        sessionManager.responseSerializer.acceptableContentTypes = Set(["application/html","text/html"])
+        
+        request(with: sessionManager,
+                withMethod: "GET",
+                withURL: url,
+                withParams: [:],
+                withResponseBlock: response,
+                withSerialNumber: serialNumber)
+    }
+    
+    
+    @objc func getTrendingDevelopersSwift(language: String?,
+                                          dateRange: ZLDateRange,
+                                          serialNumber: String,
+                                          block: @escaping GithubResponseSwift){
+        
+        var url = "https://github.com/trending/developers"
+        
+        if var language = language?.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) {
+            url = url.appending("/\(language)")
+        }
+        
+        switch dateRange {
+            case ZLDateRangeDaily:
+                url = url.appending("?since=daily")
+            case ZLDateRangeWeakly:
+                 url = url.appending("?since=weekly")
+            case ZLDateRangeMonthly:
+                 url = url.appending("?since=monthly")
+            default:
+                break
+        }
+        
+        let response: GithubResponse = { result, data, serialNumber  in
+            guard result,
+                  let data = data as? Data else {
+                block(result, data, serialNumber)
+                return
+            }
+            
+            do {
+                let htmlDoc = try HTML(html:data, encoding: .utf8 )
+                
+                var users = [ZLGithubUserModel]()
+                
+                for article in htmlDoc.xpath("//article") {
+                    
+                    guard let id = article["id"],
+                          id.hasPrefix("pa-") else {
+                        continue
+                    }
+                    let user = ZLGithubUserModel()
+                    let login = String(id.split(separator: "-").last ?? "")
+                    user.loginName = login
+                    user.avatar_url = "https://avatars.githubusercontent.com/\(login.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "")"
+                    
+                    if let a = article.xpath("//h1[@class=\"h3 lh-condensed\"]/a").first {
+                        let set = NSCharacterSet(charactersIn: " \n") as CharacterSet
+                        user.name = a.innerHTML?.trimmingCharacters(in: set)
+                    }
+                    users.append(user)
+                }
+                
+                block(true, users, serialNumber)
+            
+            } catch {
+                block(result, data, serialNumber)
+            }
+            
+        }
+        
+        let sessionManager = AFHTTPSessionManager(sessionConfiguration: httpConfig)
+        sessionManager.requestSerializer = AFHTTPRequestSerializer()
+        sessionManager.requestSerializer.timeoutInterval = 30
+        sessionManager.responseSerializer = AFHTTPResponseSerializer()
+        sessionManager.responseSerializer.acceptableContentTypes = Set(["application/html","text/html"])
+        
+        request(with: sessionManager,
+                withMethod: "GET",
+                withURL: url,
+                withParams: [:],
+                withResponseBlock: response,
+                withSerialNumber: serialNumber)
+    }
 }
 
 

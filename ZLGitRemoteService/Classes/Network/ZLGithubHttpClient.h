@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ZLSearchServiceHeader.h"
+#import <AFNetworking/AFHTTPSessionManager.h>
 
 typedef void(^GithubResponse)(BOOL,id _Nullable ,NSString * _Nonnull);
 
@@ -23,6 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
 // request callback queue
 @property (nonatomic, strong, readonly) dispatch_queue_t completeQueue;
 
+@property (nonatomic, strong, readonly) NSURLSessionConfiguration * httpConfig;
+
+
+- (void) requestWithSessionManager:(AFHTTPSessionManager *) sessionManager
+                        withMethod:(NSString *)method
+                           withURL:(NSString *) URL
+                        WithParams:(NSDictionary *) params
+                 WithResponseBlock:(GithubResponse) block
+                  WithSerialNumber:(NSString *) serialNumber;
 
 /**
  * 设置token，检查token是否有效

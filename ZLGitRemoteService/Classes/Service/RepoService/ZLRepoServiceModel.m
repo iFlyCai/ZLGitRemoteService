@@ -8,8 +8,6 @@
 
 #import "ZLRepoServiceModel.h"
 #import "ZLRepoServiceHeader.h"
-#import "OCGumbo.h"
-#import "OCGumbo+Query.h"
 
 
 // network
@@ -938,49 +936,5 @@
                                                    acceptType:@"application/vnd.github.v3.raw+json"
                                                  serialNumber:serialNumber];
 }
-
-- (void) getRepositoryFileContentWithHTMLURL:(NSString *) htmlURL
-                                      branch:(NSString *) branch
-                                serialNumber:(NSString *) serialNumber
-                              completeHandle:(void(^)(ZLOperationResultModel *)) handle{
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-
-        NSError *error = nil;
-        NSString *html = [NSString stringWithContentsOfURL:[NSURL URLWithString:htmlURL]
-                                                  encoding:NSUTF8StringEncoding
-                                                     error:&error];
-        
-        ZLOperationResultModel * operationResultModel = [[ZLOperationResultModel alloc] init];
-        if(error) {
-            operationResultModel.result = false;
-            operationResultModel.serialNumber = serialNumber;
-            ZLGithubRequestErrorModel *model = [[ZLGithubRequestErrorModel alloc] init];
-            model.message = error.localizedDescription;
-            operationResultModel.data = model;
-        } else {
-            OCGumboDocument *doc = [[OCGumboDocument alloc] initWithHTMLString:html];
-            NSArray<OCGumboElement *> *tableArray = doc.Query(@"table");
-            if(tableArray.count > 0){
-                operationResultModel.result = true;
-                operationResultModel.serialNumber = serialNumber;
-                operationResultModel.data = tableArray.firstObject.parentNode.html();
-            } else {
-                operationResultModel.result = false;
-                operationResultModel.serialNumber = serialNumber;
-                ZLGithubRequestErrorModel *model = [[ZLGithubRequestErrorModel alloc] init];
-                model.message = @"Not Found";
-                operationResultModel.data = model;
-            }
-        }
-
-        ZLMainThreadDispatch({
-            if(handle){
-                handle(operationResultModel);
-            }
-        })
-    });
-}
-
 
 @end

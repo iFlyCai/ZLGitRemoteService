@@ -255,14 +255,6 @@
                                  serialNumber:(NSString * _Nonnull) serialNumber
                                completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle;
 
-
-- (void) getRepositoryFileContentWithHTMLURL:(NSString * _Nonnull) htmlURL
-                                      branch:(NSString * _Nonnull) branch
-                                serialNumber:(NSString * _Nonnull) serialNumber
-                              completeHandle:(void(^ _Nonnull)(ZLOperationResultModel *  _Nonnull)) handle;
-
-
-
 @end
 
 

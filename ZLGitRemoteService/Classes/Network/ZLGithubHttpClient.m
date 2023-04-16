@@ -17,8 +17,6 @@
 #import "ZLSharedDataManager.h"
 #import "NSDate+Format.h"
 #import "NSString+ZLExtension.h"
-#import "OCGumbo.h"
-#import "OCGumbo+Query.h"
 
 // model
 #import "ZLGithubRequestErrorModel.h"
@@ -36,7 +34,7 @@
 
 @interface ZLGithubHttpClient()
 
-@property (nonatomic, strong) NSURLSessionConfiguration * httpConfig;
+
 
 @end
 
@@ -443,8 +441,6 @@
           WithResponseBlock:newBlock
            WithSerialNumber:serialNumber];
 }
-
-
 
 
 #pragma mark - repositories
@@ -1089,206 +1085,6 @@
                          WithParams:nil
                   WithResponseBlock:newBlock
                    WithSerialNumber:serialNumber];
-}
-
-#pragma mark - trending
-
-- (void) trendingUser: (GithubResponse)block
-             language:(NSString *__nullable) language
-            dateRange:(ZLDateRange) dateRange
-         serialNumber:(NSString *) serialNumber{
-    
-    language = [language stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
-    
-    NSString * url = @"https://github.com/trending/developers";
-    if([language length] > 0){
-        url = [url stringByAppendingPathComponent:language];
-    }
-    switch (dateRange) {
-        case ZLDateRangeDaily:
-            url = [url stringByAppendingString:@"?since=daily"];
-            break;
-        case ZLDateRangeWeakly:
-            url = [url stringByAppendingString:@"?since=weekly"];
-            break;
-        case ZLDateRangeMonthly:
-            url = [url stringByAppendingString:@"?since=monthly"];
-            break;
-        default:
-            break;
-    }
-    
-    GithubResponse newBlock = ^(BOOL result, id _Nullable responseObject, NSString * _Nonnull serialNumber) {
-        
-        if(result) {
-            
-            NSString *html = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-            
-            OCGumboDocument *doc = [[OCGumboDocument alloc] initWithHTMLString:html];
-            NSMutableArray * userArray = [NSMutableArray new];
-
-            NSArray *articles = doc.Query(@"article");
-            for(OCGumboElement *article in articles){
-                NSString * idStr = article.attr(@"id");
-                if([idStr hasPrefix:@"pa-"]){
-                    OCGumboElement *img =  article.Query(@"img").firstObject;
-                    NSString * avatar = img.attr(@"src");
-                    NSString * loginName = nil;
-                    NSString * name = nil;
-                    
-                    NSArray<OCGumboElement *>* divTagArray = article.Query(@"div.col-md-6");
-                    
-                    if([divTagArray count] >= 1){
-                        NSArray<OCGumboElement *>* aTagArray = divTagArray[0].Query(@"a");
-                        NSCharacterSet * set = [NSCharacterSet characterSetWithCharactersInString:@" \n"];
-                        name = [aTagArray.firstObject.text() stringByTrimmingCharactersInSet:set];
-                        loginName = [aTagArray.lastObject.text() stringByTrimmingCharactersInSet:set];
-                    }
-                    
-                    if([loginName length] > 0){
-                        ZLGithubUserModel * model = [ZLGithubUserModel new];
-                        model.loginName = loginName;
-                        model.avatar_url = avatar;
-                        model.name = name;
-                        [userArray addObject:model];
-                    }
-                }
-            }
-            responseObject = userArray;
-        }
-        block(result,responseObject,serialNumber);
-    };
-    
-    
-    AFHTTPSessionManager *sessionManager =  [[AFHTTPSessionManager alloc] initWithSessionConfiguration:_httpConfig];
-    sessionManager.completionQueue = _completeQueue;
-    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    sessionManager.requestSerializer.timeoutInterval = 30;
-    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    sessionManager.responseSerializer.acceptableContentTypes = [[NSSet alloc] initWithArray:@[@"application/html",@"text/html"]];
-    
-    [self requestWithSessionManager:sessionManager
-                         withMethod:@"GET"
-                            withURL:url
-                         WithParams:nil
-                  WithResponseBlock:newBlock
-                   WithSerialNumber:serialNumber];
-}
-
-
-- (void) trendingRepo:(GithubResponse)block
-             language:(NSString * __nullable) language
-   spokenLanguageCode:(NSString * __nullable) spokenLanguageCode
-            dateRange:(ZLDateRange) dateRange
-         serialNumber:(NSString *) serialNumber {
-    
-    language = [language stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
-
-    NSString * url = @"https://github.com/trending";
-    if([language length] > 0){
-        url = [url stringByAppendingPathComponent:language];
-    }
-
-    switch (dateRange) {
-        case ZLDateRangeDaily:
-            url = [url stringByAppendingString:@"?since=daily"];
-            break;
-        case ZLDateRangeWeakly:
-            url = [url stringByAppendingString:@"?since=weekly"];
-            break;
-        case ZLDateRangeMonthly:
-            url = [url stringByAppendingString:@"?since=monthly"];
-            break;
-        default:
-            break;
-    }
-    
-
-    if([spokenLanguageCode length] > 0) {
-        NSString* param = [NSString stringWithFormat:@"&spoken_language_code=%@",spokenLanguageCode];
-        url = [url stringByAppendingString:param];
-    }
-
-    GithubResponse newBlock = ^(BOOL result, id _Nullable responseObject, NSString * _Nonnull serialNumber) {
-        
-        if(result) {
-            
-            NSString *html = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-            
-            OCGumboDocument *doc = [[OCGumboDocument alloc] initWithHTMLString:html];
-            NSMutableArray * repoArray = [NSMutableArray new];
-            
-            NSArray *articles = doc.Query(@"article");
-            for(OCGumboElement *article in articles){
-                OCGumboElement *h1 =  article.Query(@"h1").firstObject;
-                OCGumboElement *p =  article.Query(@"p").firstObject;
-                OCGumboElement *a = h1.Query(@"a").firstObject;
-                NSString * fullName = a.attr(@"href");
-                NSCharacterSet * set = [NSCharacterSet characterSetWithCharactersInString:@" \n"];
-                NSString * desc = nil;
-                if(p){
-                    desc = [p.text() stringByTrimmingCharactersInSet:set];
-                }
-                NSString *language = @"";
-                NSArray<OCGumboElement *>* spanElements = article.Query(@"span");
-                for(OCGumboElement *element in spanElements){
-                    if([@"programmingLanguage" isEqualToString:element.attr(@"itemprop")]){
-                        language = element.text();
-                        break;
-                    }
-                }
-                
-                int forkNum = 0;
-                int starNum = 0;
-                NSArray<OCGumboElement *>* svgElements = article.Query(@"svg");
-                for(OCGumboElement *element in svgElements){
-                    if([@"star" isEqualToString:element.attr(@"aria-label")]){
-                        NSString *starNumStr = [element.parentNode.text() stringByTrimmingCharactersInSet:set];
-                        starNumStr = [starNumStr stringByReplacingOccurrencesOfString:@"," withString:@""];
-                        starNum = [starNumStr intValue];
-                    } else if ([@"fork" isEqualToString:element.attr(@"aria-label")]){
-                        NSString *forkNumStr = [element.parentNode.text() stringByTrimmingCharactersInSet:set];
-                        forkNumStr = [forkNumStr stringByReplacingOccurrencesOfString:@"," withString:@""];
-                        forkNum = [forkNumStr intValue];
-                    }
-                }
-                
-                
-                if([fullName length] > 0){
-                    ZLGithubRepositoryModel * model = [ZLGithubRepositoryModel new];
-                    model.full_name = [fullName substringFromIndex:1];
-                    model.owner = [ZLGithubUserBriefModel new];
-                    model.owner.loginName = [model.full_name componentsSeparatedByString:@"/"].firstObject;
-                    NSString *loginNamePath = [model.owner.loginName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
-                    model.owner.avatar_url = [NSString stringWithFormat:@"https://avatars.githubusercontent.com/%@", loginNamePath];
-                    model.name = [model.full_name componentsSeparatedByString:@"/"].lastObject;
-                    model.desc_Repo = desc;
-                    model.language = language;
-                    model.forks_count = forkNum;
-                    model.stargazers_count = starNum;
-                    [repoArray addObject:model];
-                }
-            }
-            responseObject = repoArray;
-        }
-        block(result,responseObject,serialNumber);
-    };
-    
-    
-    AFHTTPSessionManager *sessionManager =  [[AFHTTPSessionManager alloc] initWithSessionConfiguration:_httpConfig];
-    sessionManager.completionQueue = _completeQueue;
-    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    sessionManager.requestSerializer.timeoutInterval = 30;
-    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    sessionManager.responseSerializer.acceptableContentTypes = [[NSSet alloc] initWithArray:@[@"application/html",@"text/html"]];
-    
-    [self requestWithSessionManager:sessionManager
-                         withMethod:@"GET"
-                            withURL:url
-                         WithParams:nil
-                  WithResponseBlock:newBlock
-                   WithSerialNumber:serialNumber];
-    
 }
 
 @end

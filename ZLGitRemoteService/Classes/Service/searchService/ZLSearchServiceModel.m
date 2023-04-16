@@ -365,22 +365,21 @@
     switch(type){
          case ZLSearchTypeUsers:{
              
-             [[ZLGithubHttpClient defaultClient] trendingUser:response
-                                                     language:language
-                                                    dateRange:dateRange
-                                                 serialNumber:serialNumber];
-             
-             
+             [[ZLGithubHttpClient defaultClient] getTrendingDevelopersSwiftWithLanguage:language
+                                                                              dateRange:dateRange
+                                                                           serialNumber:serialNumber
+                                                                                  block:response];
+                        
              return [[ZLSharedDataManager sharedInstance] trendUsersWithLanguage:language
                                                                        dateRange:dateRange];
          }
          case ZLSearchTypeRepositories:{
              
-             [[ZLGithubHttpClient defaultClient] trendingRepo:response
-                                                     language:language
-                                           spokenLanguageCode:spokenLanguageCode
-                                                    dateRange:dateRange
-                                                 serialNumber:serialNumber];
+             [[ZLGithubHttpClient defaultClient] getTrendingReposSwiftWithLanguage:language
+                                                                spokenLanguageCode:spokenLanguageCode
+                                                                         dateRange:dateRange
+                                                                      serialNumber:serialNumber
+                                                                             block:response];
              
              return [[ZLSharedDataManager sharedInstance] trendRepositoriesWithLanguage:language
                                                                          spokenLanguage:spokenLanguageCode
