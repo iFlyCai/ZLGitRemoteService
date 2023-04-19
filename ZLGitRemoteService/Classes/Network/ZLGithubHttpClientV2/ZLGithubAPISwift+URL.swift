@@ -23,6 +23,8 @@ extension ZLGithubAPISwift {
             return ZLGithubAPISwift.GitHubAPIURL + "/user/repos"
         case .userInfo(let login):
             return ZLGithubAPISwift.GitHubAPIURL + "/users/" + login.urlPathEncoding
+        case .updateCurrentUserInfo:
+            return ZLGithubAPISwift.GitHubAPIURL + "/user"
         case .getFollowUserStatus(login: let login),
                 .followUser(login: let login),
                 .unfollowUser(login: let login):
@@ -58,6 +60,8 @@ extension ZLGithubAPISwift {
         case .getContributorsForRepo(let fullName):
             return ZLGithubAPISwift.GitHubAPIURL + "/repos/" + fullName.urlPathEncoding + "/contributors"
         case .getIssuesForRepo(let fullName, _, _, _):
+            return ZLGithubAPISwift.GitHubAPIURL + "/repos/" + fullName.urlPathEncoding + "/issues"
+        case .createIssueForRepo(let fullName, _, _, _, _):
             return ZLGithubAPISwift.GitHubAPIURL + "/repos/" + fullName.urlPathEncoding + "/issues"
         case .getWatchRepoStatus(let fullName),
                 .watchRepo(let fullName),
@@ -95,6 +99,22 @@ extension ZLGithubAPISwift {
             return ZLGithubAPISwift.GitHubAPIURL + "/markdown"
         case .getAPPCommonConfig:
             return "https://www.existorlive.cn/ZLGithubConfig/ZLGithubConfig.json"
+        case .getEventsForUser(let login, _, _):
+            return ZLGithubAPISwift.GitHubAPIURL + "/users/" + login.urlPathEncoding + "/events"
+        case .getReceivedEventsForUser(let login, _, _):
+            return ZLGithubAPISwift.GitHubAPIURL + "/users/" + login.urlPathEncoding + "/received_events"
+        case .notification:
+            return ZLGithubAPISwift.GitHubAPIURL + "/notifications"
+        case .markNotificationReaded(let thread_id):
+            return ZLGithubAPISwift.GitHubAPIURL + "/notifications/threads/" + thread_id.urlPathEncoding
+        case .getTrendingDevelopers(let language, _):
+            return "https://github.com/trending/developers/" + (language?.urlPathEncoding ?? "")
+        case .getTrendingRepos(let language, _, _):
+            return "https://github.com/trending/" + (language?.urlPathEncoding ?? "")
+        case .searchUser:
+            return ZLGithubAPISwift.GitHubAPIURL + "/seach/users"
+        case .searchRepo:
+            return ZLGithubAPISwift.GitHubAPIURL + "/search/repositories"
         }
     }
 }

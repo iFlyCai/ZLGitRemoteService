@@ -35,6 +35,22 @@ enum ZLGithubAPISwift {
     ///  - Parameters
     ///    - login: 用户标识
     case userInfo(login: String)
+    
+    /// 更新用户信息
+    ///  - Parameters
+    ///    - name: user name
+    ///    - email:
+    ///    - blog: 博客地址
+    ///    - company:
+    ///    - location:
+    ///    - hireable: 是否可雇佣
+    case updateCurrentUserInfo(name: String?,
+                               email: String?,
+                               blog: String?,
+                               company: String?,
+                               location: String?,
+                               hireable: NSNumber?,
+                               bio: String?)
     ///  获取follow用户状态
     ///  - Parameters
     ///    - login: 用户标识
@@ -102,6 +118,24 @@ enum ZLGithubAPISwift {
                          page: Int,
                          per_page: Int)
     
+    ///  某个用户的事件(如果为当前登陆用户则会包含私密事件)
+    ///  - Parameters
+    ///    - login: 用户标识
+    ///    - page: 页号 从 1 开始
+    ///    - per_page: pageSize
+    case getEventsForUser(login: String,
+                          page: Int,
+                          per_page: Int)
+    
+    /// 某个用户接受的事件(关注的仓库或用户的事件)
+    ///  - Parameters
+    ///    - login: 用户标识
+    ///    - page: 页号 从 1 开始
+    ///    - per_page: pageSize
+    case getReceivedEventsForUser(login: String,
+                                  page: Int,
+                                  per_page: Int)
+    
     // MARK: Repo
     ///  获取readme
     ///  - Parameters
@@ -159,6 +193,18 @@ enum ZLGithubAPISwift {
                           state: String,
                           page: Int,
                           per_page: Int)
+    ///  在指定repo创建issue
+    ///  - Parameters
+    ///    - fullName: 仓库名 existorlive/githubclient
+    ///    - title: 标题
+    ///    - body: issue 内容
+    ///    - labels: label
+    ///    - assignees: 指定负责人
+    case createIssueForRepo(fullName: String,
+                            title: String,
+                            body: String,
+                            labels: [String],
+                            assignees: [String])
     ///  获取watch仓库的状态
     ///  - Parameters
     ///    - fullName: 仓库名 existorlive/githubclient
@@ -276,11 +322,67 @@ enum ZLGithubAPISwift {
                                ref: String?,
                                mediaType: ZLGithubMediaType)
     
+    // MARK: Notification
+    ///  获取当前用户的通知
+    ///  - Parameters
+    ///    - page: 页号 从 1 开始
+    ///    - per_page: pageSize
+    ///    - all: 是否全部；否则只返回未读通知
+    case notification(page: Int,
+                      per_page: Int,
+                      all: Bool)
+    
+    ///  设置通知已读
+    ///  - Parameters
+    ///    - thread_id: 通知的id
+    case markNotificationReaded(thread_id: String)
+    
+    // MARK: Trending
+    ///  获取趋势仓库
+    ///  - Parameters
+    ///    - language: 开发语言
+    ///    - spokenLanguageCode: 交流语言
+    ///    - dateRange: 时间范围
+    case getTrendingRepos(language: String?,
+                          spokenLanguageCode: String?,
+                          dateRange: ZLDateRange)
+    ///  获取趋势开发者
+    ///  - Parameters
+    ///    - language: 开发语言
+    ///    - dateRange: 时间范围
+    case getTrendingDevelopers(language: String?,
+                               dateRange: ZLDateRange)
+    
+    // MARK: Search
+    ///  搜索用户
+    ///  - Parameters
+    ///    - q: 关键字
+    ///    - sort: 排序方式 followers/joined/repositories
+    ///    - asc: 是否递增
+    case searchUser(q: String,
+                    sort: String?,
+                    asc: Bool,
+                    page: Int,
+                    per_page: Int)
+    
+    ///  搜索仓库
+    ///  - Parameters
+    ///    - q: 关键字
+    ///    - sort: 排序方式 stars/forks/updated
+    ///    - asc: 是否递增
+    case searchRepo(q: String,
+                    sort: String?,
+                    asc: Bool,
+                    page: Int,
+                    per_page: Int)
+    
     // MARK: other
     ///  获取Github支持的开发语言列表
     case getDevelopLanguageList
     ///  将代码渲染为markdown
     case renderCodeToMarkdown(code: String)
+    
+    
     
     
     // MARK: 非Github API

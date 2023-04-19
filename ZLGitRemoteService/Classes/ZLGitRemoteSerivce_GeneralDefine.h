@@ -28,4 +28,6 @@
 
 static const NSNotificationName ZLGithubTokenInvalid_Notification = @"ZLGithubTokenInvalid_Notification";
 
+typedef void(^GithubResponse)(BOOL,id _Nullable ,NSString * _Nonnull);
+
 #endif /* ZLGitRemoteSerivce_GeneralDefine_h */

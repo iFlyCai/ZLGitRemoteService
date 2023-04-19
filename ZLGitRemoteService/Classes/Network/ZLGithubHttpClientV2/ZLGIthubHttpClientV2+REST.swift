@@ -13,94 +13,7 @@ typealias ZLGithubHttpClientSuccessBlock = (ZLGithubAPISwift, HTTPURLResponse, D
 
 public extension ZLGithubHttpClientV2 {
     
-    internal func requestGithubAPI(api: ZLGithubAPISwift,
-                                   serialNumber: String,
-                                   responseBlock: @escaping GithubResponseSwift) {
-        
-        let successResponse: ZLGithubHttpClientSuccessBlock = { api, response, data in
-            
-            switch api.resultType {
-            case .data:
-                responseBlock(true, data, serialNumber)
-            case .string:
-                let str = String(data: data, encoding: .utf8)
-                responseBlock(true, str, serialNumber)
-            case .jsonObject:
-                if let jsonObject = try? JSONSerialization.jsonObject(with: data) {
-                    responseBlock(true, jsonObject, serialNumber)
-                } else {
-                    responseBlock(true, data, serialNumber)
-                }
-            case .custom(let wrapper):
-                let resultData = wrapper.parseData(api: api,response: response, data: data)
-                responseBlock(true, resultData, serialNumber)
-            case .object(let wrapper):
-                let resultData = wrapper.parseData(api: api,response: response, data: data)
-                responseBlock(true, resultData, serialNumber)
-            }
-            
-        }
-        
-        
-        let commonHeaders: [String: String] = ["Authorization": "Bearer \(token)",
-                                               "Accept": "application/vnd.github.v3+json"]
-        
-        var httpHeaders = HTTPHeaders(commonHeaders)
-        for header in api.headers {
-            httpHeaders.update(name: header.key, value: header.value)
-        }
-        
-        let request = session.request(api.url,
-                                      method:api.method,
-                                      parameters: api.params,
-                                      encoding: api.paramsEncoding,
-                                      headers: httpHeaders)
-        
-        request.responseData(queue: completionQueue,
-                             completionHandler: { (dataResponse : AFDataResponse<Data>) in
-            
-            switch dataResponse.result {
-            case .success(let data):
-                if  let response = dataResponse.response,
-                    let statusCode = dataResponse.response?.statusCode {
-                    
-                    if api.successStatusCodes.contains(statusCode) {
-                        
-                        successResponse(api, response, data)
-                        
-                    } else {
-                        
-                        var message: String = ""
-                        if let jsonObject = try? JSONSerialization.jsonObject(with: data) as? [String:Any?] {
-                            message = jsonObject["message"] as? String ?? ""
-                        }
-                        let errorModel = ZLGithubRequestErrorModel()
-                        errorModel.statusCode = statusCode
-                        errorModel.message = message
-                        responseBlock(false,errorModel,serialNumber)
-                        
-                    }
-                    
-                } else {
-                    let errorModel = ZLGithubRequestErrorModel()
-                    errorModel.statusCode = 0
-                    errorModel.message = "No Status Code"
-                    responseBlock(false,errorModel,serialNumber)
-                }
-                
-            case .failure(let error):
-                let errorModel = ZLGithubRequestErrorModel()
-                errorModel.statusCode = dataResponse.response?.statusCode ?? 0
-                errorModel.message = error.errorDescription ?? ""
-                responseBlock(false, errorModel, serialNumber)
-            }
-            
-        })
-        
-        request.resume()
-    }
-    
-    
+    // MARK: - User
     /// 获取当前用户的仓库
     @objc func getRepositoriesForCurrentUser(page: Int,
                                              perPage: Int,
@@ -122,6 +35,38 @@ public extension ZLGithubHttpClientV2 {
         
         self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
     }
+    
+    /// 更新用户信息
+    ///  - Parameters
+    ///    - name: user name
+    ///    - email:
+    ///    - blog: 博客地址
+    ///    - company:
+    ///    - location:
+    ///    - bio: 自我介绍
+    ///    - hireable: 是否可雇佣
+    @objc func updateCurrentUserInfo(name: String?,
+                                     email: String?,
+                                     blog: String?,
+                                     company: String?,
+                                     location: String?,
+                                     hireable: NSNumber?,
+                                     bio: String?,
+                                     serialNumber: String,
+                                     response: @escaping GithubResponseSwift) {
+        
+        let api = ZLGithubAPISwift.updateCurrentUserInfo(name:  name,
+                                                         email: email,
+                                                         blog: blog,
+                                                         company: company,
+                                                         location: location,
+                                                         hireable: hireable,
+                                                         bio: bio)
+        
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    
     
     /// 获取用户的follow状态
     @objc func getFollowStatusFor(login: String,
@@ -351,6 +296,28 @@ public extension ZLGithubHttpClientV2 {
                                                     state: state,
                                                     page: page,
                                                     per_page: per_page)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    ///  在指定repo创建issue
+    ///  - Parameters
+    ///    - fullName: 仓库名 existorlive/githubclient
+    ///    - title: 标题
+    ///    - body: issue 内容
+    ///    - labels: label
+    ///    - assignees: 指定负责人
+    @objc dynamic func createIssuesForRepo(fullName: String,
+                                           title: String,
+                                           body: String,
+                                           labels: [String],
+                                           assignees: [String],
+                                           serialNumber: String,
+                                           response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.createIssueForRepo(fullName: fullName,
+                                                      title: title,
+                                                      body: body,
+                                                      labels: labels,
+                                                      assignees: assignees)
         self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
     }
     
@@ -621,4 +588,132 @@ public extension ZLGithubHttpClientV2 {
         self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
     }
     
+    // MARK: - Notifications
+    ///  获取当前用户的通知
+    ///  - Parameters
+    ///    - page: 页号 从 1 开始
+    ///    - per_page: pageSize
+    ///    - all: 是否全部；否则只返回未读通知
+    @objc func getNotifications(page: Int,
+                                per_page: Int,
+                                all: Bool,
+                                serialNumber: String,
+                                response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.notification(page: page, per_page: per_page, all: all)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    ///  设置通知已读
+    ///  - Parameters
+    ///    - thread_id: 通知的id
+    @objc func markNotificationReaded(thread_id: String,
+                                      serialNumber: String,
+                                      response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.markNotificationReaded(thread_id: thread_id)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    // MARK: - Event
+    ///  某个用户的事件(如果为当前登陆用户则会包含私密事件)
+    ///  - Parameters
+    ///    - login: 用户标识
+    ///    - page: 页号 从 1 开始
+    ///    - per_page: pageSize
+    @objc func getEventsForUser(login: String,
+                                page: Int,
+                                per_page: Int,
+                                serialNumber: String,
+                                response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.getEventsForUser(login: login,
+                                                    page: page,
+                                                    per_page: per_page)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    /// 某个用户接受的事件(关注的仓库或用户的事件)
+    ///  - Parameters
+    ///    - login: 用户标识
+    ///    - page: 页号 从 1 开始
+    ///    - per_page: pageSize
+    @objc func getReceivedEventsForUser(login: String,
+                                        page: Int,
+                                        per_page: Int,
+                                        serialNumber: String,
+                                        response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.getReceivedEventsForUser(login: login,
+                                                            page: page,
+                                                            per_page: per_page)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    // MARK: Trending
+    ///  获取趋势仓库
+    ///  - Parameters
+    ///    - language: 开发语言
+    ///    - spokenLanguageCode: 交流语言
+    ///    - dateRange: 时间范围
+    @objc func getTrendingRepos(language: String?,
+                                spokenLanguageCode: String?,
+                                dateRange: ZLDateRange,
+                                serialNumber: String,
+                                response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.getTrendingRepos(language: language,
+                                                    spokenLanguageCode: spokenLanguageCode,
+                                                    dateRange: dateRange)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    ///  获取趋势开发者
+    ///  - Parameters
+    ///    - language: 开发语言
+    ///    - dateRange: 时间范围
+    @objc func getTrendingDevelopers(language: String?,
+                                     dateRange: ZLDateRange,
+                                     serialNumber: String,
+                                     response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.getTrendingDevelopers(language: language,
+                                                         dateRange: dateRange)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+
+    // MARK: - Search
+    ///  搜索用户
+    ///  - Parameters
+    ///    - q: 关键字
+    ///    - sort: 排序方式 followers/joined/repositories
+    ///    - asc: 是否递增
+    @objc func searchUser(q: String,
+                          sort: String?,
+                          asc: Bool,
+                          page: Int,
+                          per_page: Int,
+                          serialNumber: String,
+                          response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.searchUser(q: q,
+                                              sort: sort,
+                                              asc: asc,
+                                              page: page,
+                                              per_page: per_page)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
+    
+    ///  搜索仓库
+    ///  - Parameters
+    ///    - q: 关键字
+    ///    - sort: 排序方式 stars/forks/updated
+    ///    - asc: 是否递增
+    @objc func searchRepo(q: String,
+                          sort: String?,
+                          asc: Bool,
+                          page: Int,
+                          per_page: Int,
+                          serialNumber: String,
+                          response: @escaping GithubResponseSwift) {
+        let api = ZLGithubAPISwift.searchRepo(q: q,
+                                              sort: sort,
+                                              asc: asc,
+                                              page: page,
+                                              per_page: per_page)
+        self.requestGithubAPI(api: api, serialNumber: serialNumber, responseBlock: response)
+    }
 }

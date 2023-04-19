@@ -91,7 +91,7 @@ import UIKit
     
     func getCurrentUserModelFromServer() -> ZLGithubUserModel? {
         
-        ZLGithubHttpClient.default().getCurrentUserInfo(serialNumber: NSString.generateSerialNumber()) { [weak self](result, data, serialNumber) in
+        ZLGithubHttpClientV2.defaultClient.getCurrentUserInfo(serialNumber: NSString.generateSerialNumber()) { [weak self](result, data, serialNumber) in
             
             let operationModel = ZLOperationResultModel()
             operationModel.data = data!
@@ -143,15 +143,15 @@ import UIKit
             
         }
         
-        ZLGithubHttpClient.default().updateUserPublicProfile(githubResponse,
-                                                             name: nil,
-                                                             email: nil,
-                                                             blog: blog,
-                                                             company: company,
-                                                             location: location,
-                                                             hireable: nil,
-                                                             bio: bio,
-                                                             serialNumber: serialNumber)
+        ZLGithubHttpClientV2.defaultClient.updateCurrentUserInfo(name: nil,
+                                                                 email: nil,
+                                                                 blog: blog,
+                                                                 company: company,
+                                                                 location: location,
+                                                                 hireable: nil,
+                                                                 bio: bio,
+                                                                 serialNumber: serialNumber,
+                                                                 response: githubResponse)
     }
     
     
@@ -193,7 +193,7 @@ import UIKit
             
         }
         
-        ZLGithubHttpClient.default().searchItem(after: after,
+        ZLGithubHttpClientV2.defaultClient.searchItem(after: after,
                                                 query: query,
                                                 type: .Issue,
                                                 serialNumber: serialNumber,
@@ -237,7 +237,7 @@ import UIKit
             
         }
         
-        ZLGithubHttpClient.default().searchItem(after: after,
+        ZLGithubHttpClientV2.defaultClient.searchItem(after: after,
                                                 query: query,
                                                 type: .Issue,
                                                 serialNumber: serialNumber,
@@ -277,7 +277,7 @@ import UIKit
             
         }
         
-        ZLGithubHttpClient.default().searchItem(after: after,
+        ZLGithubHttpClientV2.defaultClient.searchItem(after: after,
                                                 query: query,
                                                 type: .Discussion,
                                                 serialNumber: serialNumber,
@@ -303,7 +303,7 @@ import UIKit
             
         }
         
-        ZLGithubHttpClient.default().getOrgs(serialNumber: serialNumber,
+        ZLGithubHttpClientV2.defaultClient.getOrgs(serialNumber: serialNumber,
                                              block: githubResponse)
     }
     
@@ -328,7 +328,7 @@ import UIKit
             
         }
         
-        ZLGithubHttpClient.default().getMyTopRepo(after: after,
+        ZLGithubHttpClientV2.defaultClient.getMyTopRepo(after: after,
                                                   serialNumber: serialNumber,
                                                   block: githubResponse)
         

@@ -37,8 +37,7 @@ Pod::Spec.new do |s|
                            'ZLGitRemoteService/Classes/Base/**/*.h',
                            'ZLGitRemoteService/Classes/Manager/ZLSharedDataManager/*.h',
                            'ZLGitRemoteService/Classes/Manager/ZLBuglyManager/*.h',
-                           'ZLGitRemoteService/Classes/PublicModule/**/*.h',
-                           'ZLGitRemoteService/Classes/Network/ZLGithubHttpClient.h']
+                           'ZLGitRemoteService/Classes/PublicModule/**/*.h']
  # s.vendored_frameworks = 'ZLGitRemoteService/Frameworks/Bugly.framework'
   s.pod_target_xcconfig = { 'LIBRARY_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Libs",
                             'FRAMEWORK_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Frameworks",
@@ -56,7 +55,6 @@ Pod::Spec.new do |s|
   s.dependency 'Umbrella'
   s.dependency 'Umbrella/Firebase'
   s.dependency 'Firebase/Analytics'
-  s.dependency 'AFNetworking'
   s.dependency 'FMDB'
   s.dependency 'CocoaLumberjack'
   s.dependency 'MJExtension'

@@ -46,13 +46,6 @@ static const NSNotificationName _Nonnull ZLSearchResult_Notification = @"ZLSearc
                     filterInfo:(ZLSearchFilterInfoModel * __nullable) filterInfo
                           page:(NSUInteger) page
                       per_page:(NSUInteger) per_page
-                  serialNumber:(NSString *_Nonnull) serialNumber;
-
-- (void) searchInfoWithKeyWord:(NSString *_Nonnull) keyWord
-                          type:(ZLSearchType) type
-                    filterInfo:(ZLSearchFilterInfoModel * __nullable) filterInfo
-                          page:(NSUInteger) page
-                      per_page:(NSUInteger) per_page
                   serialNumber:(NSString *_Nonnull) serialNumber
                 completeHandle:(void(^_Nonnull)(ZLOperationResultModel *_Nonnull)) handle;
 

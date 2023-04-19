@@ -11,9 +11,6 @@
 #import "ZLLoginServiceModel.h"
 #import "ZLOperationResultModel.h"
 
-// network
-#import "ZLGithubHttpClient.h"
-
 // tool
 #import "ZLSharedDataManager.h"
 
@@ -89,7 +86,7 @@
         ZLMainThreadDispatch(if(handle){handle(userResultModel);})
     };
     
-    [[ZLGithubHttpClient defaultClient] getUserAvatarWithLogin:loginName
+    [[ZLGithubHttpClientV2 defaultClient] getUserAvatarWithLogin:loginName
                                                   serialNumber:serailNumber
                                                          block:response];
         
@@ -321,7 +318,7 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getUserContributionsDataSwiftWithLogin:loginName
+    [[ZLGithubHttpClientV2 defaultClient] getUserContributionsDataSwiftWithLogin:loginName
                                                                   serialNumber:serialNumber
                                                                          block:response];
     
@@ -348,7 +345,7 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getUserPinnedRepositoriesWithLogin:loginName
+    [[ZLGithubHttpClientV2 defaultClient] getUserPinnedRepositoriesWithLogin:loginName
                                                               serialNumber:serialNumber
                                                                      block:response];
 }
@@ -371,7 +368,7 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getOrgPinnedRepositoriesWithLogin:loginName
+    [[ZLGithubHttpClientV2 defaultClient] getOrgPinnedRepositoriesWithLogin:loginName
                                                              serialNumber:serialNumber
                                                                     block:response];
 }

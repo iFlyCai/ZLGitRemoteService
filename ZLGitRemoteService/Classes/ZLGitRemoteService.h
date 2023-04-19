@@ -55,8 +55,6 @@ FOUNDATION_EXPORT const unsigned char ZLServiceFrameworkVersionString[];
 #import "NSString+ZLExtension.h"
 #import "NSDate+Format.h"
 
-// network
-#import "ZLGithubHttpClient.h"
 
 
 

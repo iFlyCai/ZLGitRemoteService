@@ -9,10 +9,6 @@
 #import "ZLRepoServiceModel.h"
 #import "ZLRepoServiceHeader.h"
 
-
-// network
-#import "ZLGithubHttpClient.h"
-
 #import "ZLGithubRequestErrorModel.h"
 #import "ZLOperationResultModel.h"
 #import "ZLGitRemoteService-Swift.h"
@@ -86,7 +82,7 @@
         })
     };
     
-    [[ZLGithubHttpClient defaultClient] getRepoInfoWithLogin:ownerName
+    [[ZLGithubHttpClientV2 defaultClient] getRepoInfoWithLogin:ownerName
                                                         name:repoName
                                                 serialNumber:serialNumber
                                                        block:response];

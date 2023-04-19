@@ -10,7 +10,6 @@
 #import "ZLEventServiceHeader.h"
 #import "ZLUserServiceModel.h"
 #import "ZLOperationResultModel.h"
-#import "ZLGithubHttpClient.h"
 #import "ZLGitRemoteService-Swift.h"
 
 
@@ -51,11 +50,11 @@
     
     NSString * loginName = ZLServiceManager.sharedInstance.viewerServiceModel.currentUserLoginName;
     
-    [[ZLGithubHttpClient defaultClient] getEventsForUser:loginName
-                                                    page:page
-                                                per_page:per_page
-                                            serialNumber:serialNumber
-                                           responseBlock:responseBlock];
+    
+    [[ZLGithubHttpClientV2 defaultClient] getEventsForUserWithLogin:loginName
+                                                               page:page
+                                                           per_page:per_page
+                                                       serialNumber:serialNumber response:responseBlock];
 }
 
 
@@ -79,11 +78,10 @@
         ZLMainThreadDispatch([weakSelf postNotification:ZLGetUserReceivedEventResult_Notification withParams:repoResultModel];)
     };
     
-    [[ZLGithubHttpClient defaultClient] getEventsForUser:userName
-                                                    page:page
-                                                per_page:per_page
-                                            serialNumber:serialNumber
-                                           responseBlock:responseBlock];
+    [[ZLGithubHttpClientV2 defaultClient] getEventsForUserWithLogin:userName
+                                                               page:page
+                                                           per_page:per_page
+                                                       serialNumber:serialNumber response:responseBlock];
 }
 
 
@@ -107,7 +105,11 @@
         ZLMainThreadDispatch([weakSelf postNotification:ZLGetUserReceivedEventResult_Notification withParams:repoResultModel];)
     };
     
-    [[ZLGithubHttpClient defaultClient] getReceivedEventsForUser:userName page:page per_page:per_page serialNumber:serialNumber responseBlock:responseBlock];
+    
+    [[ZLGithubHttpClientV2 defaultClient] getReceivedEventsForUserWithLogin:userName
+                                                                       page:page
+                                                                   per_page:per_page
+                                                               serialNumber:serialNumber response:responseBlock];
 }
 
 
@@ -129,11 +131,11 @@
         ZLMainThreadDispatch(if(handle)handle(resultModel);)
     };
     
-    [[ZLGithubHttpClient defaultClient] getNotification:responseBlock
-                                                showAll:showAll
-                                                   page:page
-                                               per_page:per_page
-                                           serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] getNotificationsWithPage:page
+                                                          per_page:per_page
+                                                               all:showAll
+                                                      serialNumber:serialNumber
+                                                          response:responseBlock];
     
 }
 
@@ -152,9 +154,9 @@
         ZLMainThreadDispatch(if(handle)handle(resultModel);)
     };
     
-    [[ZLGithubHttpClient defaultClient] markNotificationRead:responseBlock
-                                              notificationId:notificationId
-                                                serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] markNotificationReadedWithThread_id:notificationId
+                                                                 serialNumber:serialNumber
+                                                                     response:responseBlock];
     
 }
 
@@ -182,7 +184,7 @@
         
     };
     
-    [[ZLGithubHttpClient defaultClient] getPRInfoWithLogin:login
+    [[ZLGithubHttpClientV2 defaultClient] getPRInfoWithLogin:login
                                                   repoName:repoName
                                                     number:number
                                                      after:after
@@ -212,7 +214,7 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getIssueInfoWithLogin:loginName
+    [[ZLGithubHttpClientV2 defaultClient] getIssueInfoWithLogin:loginName
                                                      repoName:repoName
                                                        number:number
                                                  serialNumber:serialNumber
@@ -241,7 +243,7 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getIssueTimelinesInfoWithLogin:loginName
+    [[ZLGithubHttpClientV2 defaultClient] getIssueTimelinesInfoWithLogin:loginName
                                                               repoName:repoName
                                                                 number:number
                                                                  after:after
@@ -270,7 +272,7 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] getEditIssueInfoWithLogin:loginName
+    [[ZLGithubHttpClientV2 defaultClient] getEditIssueInfoWithLogin:loginName
                                                          repoName:repoName
                                                            number:number
                                                      serialNumber:serialNumber
@@ -297,7 +299,7 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] addIssueCommentWithIssueId:issueId
+    [[ZLGithubHttpClientV2 defaultClient] addIssueCommentWithIssueId:issueId
                                                        commentBody:comment
                                                       serialNumber:serialNumber
                                                              block:response];
@@ -322,7 +324,7 @@
         }
     };
     
-    [[ZLGithubHttpClient defaultClient] editIssueAssigneesWithIssueId:issueId
+    [[ZLGithubHttpClientV2 defaultClient] editIssueAssigneesWithIssueId:issueId
                                                        addedAssignees:addedList
                                                      removedAssignees:removedList
                                                          serialNumber:serialNumber
@@ -358,14 +360,12 @@
         }
     };
     
-    
-    [[ZLGithubHttpClient defaultClient] createIssue:response
-                                           fullName:fullName
-                                              title:title
-                                            content:body
-                                             labels:labels
-                                          assignees:assignees
-                                       serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] createIssuesForRepoWithFullName:fullName
+                                                                    title:title
+                                                                     body:body
+                                                                   labels:labels
+                                                                assignees:assignees
+                                                             serialNumber:serialNumber response:response];
 }
 
 
@@ -388,7 +388,7 @@
     };
     
     
-    [[ZLGithubHttpClient defaultClient] openIssueWithId:issueId
+    [[ZLGithubHttpClientV2 defaultClient] openIssueWithId:issueId
                                                    open:open
                                            serialNumber:serialNumber
                                                   block:response];
@@ -414,7 +414,7 @@
     };
     
     
-    [[ZLGithubHttpClient defaultClient] lockLockableWithId:lockableId
+    [[ZLGithubHttpClientV2 defaultClient] lockLockableWithId:lockableId
                                                       lock:lock
                                               serialNumber:serialNumber
                                                      block:response];
@@ -440,7 +440,7 @@
     };
     
     
-    [[ZLGithubHttpClient defaultClient] subscribeSubscriptionWithId:subscriptionId
+    [[ZLGithubHttpClientV2 defaultClient] subscribeSubscriptionWithId:subscriptionId
                                                           subscribe:subscribe
                                                        serialNumber:serialNumber
                                                               block:response];

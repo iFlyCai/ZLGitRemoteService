@@ -31,6 +31,21 @@ import Alamofire
     }
 }
 
+extension ZLDateRange {
+    var since: String {
+        switch self {
+        case ZLDateRangeDaily:
+            return "daily"
+        case ZLDateRangeWeakly:
+            return "weekly"
+        case ZLDateRangeMonthly:
+            return "monthly"
+        default:
+            return "daily"
+        }
+    }
+}
+
 extension ZLGithubAPISwift {
  
     var method: HTTPMethod {
@@ -48,8 +63,13 @@ extension ZLGithubAPISwift {
         case .forkRepo,
                 .cancelWorkflowRunForRepo,
                 .rerunWorkflowRunForRepo,
-                .renderCodeToMarkdown:
+                .renderCodeToMarkdown,
+                .createIssueForRepo,
+                .updateCurrentUserInfo:
             return .post
+        case .markNotificationReaded:
+            return .patch
+        
         default:
             return .get
         }
@@ -74,6 +94,9 @@ extension ZLGithubAPISwift {
             return ["Accept": "application/json"]
         case .renderCodeToMarkdown:
             return ["Accept": ZLGithubMediaType.json_html.acceptType]
+        case .getTrendingDevelopers,
+                .getTrendingRepos:
+            return ["Accept": "application/html, text/html"]
         default:
             return [:]
         }
@@ -87,7 +110,10 @@ extension ZLGithubAPISwift {
         case .forkRepo,
                 .cancelWorkflowRunForRepo,
                 .rerunWorkflowRunForRepo,
-                .renderCodeToMarkdown: 
+                .renderCodeToMarkdown,
+                .createIssueForRepo,
+                .markNotificationReaded,
+                .updateCurrentUserInfo:
             return JSONEncoding.default
         default:
             return URLEncoding.default
@@ -120,7 +146,9 @@ extension ZLGithubAPISwift {
                 .getStargazersForRepo(_, let page, let per_page),
                 .getForksForRepo(_, let page, let per_page),
                 .getWorkflowsForRepo(_ , let page, let per_page),
-                .getWorkflowRunsForRepo(_, _, let page, let per_page):
+                .getWorkflowRunsForRepo(_, _, let page, let per_page),
+                .getEventsForUser(_, let page, let per_page),
+                .getReceivedEventsForUser(_, let page, let per_page):
             params = ["page": page,
                       "per_page": per_page]
         case .getRepoReadMeInfo(_,let ref,_):
@@ -158,6 +186,43 @@ extension ZLGithubAPISwift {
             params = ["ref":ref]
         case .renderCodeToMarkdown(let code):
             params = ["text": code]
+        case .notification(let page, let per_page, let all):
+            params = ["page": page,
+                      "per_page": per_page,
+                      "all": all]
+        case .createIssueForRepo(_, let title, let body, let labels, let assignees):
+            params = ["title": title,
+                      "body": body,
+                      "labels": labels,
+                      "assignees": assignees]
+        case .getTrendingDevelopers(_, let dateRange):
+            params = ["since": dateRange.since]
+        case .getTrendingRepos(_ , let spokenLanguageCode, let dateRange):
+            params = ["since": dateRange.since,
+                      "spoken_language_code": spokenLanguageCode]
+        case .searchRepo(let q, let sort, let asc, let page, let per_page),
+                .searchUser(let q, let sort, let asc, let page, let per_page):
+            params = ["q": q,
+                      "page": page,
+                      "per_page": per_page]
+            if let sort = sort {
+                params["sort"] = sort
+                params["order"] = asc ? "asc" : "desc"
+            }
+        case .updateCurrentUserInfo(let name,
+                                    let email,
+                                    let blog,
+                                    let company,
+                                    let location,
+                                    let hireable,
+                                    let bio):
+            params = ["name": name,
+                      "email": email,
+                      "blog": blog,
+                      "company": company,
+                      "location": location,
+                      "hireable": hireable?.boolValue,
+                      "bio": bio]
         default:
             params = [:]
         }

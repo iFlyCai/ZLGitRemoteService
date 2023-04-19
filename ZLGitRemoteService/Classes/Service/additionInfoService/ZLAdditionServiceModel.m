@@ -8,9 +8,6 @@
 
 #import "ZLAdditionServiceModel.h"
 
-// HTTP
-#import "ZLGithubHTTPClient.h"
-
 // ServiceModel
 #import "ZLUserServiceModel.h"
 

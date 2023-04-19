@@ -8,9 +8,6 @@
 
 #import "ZLLoginServiceModel.h"
 
-// network
-#import "ZLGithubHttpClient.h"
-
 //
 #import "ZLSharedDataManager.h"
 
@@ -71,7 +68,8 @@
         
         ZLLog_Info(@"ZLLogoutProcess: logout[%@]",serialNumber);
       
-        [[ZLGithubHttpClient defaultClient] logout:nil serialNumber:serialNumber];
+        [[ZLGithubHttpClientV2 defaultClient] logoutWithSerialNumber:serialNumber
+                                                       responseBlock:^(BOOL result, id model, NSString *serialNumber){ }];
         
         [[ZLSharedDataManager sharedInstance] clearGithubTokenAndUserInfo];
                 
@@ -104,9 +102,10 @@
             ZLMainThreadDispatch([weakSelf postNotification:ZLLoginResult_Notification withParams:resultModel];)
         };
         
-        [[ZLGithubHttpClient defaultClient] checkTokenIsValid:response
-                                                        token:token
-                                                 serialNumber:serialNumber];
+        
+        [[ZLGithubHttpClientV2 defaultClient] checkTokenIsValidWithToken:token
+                                                            serialNumber:serialNumber
+                                                           responseBlock:response];
         
     }];
 }

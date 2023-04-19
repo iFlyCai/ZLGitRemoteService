@@ -13,9 +13,6 @@
 #import "ZLSearchResultModel.h"
 #import "ZLOperationResultModel.h"
 
-// network
-#import "ZLGithubHttpClient.h"
-
 // tool
 #import "ZLSharedDataManager.h"
 
@@ -32,133 +29,6 @@
     });
     return serviceModel;
 }
-
-
-#pragma mark - search rest api
-
-
-- (void) searchInfoWithKeyWord:(NSString *) keyWord
-                          type:(ZLSearchType) type
-                    filterInfo:(ZLSearchFilterInfoModel * __nullable) filterInfo
-                          page:(NSUInteger) page
-                      per_page:(NSUInteger) per_page
-                  serialNumber:(NSString *) serialNumber{
-    switch(type){
-        case ZLSearchTypeUsers:{
-            [self searchUserInfoKeyWord:keyWord filterInfo:filterInfo page:page per_page:per_page serialNumber:serialNumber];
-            break;
-        }
-        case ZLSearchTypeRepositories:{
-            [self searchRepoInfoKeyWord:keyWord filterInfo:filterInfo page:page per_page:per_page serialNumber:serialNumber];
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-- (void) searchUserInfoKeyWord:(NSString *) keyWord
-                    filterInfo:(ZLSearchFilterInfoModel * __nullable) filterInfo
-                          page:(NSUInteger) page
-                      per_page:(NSUInteger) per_page
-                  serialNumber:(NSString *) serialNumber{
-    __weak typeof(self) weakSelf = self;
-    GithubResponse response = ^(BOOL result,id responseObject,NSString * serialNumber){
-        
-        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
-        repoResultModel.result = result;
-        repoResultModel.serialNumber = serialNumber;
-        repoResultModel.data = responseObject;
-        
-        ZLMainThreadDispatch([weakSelf postNotification:ZLSearchResult_Notification withParams:repoResultModel];)
-    };
-    
-    NSString * finalKeyWord = keyWord;
-    
-    if(filterInfo){
-       finalKeyWord =  [filterInfo finalKeyWordForUserFilter:keyWord];
-    }
-
-    [[ZLGithubHttpClient defaultClient] searchUser:response
-                                           keyword:finalKeyWord
-                                              sort:filterInfo.order
-                                             order:filterInfo.isAsc
-                                              page:page
-                                          per_page:per_page
-                                      serialNumber:serialNumber];
-}
-
-
-- (void) searchRepoInfoKeyWord:(NSString *) keyWord
-                    filterInfo:(ZLSearchFilterInfoModel * __nullable) filterInfo
-                          page:(NSUInteger) page
-                      per_page:(NSUInteger) per_page
-                  serialNumber:(NSString *) serialNumber{
-    
-    __weak typeof(self) weakSelf = self;
-    GithubResponse response = ^(BOOL result,id responseObject,NSString * serialNumber){
-        
-        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
-        repoResultModel.result = result;
-        repoResultModel.serialNumber = serialNumber;
-        repoResultModel.data = responseObject;
-        
-        ZLMainThreadDispatch([weakSelf postNotification:ZLSearchResult_Notification withParams:repoResultModel];)
-    };
-    
-    
-    NSString * finalKeyWord = keyWord;
-    
-    if(filterInfo){
-       finalKeyWord =  [filterInfo finalKeyWordForRepoFilter:keyWord];
-    }
-  
-    
-    [[ZLGithubHttpClient defaultClient] searchRepos:response
-                                            keyword:finalKeyWord
-                                               sort:filterInfo.order
-                                              order:filterInfo.isAsc
-                                               page:page
-                                           per_page:per_page
-                                       serialNumber:serialNumber];
-}
-
-
-- (void) searchIssuesInfoKeyWord:(NSString *) keyWord
-                      filterInfo:(ZLSearchFilterInfoModel * __nullable) filterInfo
-                            page:(NSUInteger) page
-                        per_page:(NSUInteger) per_page
-                    serialNumber:(NSString *) serialNumber{
-    
-    __weak typeof(self) weakSelf = self;
-    GithubResponse response = ^(BOOL result,id responseObject,NSString * serialNumber){
-        
-        ZLOperationResultModel * repoResultModel = [[ZLOperationResultModel alloc] init];
-        repoResultModel.result = result;
-        repoResultModel.serialNumber = serialNumber;
-        repoResultModel.data = responseObject;
-        
-        ZLMainThreadDispatch([weakSelf postNotification:ZLSearchResult_Notification withParams:repoResultModel];)
-    };
-    
-    
-    NSString * finalKeyWord = keyWord;
-    
-    if(filterInfo){
-       finalKeyWord =  [filterInfo finalKeyWordForRepoFilter:keyWord];
-    }
-  
-    
-    [[ZLGithubHttpClient defaultClient] searchRepos:response
-                                            keyword:finalKeyWord
-                                               sort:filterInfo.order
-                                              order:filterInfo.isAsc
-                                               page:page
-                                           per_page:per_page
-                                       serialNumber:serialNumber];
-}
-
-
 
 
 
@@ -218,13 +88,14 @@
        finalKeyWord =  [filterInfo finalKeyWordForUserFilter:keyWord];
     }
 
-    [[ZLGithubHttpClient defaultClient] searchUser:response
-                                           keyword:finalKeyWord
-                                              sort:filterInfo.order
-                                             order:filterInfo.isAsc
-                                              page:page
-                                          per_page:per_page
-                                      serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] searchUserWithQ:finalKeyWord
+                                                     sort:filterInfo.order
+                                                      asc:filterInfo.isAsc
+                                                     page:page
+                                                 per_page:per_page
+                                             serialNumber:serialNumber
+                                                 response:response];
+    
 }
 
 
@@ -253,13 +124,13 @@
     }
   
     
-    [[ZLGithubHttpClient defaultClient] searchRepos:response
-                                            keyword:finalKeyWord
-                                               sort:filterInfo.order
-                                              order:filterInfo.isAsc
-                                               page:page
-                                           per_page:per_page
-                                       serialNumber:serialNumber];
+    [[ZLGithubHttpClientV2 defaultClient] searchRepoWithQ:finalKeyWord
+                                                     sort:filterInfo.order
+                                                      asc:filterInfo.isAsc
+                                                     page:page
+                                                 per_page:per_page
+                                             serialNumber:serialNumber
+                                                 response:response];
 }
 
 #pragma mark - search graphql api
@@ -312,7 +183,7 @@
             break;
     }
     
-    [[ZLGithubHttpClient defaultClient] searchItemAfter:after
+    [[ZLGithubHttpClientV2 defaultClient] searchItemAfter:after
                                                   query:query
                                                    type:searchType
                                            serialNumber:serialNumber
@@ -365,22 +236,22 @@
     switch(type){
          case ZLSearchTypeUsers:{
              
-             [[ZLGithubHttpClient defaultClient] getTrendingDevelopersSwiftWithLanguage:language
-                                                                              dateRange:dateRange
-                                                                           serialNumber:serialNumber
-                                                                                  block:response];
-                        
+             [[ZLGithubHttpClientV2 defaultClient] getTrendingDevelopersWithLanguage:language
+                                                                           dateRange:dateRange
+                                                                        serialNumber:serialNumber
+                                                                            response:response];
+             
              return [[ZLSharedDataManager sharedInstance] trendUsersWithLanguage:language
                                                                        dateRange:dateRange];
          }
          case ZLSearchTypeRepositories:{
              
-             [[ZLGithubHttpClient defaultClient] getTrendingReposSwiftWithLanguage:language
-                                                                spokenLanguageCode:spokenLanguageCode
-                                                                         dateRange:dateRange
-                                                                      serialNumber:serialNumber
-                                                                             block:response];
-             
+             [[ZLGithubHttpClientV2 defaultClient] getTrendingReposWithLanguage:language
+                                                             spokenLanguageCode:spokenLanguageCode
+                                                                      dateRange:dateRange
+                                                                   serialNumber:serialNumber
+                                                                       response:response];
+    
              return [[ZLSharedDataManager sharedInstance] trendRepositoriesWithLanguage:language
                                                                          spokenLanguage:spokenLanguageCode
                                                                        dateRange:dateRange];

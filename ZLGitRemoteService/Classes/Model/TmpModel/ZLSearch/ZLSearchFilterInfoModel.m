@@ -25,6 +25,8 @@
     {
         _firstCreatedTimeStr = @"*";
         _secondCreatedTimeStr = @"*";
+        _isAsc = NO;
+        _sortKey = nil; 
     }
     
     return self;
