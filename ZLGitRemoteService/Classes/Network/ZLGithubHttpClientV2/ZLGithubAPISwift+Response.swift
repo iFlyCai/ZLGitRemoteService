@@ -9,6 +9,8 @@ import Foundation
 import MJExtension
 import Alamofire
 import Kanna
+import ZLUtilities
+import HandyJSON
 
 
 // MARK: - ZLGithubAPIResultParseProtocol 处理协议
@@ -239,6 +241,58 @@ extension ZLGithubAPISwift {
 // MARK: - ZLGithubAPISwift + deal with response
 extension ZLGithubAPISwift {
     
+    class TrendingConfig: HandyJSON {
+        required init() {}
+        var path: String = ""
+        var property: String = ""
+        
+        func getTargetElementStr(element: XMLElement) -> String? {
+            guard let targetElement = element.at_xpath(path) else {
+                return nil
+            }
+            var content: String?
+            let set = NSCharacterSet(charactersIn: " \n") as CharacterSet
+            if property == "content" {
+                content = targetElement.content
+            } else {
+                content = targetElement[property]
+            }
+            return content?.trimmingCharacters(in: set)
+        }
+    }
+    class TrendingRepoConfig: HandyJSON {
+        required init() {}
+        var repoArrayPath: String = ""
+        var fullName: TrendingConfig = TrendingConfig()
+        var desc: TrendingConfig = TrendingConfig()
+        var language: TrendingConfig = TrendingConfig()
+        var star: TrendingConfig = TrendingConfig()
+        var fork: TrendingConfig = TrendingConfig()
+    }
+    static let trendingRepoConfig: [String:Any] = [
+        "repoArrayPath": "//article[@class=\"Box-row\"]",
+        "fullName": [
+          "path": "/h2[@class=\"h3 lh-condensed\"]/a[@class=\"Link\"]",
+          "property": "href"
+        ],
+        "desc": [
+          "path": "/p[@class=\"col-9 color-fg-muted my-1 pr-4\"]",
+          "property": "content"
+        ],
+        "language": [
+          "path": "/div[@class=\"f6 color-fg-muted mt-2\"]/span[@class=\"d-inline-block ml-0 mr-3\"]/span[@itemprop=\"programmingLanguage\"]",
+          "property": "content"
+        ],
+        "star": [
+          "path": "/div[@class=\"f6 color-fg-muted mt-2\"]/a[@class=\"Link Link--muted d-inline-block mr-3\"]/svg[@aria-label=\"star\"]/..",
+          "property": "content"
+        ],
+        "fork": [
+          "path": "/div[@class=\"f6 color-fg-muted mt-2\"]/a[@class=\"Link Link--muted d-inline-block mr-3\"]/svg[@aria-label=\"fork\"]/..",
+          "property": "content"
+        ]
+    ]
+    
     static func parseDataForTrendingRepo(api: ZLGithubAPISwift,
                                          response: HTTPURLResponse,
                                          data: Data) -> Any? {
@@ -247,15 +301,18 @@ extension ZLGithubAPISwift {
         do {
             let htmlDoc = try HTML(html:data, encoding: .utf8 )
     
-            for article in htmlDoc.xpath("//article") {
+            let trendConfigDic = ZLAGC().configAsJsonObject(for: "TrendRepoConfig",defaultValue: ZLGithubAPISwift.trendingRepoConfig)
+            guard let trendConfig = TrendingRepoConfig.deserialize(from: trendConfigDic) else {
+                return repos
+            }
+            
+            for article in htmlDoc.xpath(trendConfig.repoArrayPath) {
                 
-                let h2 = article.xpath("//h2").first
-                let p = article.xpath("//p").first
-                let a = h2?.xpath("//a").first
-                
-                guard var fullName = a?["href"] else { continue }
+                guard var fullName = trendConfig.fullName.getTargetElementStr(element: article) else {
+                    continue
+                }
                 fullName = String(fullName.suffix(from: fullName.index(after: fullName.startIndex)))
-                
+       
                 let repoModel = ZLGithubRepositoryModel()
                 repoModel.full_name = fullName
                 repoModel.name = String(fullName.split(separator: "/").last ?? "")
@@ -265,39 +322,29 @@ extension ZLGithubAPISwift {
                 owner.loginName = loginName
                 owner.avatar_url = "https://avatars.githubusercontent.com/\(loginName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "")"
                 repoModel.owner = owner
-                
-                let set = NSCharacterSet(charactersIn: " \n") as CharacterSet
-                if let desc = p?.content?.trimmingCharacters(in: set){
+            
+                if let desc = trendConfig.desc.getTargetElementStr(element: article) {
                     repoModel.desc_Repo = desc
                 }
                 
-                for span in article.xpath("//span") {
-                    if let itemprop = span["itemprop"],
-                       itemprop == "programmingLanguage" {
-                        repoModel.language = span.content
-                        break
+                if let language = trendConfig.language.getTargetElementStr(element: article){
+                    repoModel.language = language
+                }
+            
+                if var starStr = trendConfig.star.getTargetElementStr(element: article) {
+                    starStr = (starStr as NSString).replacingOccurrences(of: ",", with: "")
+                    if let num = Int(starStr) {
+                        repoModel.stargazers_count = num
                     }
                 }
                 
-                for svg in article.xpath("//svg") {
-                    let ariaLabel = svg["aria-label"]
-                    if "star" == ariaLabel,
-                       let content = svg.parent?.content {
-                        var str =  content.trimmingCharacters(in: set)
-                        str = (str as NSString).replacingOccurrences(of: ",", with: "")
-                        if let num = Int(str) {
-                            repoModel.stargazers_count = num
-                        }
-                    }
-                    if "fork" == ariaLabel,
-                       let content = svg.parent?.content {
-                        var str =  content.trimmingCharacters(in: set)
-                        str = (str as NSString).replacingOccurrences(of: ",", with: "")
-                        if let num = Int(str) {
-                            repoModel.forks_count = num
-                        }
+                if var forkStr = trendConfig.fork.getTargetElementStr(element: article) {
+                    forkStr = (forkStr as NSString).replacingOccurrences(of: ",", with: "")
+                    if let num = Int(forkStr) {
+                        repoModel.forks_count = num
                     }
                 }
+               
                 repos.append(repoModel)
             }
         } catch {
@@ -307,6 +354,24 @@ extension ZLGithubAPISwift {
         return repos
     }
     
+    class TrendingUserConfig: HandyJSON {
+        required init() {}
+        var userArrayPath: String = ""
+        var loginName: TrendingConfig = TrendingConfig()
+        var displayName: TrendingConfig = TrendingConfig()
+    }
+    static let trendingUserConfig: [String:Any] = [
+        "userArrayPath": "//article[@class=\"Box-row d-flex\"]/div[@class=\"d-sm-flex flex-auto\"]/div[@class=\"col-sm-8 d-md-flex\"]/div[@class=\"col-md-6\"]",
+        "loginName": [
+          "path": "/h1[@class=\"h3 lh-condensed\"]/a",
+          "property": "href"
+        ],
+        "displayName": [
+          "path": "/h1[@class=\"h3 lh-condensed\"]/a" ,
+          "property": "content"
+        ]
+    ]
+    
     
     static func parseDataForTrendingDevelopers(api: ZLGithubAPISwift,
                                                response: HTTPURLResponse,
@@ -315,20 +380,22 @@ extension ZLGithubAPISwift {
         do {
             let htmlDoc = try HTML(html:data, encoding: .utf8 )
             
-            for article in htmlDoc.xpath("//article") {
+            let trendConfigDic = ZLAGC().configAsJsonObject(for: "TrendUserConfig",defaultValue: ZLGithubAPISwift.trendingUserConfig)
+            guard let trendConfig = TrendingUserConfig.deserialize(from: trendConfigDic) else {
+                return users
+            }
+            
+            for article in htmlDoc.xpath(trendConfig.userArrayPath) {
                 
-                guard let id = article["id"],
-                      id.hasPrefix("pa-") else {
+                guard let loginName = trendConfig.loginName.getTargetElementStr(element: article) else {
                     continue
                 }
                 let user = ZLGithubUserModel()
-                let login = String(id.split(separator: "-").last ?? "")
-                user.loginName = login
-                user.avatar_url = "https://avatars.githubusercontent.com/\(login.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "")"
+                user.loginName = String(loginName.suffix(from: loginName.index(after: loginName.startIndex)))
+                user.avatar_url = "https://avatars.githubusercontent.com/\(loginName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "")"
                 
-                if let a = article.xpath("//h1[@class=\"h3 lh-condensed\"]/a").first {
-                    let set = NSCharacterSet(charactersIn: " \n") as CharacterSet
-                    user.name = a.innerHTML?.trimmingCharacters(in: set)
+                if let displayName = trendConfig.displayName.getTargetElementStr(element: article) {
+                    user.name = displayName
                 }
                 users.append(user)
             }
