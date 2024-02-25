@@ -59,10 +59,8 @@ public func ZLEventServiceShared() ->  ZLEventServiceModuleProtocol? {
         return ZLServiceManager()
     }
     
-    public func initManager(buglyId: String){
-        
-        ZLBuglyManager.shared().setUp(buglyId);
-        
+    public func initManager() {
+      
         SYDCentralFactory.sharedInstance().getCommonBean("ZLLoginServiceModel")
         SYDCentralFactory.sharedInstance().getCommonBean("ZLViewerServiceModel")
         

@@ -36,7 +36,6 @@ Pod::Spec.new do |s|
                            'ZLGitRemoteService/Classes/PublicUtilities/**/*.h',
                            'ZLGitRemoteService/Classes/Base/**/*.h',
                            'ZLGitRemoteService/Classes/Manager/ZLSharedDataManager/*.h',
-                           'ZLGitRemoteService/Classes/Manager/ZLBuglyManager/*.h',
                            'ZLGitRemoteService/Classes/PublicModule/**/*.h']
  # s.vendored_frameworks = 'ZLGitRemoteService/Frameworks/Bugly.framework'
   s.pod_target_xcconfig = { 'LIBRARY_SEARCH_PATHS' => "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Libs",
@@ -44,7 +43,7 @@ Pod::Spec.new do |s|
                             'DEFINES_MODULE' => 'YES'}
   s.swift_version = '5.0'
   # 由于引入了bugly静态库，因此ZLGitRemote也必须是静态库
-  s.static_framework = true
+#  s.static_framework = true
   
   # s.resource_bundles = {
   #   'ZLGitRemoteService' => ['ZLGitRemoteService/Assets/*.png']
@@ -60,7 +59,6 @@ Pod::Spec.new do |s|
   s.dependency 'MJExtension'
   s.dependency 'Apollo', '~> 0.39.0'
   s.dependency 'SYDCentralPivot'
-  s.dependency 'Bugly'
   s.dependency 'Alamofire'
   s.dependency 'Kanna'
 

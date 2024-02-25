@@ -16,13 +16,6 @@ public let analytics : Umbrella.Analytics<ZLAppEvent> = {
     return tmpAnalytics
 }()
 
-
-final class BuglyProvider: ProviderType {
-  func log(_ eventName: String, parameters: [String: Any]?) {
-    ZLBuglyManager.shared().log(eventName, parameters: parameters)
-  }
-}
-
 final class ZLFirebaseProvider : ProviderType {
     func log(_ eventName: String, parameters: [String : Any]?) {
         FirebaseAnalytics.Analytics.logEvent(eventName, parameters: parameters)
