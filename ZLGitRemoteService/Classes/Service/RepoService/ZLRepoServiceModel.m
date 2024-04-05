@@ -192,7 +192,7 @@
     [[ZLGithubHttpClientV2 defaultClient] getCommitsForRepoWithFullName:fullName
                                                                    page:1
                                                                per_page:30
-                                                                    sha:nil
+                                                                    sha:branch
                                                                    path:nil
                                                                  author:nil
                                                               committer:nil

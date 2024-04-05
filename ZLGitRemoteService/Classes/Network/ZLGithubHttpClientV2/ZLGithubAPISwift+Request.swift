@@ -182,7 +182,8 @@ extension ZLGithubAPISwift {
             params = ["organization": organization,
                       "name": name,
                       "default_branch_only": default_branch_only]
-        case .getFileContentForRepo(_ , _, let ref, _):
+        case .getFileContentForRepo(_ , _, let ref, _),
+                .getDirContentForRepo(_, _, let ref): 
             params = ["ref":ref]
         case .renderCodeToMarkdown(let code):
             params = ["text": code]
