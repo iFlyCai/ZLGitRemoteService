@@ -30,6 +30,7 @@ typealias ZLGithubHttpClientBlock = (Bool, Any?,  ZLGithubRequestErrorModel?) ->
         
         sessionConfiguration = URLSessionConfiguration.default
         sessionConfiguration.timeoutIntervalForRequest = 30
+        sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
         
         session = Session(configuration: sessionConfiguration,
                           startRequestsImmediately: false)
