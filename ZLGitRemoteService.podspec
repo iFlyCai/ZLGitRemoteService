@@ -62,6 +62,6 @@ Pod::Spec.new do |s|
   s.dependency 'Alamofire'
   s.dependency 'Kanna'
   s.dependency 'ZLUtilities'
-  s.dependency "HandyJSON"
+  s.dependency "ObjectMapper"
 
 end

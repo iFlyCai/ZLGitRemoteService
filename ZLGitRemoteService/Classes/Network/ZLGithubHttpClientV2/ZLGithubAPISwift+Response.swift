@@ -10,7 +10,7 @@ import MJExtension
 import Alamofire
 import Kanna
 import ZLUtilities
-import HandyJSON
+import ObjectMapper
 
 
 // MARK: - ZLGithubAPIResultParseProtocol 处理协议
@@ -241,10 +241,17 @@ extension ZLGithubAPISwift {
 // MARK: - ZLGithubAPISwift + deal with response
 extension ZLGithubAPISwift {
     
-    class TrendingConfig: HandyJSON {
+    class TrendingConfig: Mappable {
         required init() {}
+        required init?(map: Map) { }
+        
         var path: String = ""
         var property: String = ""
+  
+        func mapping(map: Map) {
+            path    <- map["path"]
+            property  <- map["property"]
+        }
         
         func getTargetElementStr(element: XMLElement) -> String? {
             guard let targetElement = element.at_xpath(path) else {
@@ -260,14 +267,24 @@ extension ZLGithubAPISwift {
             return content?.trimmingCharacters(in: set)
         }
     }
-    class TrendingRepoConfig: HandyJSON {
-        required init() {}
+    class TrendingRepoConfig: Mappable {
         var repoArrayPath: String = ""
         var fullName: TrendingConfig = TrendingConfig()
         var desc: TrendingConfig = TrendingConfig()
         var language: TrendingConfig = TrendingConfig()
         var star: TrendingConfig = TrendingConfig()
         var fork: TrendingConfig = TrendingConfig()
+        
+        required init?(map: ObjectMapper.Map) {}
+        
+        func mapping(map: ObjectMapper.Map) {
+            repoArrayPath <- map["repoArrayPath"]
+            fullName <- map["fullName"]
+            desc <- map["desc"]
+            language <- map["language"]
+            star <- map["star"]
+            fork <- map["fork"]
+        }
     }
     static let trendingRepoConfig: [String:Any] = [
         "repoArrayPath": "//article[@class=\"Box-row\"]",
@@ -302,7 +319,7 @@ extension ZLGithubAPISwift {
             let htmlDoc = try HTML(html:data, encoding: .utf8 )
     
             let trendConfigDic = ZLAGC().configAsJsonObject(for: "TrendRepoConfig",defaultValue: ZLGithubAPISwift.trendingRepoConfig)
-            guard let trendConfig = TrendingRepoConfig.deserialize(from: trendConfigDic) else {
+            guard let trendConfig = TrendingRepoConfig(JSON: trendConfigDic) else {
                 return repos
             }
             
@@ -354,11 +371,18 @@ extension ZLGithubAPISwift {
         return repos
     }
     
-    class TrendingUserConfig: HandyJSON {
-        required init() {}
+    class TrendingUserConfig: Mappable {
         var userArrayPath: String = ""
         var loginName: TrendingConfig = TrendingConfig()
         var displayName: TrendingConfig = TrendingConfig()
+        
+        required init?(map: ObjectMapper.Map) {}
+        
+        func mapping(map: ObjectMapper.Map) {
+            userArrayPath <- map["userArrayPath"]
+            loginName <- map["loginName"]
+            displayName <- map["displayName"]
+        }
     }
     static let trendingUserConfig: [String:Any] = [
         "userArrayPath": "//article[@class=\"Box-row d-flex\"]/div[@class=\"d-sm-flex flex-auto\"]/div[@class=\"col-sm-8 d-md-flex\"]/div[@class=\"col-md-6\"]",
@@ -381,7 +405,7 @@ extension ZLGithubAPISwift {
             let htmlDoc = try HTML(html:data, encoding: .utf8 )
             
             let trendConfigDic = ZLAGC().configAsJsonObject(for: "TrendUserConfig",defaultValue: ZLGithubAPISwift.trendingUserConfig)
-            guard let trendConfig = TrendingUserConfig.deserialize(from: trendConfigDic) else {
+            guard let trendConfig = TrendingUserConfig(JSON: trendConfigDic) else {
                 return users
             }
             
