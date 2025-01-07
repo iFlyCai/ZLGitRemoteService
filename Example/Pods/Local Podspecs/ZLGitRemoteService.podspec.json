@@ -1,9 +1,9 @@
 {
   "name": "ZLGitRemoteService",
-  "version": "1.1.2",
+  "version": "1.4.0",
   "summary": "A short description of ZLGitRemoteService.",
   "description": "ZLGitRemoteService",
-  "homepage": "https://github.com/existorlive/ZLGitRemoteService",
+  "homepage": "https://github.com/iFlyCai/ZLGitRemoteService",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
@@ -12,11 +12,11 @@
     "existorlive": "2068531506@qq.com"
   },
   "source": {
-    "git": "https://github.com/existorlive/ZLGitRemoteService.git",
-    "tag": "1.1.2"
+    "git": "https://github.com/iFlyCai/ZLGitRemoteService.git",
+    "tag": "1.4.0"
   },
   "platforms": {
-    "ios": "11.0"
+    "ios": "15.6"
   },
   "module_name": "ZLGitRemoteService",
   "source_files": "ZLGitRemoteService/Classes/**/*.{h,m,swift}",
@@ -28,18 +28,14 @@
     "ZLGitRemoteService/Classes/PublicUtilities/**/*.h",
     "ZLGitRemoteService/Classes/Base/**/*.h",
     "ZLGitRemoteService/Classes/Manager/ZLSharedDataManager/*.h",
-    "ZLGitRemoteService/Classes/Manager/ZLBuglyManager/*.h",
-    "ZLGitRemoteService/Classes/PublicModule/**/*.h",
-    "ZLGitRemoteService/Classes/Network/ZLGithubHttpClient.h"
+    "ZLGitRemoteService/Classes/PublicModule/**/*.h"
   ],
-  "vendored_libraries": "ZLGitRemoteService/Libs/libgumbo.a",
   "pod_target_xcconfig": {
     "LIBRARY_SEARCH_PATHS": "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Libs",
     "FRAMEWORK_SEARCH_PATHS": "$(PODS_TARGET_SRCROOT)/ZLGitRemoteService/Frameworks",
     "DEFINES_MODULE": "YES"
   },
   "swift_versions": "5.0",
-  "static_framework": true,
   "dependencies": {
     "Umbrella": [
 
@@ -48,9 +44,6 @@
 
     ],
     "Firebase/Analytics": [
-
-    ],
-    "AFNetworking": [
 
     ],
     "FMDB": [
@@ -68,7 +61,13 @@
     "SYDCentralPivot": [
 
     ],
-    "Bugly": [
+    "Alamofire": [
+
+    ],
+    "Kanna": [
+
+    ],
+    "ObjectMapper": [
 
     ]
   },

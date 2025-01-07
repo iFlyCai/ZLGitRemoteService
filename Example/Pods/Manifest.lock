@@ -1,23 +1,8 @@
 PODS:
-  - AFNetworking (4.0.1):
-    - AFNetworking/NSURLSession (= 4.0.1)
-    - AFNetworking/Reachability (= 4.0.1)
-    - AFNetworking/Security (= 4.0.1)
-    - AFNetworking/Serialization (= 4.0.1)
-    - AFNetworking/UIKit (= 4.0.1)
-  - AFNetworking/NSURLSession (4.0.1):
-    - AFNetworking/Reachability
-    - AFNetworking/Security
-    - AFNetworking/Serialization
-  - AFNetworking/Reachability (4.0.1)
-  - AFNetworking/Security (4.0.1)
-  - AFNetworking/Serialization (4.0.1)
-  - AFNetworking/UIKit (4.0.1):
-    - AFNetworking/NSURLSession
+  - Alamofire (5.10.2)
   - Apollo (0.39.0):
     - Apollo/Core (= 0.39.0)
   - Apollo/Core (0.39.0)
-  - Bugly (2.5.90)
   - CocoaLumberjack (3.7.2):
     - CocoaLumberjack/Core (= 3.7.2)
   - CocoaLumberjack/Core (3.7.2)
@@ -106,12 +91,14 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.5.2):
     - GoogleUtilities/Logger
+  - Kanna (5.2.7)
   - MJExtension (3.3.0)
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
+  - ObjectMapper (4.2.0)
   - PromisesObjC (2.0.0)
   - SYDCentralPivot (1.4.1):
     - SYDCentralPivot/Core (= 1.4.1)
@@ -124,14 +111,15 @@ PODS:
   - Umbrella/Core (0.12.0)
   - Umbrella/Firebase (0.12.0):
     - Umbrella/Core
-  - ZLGitRemoteService (1.1.2):
-    - AFNetworking
+  - ZLGitRemoteService (1.4.0):
+    - Alamofire
     - Apollo (~> 0.39.0)
-    - Bugly
     - CocoaLumberjack
     - Firebase/Analytics
     - FMDB
+    - Kanna
     - MJExtension
+    - ObjectMapper
     - SYDCentralPivot
     - Umbrella
     - Umbrella/Firebase
@@ -141,9 +129,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - AFNetworking
+    - Alamofire
     - Apollo
-    - Bugly
     - CocoaLumberjack
     - Firebase
     - FirebaseAnalytics
@@ -154,8 +141,10 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
+    - Kanna
     - MJExtension
     - nanopb
+    - ObjectMapper
     - PromisesObjC
     - SYDCentralPivot
     - Umbrella
@@ -165,9 +154,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
+  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
   Apollo: f6c6410ebee82dd5846be87b81cedc8bc7754a82
-  Bugly: 88bc32c0acc6fef7b74d610f0319ee7560d6b9fe
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
   Firebase: 629510f1a9ddb235f3a7c5c8ceb23ba887f0f814
   FirebaseAnalytics: 5506ea8b867d8423485a84b4cd612d279f7b0b8a
@@ -178,13 +166,15 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 5ba1164e3c844ba84272555e916d0a6d3d977e91
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleUtilities: 8de2a97a17e15b6b98e38e8770e2d129a57c0040
+  Kanna: 01cfbddc127f5ff0963692f285fcbc8a9d62d234
   MJExtension: 01704cca2b60a214c10761b6491eab74069d68a9
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
+  ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   SYDCentralPivot: 744303ae0997af1b829fab7ef9772bba692222bd
   Umbrella: 4faf9786a6b29197608f6483711271104d237646
-  ZLGitRemoteService: ff54fad10c0abfa89dde01b03c774da970ac6d5a
+  ZLGitRemoteService: 590df8bb2f11b3ca97b8b018083af927201888b2
 
-PODFILE CHECKSUM: 7d33a8b4a25c3b57a630ca43288a0e441f5507f4
+PODFILE CHECKSUM: 1a507e24e9da03e8b008a1a5f07c935633b8e30c
 
-COCOAPODS: 1.11.0
+COCOAPODS: 1.16.2

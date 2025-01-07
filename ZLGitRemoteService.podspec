@@ -19,14 +19,14 @@ Pod::Spec.new do |s|
 
   s.description      = 'ZLGitRemoteService'
 
-  s.homepage         = 'https://github.com/existorlive/ZLGitRemoteService'
+  s.homepage         = 'https://github.com/iFlyCai/ZLGitRemoteService'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'existorlive' => '2068531506@qq.com' }
-  s.source           = { :git => 'https://github.com/existorlive/ZLGitRemoteService.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/iFlyCai/ZLGitRemoteService.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '11.0'
+  s.ios.deployment_target = '15.6'
   s.module_name = 'ZLGitRemoteService'
   s.source_files = 'ZLGitRemoteService/Classes/**/*.{h,m,swift}'
   s.prefix_header_file= 'ZLGitRemoteService/Classes/ZLGitRemoteService-prefix.pch'
@@ -61,7 +61,6 @@ Pod::Spec.new do |s|
   s.dependency 'SYDCentralPivot'
   s.dependency 'Alamofire'
   s.dependency 'Kanna'
-  s.dependency 'ZLUtilities'
   s.dependency "ObjectMapper"
-
+  
 end

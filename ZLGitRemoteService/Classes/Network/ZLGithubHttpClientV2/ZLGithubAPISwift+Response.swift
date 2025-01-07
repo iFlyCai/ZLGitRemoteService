@@ -9,7 +9,6 @@ import Foundation
 import MJExtension
 import Alamofire
 import Kanna
-import ZLUtilities
 import ObjectMapper
 
 
@@ -155,7 +154,7 @@ extension ZLGithubAPISwift {
             }))
         case .getAPPCommonConfig:
             return .custom(parseWrapper: ZLGithubAPIResultCustomParseWrapper(block: { api, _, data in
-                let appVersion = ZLDeviceInfo.getAppVersion()
+                let appVersion = AppInfo.getAppVersion()
                 if let jsonObject = (data as NSObject).mj_JSONObject() as? [String: Any?],
                    let config = jsonObject[appVersion] as? [String: Any?] {
                     return ZLGithubConfigModel.mj_object(withKeyValues: config)
@@ -315,58 +314,6 @@ extension ZLGithubAPISwift {
                                          data: Data) -> Any? {
        
         var repos = [ZLGithubRepositoryModel]()
-        do {
-            let htmlDoc = try HTML(html:data, encoding: .utf8 )
-    
-            let trendConfigDic = ZLAGC().configAsJsonObject(for: "TrendRepoConfig",defaultValue: ZLGithubAPISwift.trendingRepoConfig)
-            guard let trendConfig = TrendingRepoConfig(JSON: trendConfigDic) else {
-                return repos
-            }
-            
-            for article in htmlDoc.xpath(trendConfig.repoArrayPath) {
-                
-                guard var fullName = trendConfig.fullName.getTargetElementStr(element: article) else {
-                    continue
-                }
-                fullName = String(fullName.suffix(from: fullName.index(after: fullName.startIndex)))
-       
-                let repoModel = ZLGithubRepositoryModel()
-                repoModel.full_name = fullName
-                repoModel.name = String(fullName.split(separator: "/").last ?? "")
-                
-                let owner = ZLGithubUserBriefModel()
-                let loginName = String(fullName.split(separator: "/").first ?? "")
-                owner.loginName = loginName
-                owner.avatar_url = "https://avatars.githubusercontent.com/\(loginName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "")"
-                repoModel.owner = owner
-            
-                if let desc = trendConfig.desc.getTargetElementStr(element: article) {
-                    repoModel.desc_Repo = desc
-                }
-                
-                if let language = trendConfig.language.getTargetElementStr(element: article){
-                    repoModel.language = language
-                }
-            
-                if var starStr = trendConfig.star.getTargetElementStr(element: article) {
-                    starStr = (starStr as NSString).replacingOccurrences(of: ",", with: "")
-                    if let num = Int(starStr) {
-                        repoModel.stargazers_count = num
-                    }
-                }
-                
-                if var forkStr = trendConfig.fork.getTargetElementStr(element: article) {
-                    forkStr = (forkStr as NSString).replacingOccurrences(of: ",", with: "")
-                    if let num = Int(forkStr) {
-                        repoModel.forks_count = num
-                    }
-                }
-               
-                repos.append(repoModel)
-            }
-        } catch {
-            
-        }
         
         return repos
     }
@@ -401,32 +348,6 @@ extension ZLGithubAPISwift {
                                                response: HTTPURLResponse,
                                                data: Data) -> Any? {
         var users = [ZLGithubUserModel]()
-        do {
-            let htmlDoc = try HTML(html:data, encoding: .utf8 )
-            
-            let trendConfigDic = ZLAGC().configAsJsonObject(for: "TrendUserConfig",defaultValue: ZLGithubAPISwift.trendingUserConfig)
-            guard let trendConfig = TrendingUserConfig(JSON: trendConfigDic) else {
-                return users
-            }
-            
-            for article in htmlDoc.xpath(trendConfig.userArrayPath) {
-                
-                guard let loginName = trendConfig.loginName.getTargetElementStr(element: article) else {
-                    continue
-                }
-                let user = ZLGithubUserModel()
-                user.loginName = String(loginName.suffix(from: loginName.index(after: loginName.startIndex)))
-                user.avatar_url = "https://avatars.githubusercontent.com/\(loginName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "")"
-                
-                if let displayName = trendConfig.displayName.getTargetElementStr(element: article) {
-                    user.name = displayName
-                }
-                users.append(user)
-            }
-        
-        } catch {
-           
-        }
         return users
     }
     
@@ -453,5 +374,15 @@ extension ZLGithubAPISwift {
             searchModel.data = ZLGithubRepositoryModel.mj_objectArray(withKeyValuesArray: jsonObject["items"]) as? [Any] ?? []
         }
         return searchModel
+    }
+}
+class AppInfo {
+    static func getAppVersion() -> String {
+        if let infoDictionary = Bundle.main.infoDictionary,
+           let shortVersion = infoDictionary["CFBundleShortVersionString"] as? String,
+           let bundleVersion = infoDictionary["CFBundleVersion"] as? String {
+            return "\(shortVersion)(\(bundleVersion))"
+        }
+        return "Unknown Version"
     }
 }

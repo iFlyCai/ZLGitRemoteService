@@ -1,12 +1,16 @@
 use_frameworks!
 inhibit_all_warnings!     # 屏蔽pod中告警
 
-platform :ios, '11.0'
+platform :ios, '15.6'
 
 target 'ZLGitRemoteService_Example' do
   pod 'ZLGitRemoteService', :path => '../'
 
-  target 'ZLGitRemoteService_Tests' do
-    inherit! :search_paths
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.6'
+      end
+    end
   end
 end

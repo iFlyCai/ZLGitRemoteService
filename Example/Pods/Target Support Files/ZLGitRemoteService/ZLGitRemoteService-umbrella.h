@@ -22,7 +22,6 @@
 #import "ZLGithubRepositoryBranchModel.h"
 #import "ZLGithubRepositoryReadMeModel.h"
 #import "ZLGithubUserType.h"
-#import "ZLLoginProcessModel.h"
 #import "ZLGithubRequestErrorModel.h"
 #import "ZLOperationResultModel.h"
 #import "ZLSearchFilterInfoModel.h"
@@ -30,12 +29,10 @@
 #import "ZLTrendingFilterInfoModel.h"
 #import "NSDate+Format.h"
 #import "NSString+ZLExtension.h"
-#import "ZLDeviceInfo.h"
 #import "ZLKeyChainManager.h"
 #import "ZLBaseObject.h"
 #import "ZLBaseServiceModel.h"
 #import "ZLSharedDataManager.h"
-#import "ZLBuglyManager.h"
 #import "ZLDBModuleProtocol.h"
 #import "ZLLogModuleProtocol.h"
 #import "ZLAdditionServiceHeader.h"
@@ -44,7 +41,6 @@
 #import "ZLRepoServiceHeader.h"
 #import "ZLSearchServiceHeader.h"
 #import "ZLUserServiceHeader.h"
-#import "ZLGithubHttpClient.h"
 
 FOUNDATION_EXPORT double ZLGitRemoteServiceVersionNumber;
 FOUNDATION_EXPORT const unsigned char ZLGitRemoteServiceVersionString[];
